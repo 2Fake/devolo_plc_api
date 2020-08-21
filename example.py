@@ -4,14 +4,14 @@ from aiohttp import ClientSession
 
 from devolo_plc_api.devolo_plc_api import DevoloPlcApi
 
-IP = "http://192.168.178.35"
-PORT = 14791
+IP = "192.168.178.35"
 
 
 async def run():
     async with ClientSession() as session:
-        dpa = DevoloPlcApi(IP, session, PORT)
-        print(await dpa.get_wifi_guest_access())
+        dpa = DevoloPlcApi(IP, session)
+        print(await dpa.device_api.wifi1.get_wifi_guest_access())
+        print(await dpa.plc_net_api.get_network_overview())
 
 
 if __name__ == "__main__":

@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package plcnet.api;
+option java_package = "plcnet";
+option java_outer_classname = "net";
+
+message GetNetworkOverview
+{
+  message Device                     // describes a single powerline device
+  {
+    string product_name = 1;         // product name for display purposes, like "devolo dLAN 1200+"
+    string product_id = 2;           // internal product identifier, like "MT2639"
+
+    string friendly_version = 3;     // version string for display purposes, like "2.5.0.0-1"
+    string full_version = 4;         // full version string
+
+    string user_device_name = 5;     // user provided device name, if any
+    string user_network_name = 6;    // user provided network name, if any
+
+    string mac_address = 7;          // MAC address of the device, like "000B3BC3A4E6"
+
+    enum Topology
+    {
+      UNKNOWN_TOPOLOGY = 0;
+      LOCAL = 1;                     // the device is LOCAL (i.e. reachable via eth/wifi)
+      REMOTE = 2;                    // the device is REMOTE (i.e. connected via powerline to the LOCAL device)
+    }
+                                     // in a real network, we will always see one LOCAL device
+    Topology topology = 8;           // and zero or more REMOTEs
+
+    enum Technology
+    {
+      UNKNOWN_TECHNOLOGY = 0;
+      HPAV_THUNDERBOLT = 3;          // HomePlugAV device (based on Intellon/QCA Thunderbolt or later, i.e. 6x00/74x0 family)
+      HPAV_PANTHER = 4;              // HomePlugAV device (based on Intellon/QCA Panther or later, i.e. 7420/75x0 family)
+      GHN_SPIRIT = 7;                // G.hn device (based on Maxlinear Spirit firmware)
+    }
+
+    Technology technology = 9;       // in a real network, you will always see either HPAV or GHN devices, but never both
+
+    repeated string bridged_devices = 10; // MAC addresses of devices attached to this device on the LAN side
+
+    string ipv4_address = 11;        // ipv4 address of the device; empty if none is available
+
+    bool attached_to_router = 12;    // indicates whether this adapter is attached to the router or not (only one should be set true)
+  }
+
+  message DataRate                   // describes the data rate between two powerline devices in the same logical network
+  {
+    string mac_address_from = 1;     // the powerline device from which we got information about the data rates
+    string mac_address_to = 2;       // the powerline device to which we are transmitting/receiving
+    double tx_rate = 3;              // transmit data rate in mbps
+    double rx_rate = 4;              // receive data rate in mbps
+  }
+
+  message LogicalNetwork
+  {
+    repeated Device devices = 1;      // all devices in the logical network
+    repeated DataRate data_rates = 2; // all known data rates between devices in the logical network
+  }
+
+  LogicalNetwork network = 1;
+}
