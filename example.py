@@ -5,13 +5,18 @@ from aiohttp import ClientSession
 from devolo_plc_api.device import Device
 
 
-IP = "192.168.3.13"
+# IP of the device to query
+IP = "192.168.0.10"
 
 
 async def run():
     async with ClientSession() as session:
         dpa = Device(IP, session)
+
+        # Get details about wifi guest access
         print(await dpa.device.get_wifi_guest_access())
+
+        # Get PLC data rates
         print(await dpa.plcnet.get_network_overview())
 
 
