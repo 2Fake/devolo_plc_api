@@ -128,4 +128,12 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+### VisualStudioCode ###
+.vscode/*
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+
+### PyCharm ###
 .idea
