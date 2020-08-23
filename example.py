@@ -2,16 +2,17 @@ import asyncio
 
 from aiohttp import ClientSession
 
-from devolo_plc_api.devolo_plc_api import DevoloPlcApi
+from devolo_plc_api.device import Device
 
-IP = "192.168.178.35"
+
+IP = "192.168.3.13"
 
 
 async def run():
     async with ClientSession() as session:
-        dpa = DevoloPlcApi(IP, session)
-        print(await dpa.device_api.wifi1.get_wifi_guest_access())
-        print(await dpa.plc_net_api.get_network_overview())
+        dpa = Device(IP, session)
+        print(await dpa.device.get_wifi_guest_access())
+        print(await dpa.plcnet.get_network_overview())
 
 
 if __name__ == "__main__":
