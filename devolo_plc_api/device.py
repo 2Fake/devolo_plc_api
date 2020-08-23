@@ -1,3 +1,4 @@
+import logging
 import socket
 import struct
 import time
@@ -31,6 +32,7 @@ class Device:
         self.device = None
         self.plcnet = None
 
+        self._logger = logging.getLogger(self.__class__.__name__)
         self._session = session
 
         self._zeroconf = Zeroconf()
@@ -73,6 +75,7 @@ class Device:
 
     def _get_zeroconf_info(self, service_type: str):
         """ Browse for the desired mDNS service types and query them. """
+        self._logger.debug(f"Browsing for {service_type}")
         browser = ServiceBrowser(self._zeroconf, service_type, [self._state_change])
         start_time = time.time()
         while not time.time() > start_time + 10 and not self._info:
@@ -83,6 +86,7 @@ class Device:
         """ Evaluate the query result. """
         if state_change is ServiceStateChange.Added and \
                 socket.inet_ntoa(zeroconf.get_service_info(service_type, name).address) == self.ip:
+            self._logger.debug(f"Adding service info of {service_type}")
             service_info = zeroconf.get_service_info(service_type, name).text
 
             # The answer is a byte string, that concatenates key-value pairs with their length as two byte hex value.

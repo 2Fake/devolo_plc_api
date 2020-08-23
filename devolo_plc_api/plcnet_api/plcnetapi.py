@@ -1,3 +1,5 @@
+import logging
+
 from aiohttp import ClientSession
 
 from ..clients.protobuf import Protobuf
@@ -20,10 +22,12 @@ class PlcNetApi(Protobuf):
         self._session = session
         self._path = path
         self._version = version
+        self._logger = logging.getLogger(self.__class__.__name__)
 
 
     async def get_network_overview(self) -> dict:
         """ Get a PLC network overview. """
+        self._logger.debug("Getting network overview")
         network_overview = devolo_idl_proto_plcnetapi_getnetworkoverview_pb2.GetNetworkOverview()
         responds = await self.get("GetNetworkOverview")
         network_overview.ParseFromString(await responds.read())

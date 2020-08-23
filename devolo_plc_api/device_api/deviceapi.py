@@ -1,3 +1,4 @@
+import logging
 from typing import Callable
 
 from aiohttp import ClientSession
@@ -25,6 +26,7 @@ class DeviceApi(Protobuf):
         self._path = path
         self._version = version
         self._features = features.split(",")
+        self._logger = logging.getLogger(self.__class__.__name__)
 
 
     def _feature(feature: str):
@@ -42,6 +44,7 @@ class DeviceApi(Protobuf):
     @_feature("wifi1")
     async def get_wifi_guest_access(self) -> dict:
         """ Get details about wifi guest access. """
+        self._logger.debug("Getting wifi guest access")
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessGet()
         r = await self.get("WifiGuestAccessGet")
         wifi_guest_proto.ParseFromString(await r.read())
