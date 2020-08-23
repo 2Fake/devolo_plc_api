@@ -1,6 +1,6 @@
 import setuptools
 
-from devolo_home_control_api import __version__
+from devolo_plc_api import __version__
 
 
 with open("README.md", "r") as fh:
