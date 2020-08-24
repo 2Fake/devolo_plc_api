@@ -23,8 +23,9 @@ setuptools.setup(
     ],
     install_requires=[
         "aiohttp",
+        "asyncinit",
         "protobuf",
-        "zeroconf"
+        "zeroconf>=0.27.0"
     ],
     setup_requires=[
         "pytest-runner"
