@@ -25,7 +25,7 @@ class DeviceApi(Protobuf):
         self._session = session
         self._path = path
         self._version = version
-        self._features = features.split(",")
+        self._features = features.split(",") if features else []
         self._logger = logging.getLogger(self.__class__.__name__)
 
 
