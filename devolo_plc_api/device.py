@@ -2,7 +2,6 @@ import asyncio
 import logging
 import socket
 import struct
-import time
 from datetime import date
 
 from aiohttp import ClientSession
@@ -41,15 +40,15 @@ class Device:
         self._info = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
         self._session = ClientSession()
         self._zeroconf = Zeroconf()
-  
+
         loop = asyncio.get_running_loop()
         await loop.create_task(self._gather_apis())
 
         delattr(self, "_info")
 
-    async def __aexit__(self):     
+    async def __aexit__(self, exc_type, exc, tb):
         self._zeroconf.close()
-        self._session.close()
+        await self._session.close()
 
 
     async def _gather_apis(self):
@@ -83,19 +82,19 @@ class Device:
         except asyncio.TimeoutError:
             raise DeviceNotFound(f"The device {self.ip} did not answer.") from None
 
-        self.mac = self._plc_info[service_type].get("PlcMacAddress", "")
-        self.technology = self._plc_info[service_type].get("PlcTechnology", "")
+        self.mac = self._info[service_type].get("PlcMacAddress", "")
+        self.technology = self._info[service_type].get("PlcTechnology", "")
 
         self.plcnet = PlcNetApi(ip=self.ip,
                                 session=self._session,
-                                path=self._plc_info[service_type]['Path'],
-                                version=self._plc_info[service_type]['Version'])
+                                path=self._info[service_type]['Path'],
+                                version=self._info[service_type]['Version'])
 
     async def _get_zeroconf_info(self, service_type: str):
         """ Browse for the desired mDNS service types and query them. """
         self._logger.debug(f"Browsing for {service_type}")
         browser = ServiceBrowser(self._zeroconf, service_type, [self._state_change])
-        while not self._info:
+        while not self._info[service_type]:
             await asyncio.sleep(0.1)
         browser.cancel()
 
@@ -103,8 +102,7 @@ class Device:
     def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange):
         """ Evaluate the query result. """
         if state_change is ServiceStateChange.Added and \
-            self.ip in [socket.inet_ntoa(address) for address in zeroconf.get_service_info(service_type, name).addresses]:
-
+                self.ip in [socket.inet_ntoa(address) for address in zeroconf.get_service_info(service_type, name).addresses]:
             self._logger.debug(f"Adding service info of {service_type}")
             service_info = zeroconf.get_service_info(service_type, name).text
 
