@@ -10,8 +10,7 @@ IP = "192.168.0.10"
 
 
 async def run():
-    async with ClientSession() as session:
-        dpa = Device(IP, session)
+    async with Device(IP) as dpa:
 
         # Get details about wifi guest access
         print(await dpa.device.get_wifi_guest_access())
