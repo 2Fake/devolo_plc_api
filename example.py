@@ -1,7 +1,5 @@
 import asyncio
 
-from aiohttp import ClientSession
-
 from devolo_plc_api.device import Device
 
 
