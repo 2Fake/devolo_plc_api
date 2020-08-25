@@ -35,7 +35,6 @@ setuptools.setup(
         "pytest",
         "pytest-cov",
         "pytest-mock",
-        "unittest",
     ],
     python_requires='>=3.6',
 )
