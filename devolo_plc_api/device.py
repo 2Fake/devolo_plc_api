@@ -18,10 +18,10 @@ class Device:
     Representing object for your devolo PLC device. It stores all properties and functionalities discovered during setup.
 
     :param ip: IP address of the device to communicate with.
-    :param session: HTTP client session
+    :param zeroconf_instance: Zeroconf instance to be potentially reused.
     """
 
-    def __init__(self, ip: str):
+    def __init__(self, ip: str, zeroconf_instance: Zeroconf = None):
         self.firmware_date = date.fromtimestamp(0)
         self.firmware_version = ""
         self.ip = ip
@@ -36,30 +36,29 @@ class Device:
 
         self._info = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
         self._logger = logging.getLogger(self.__class__.__name__)
+        self._zeroconf_instance = zeroconf_instance
 
-    async def __aenter__(self):     
+    async def __aenter__(self):
         self._session = ClientSession()
-        self._zeroconf = Zeroconf()
-
+        self._zeroconf = self._zeroconf_instance or Zeroconf()
         loop = asyncio.get_running_loop()
         await loop.create_task(self._gather_apis())
-
         return self
 
     def __enter__(self):
         self._session = requests.Session()
-        self._zeroconf = Zeroconf()
-
+        self._zeroconf = self._zeroconf_instance or Zeroconf()
         asyncio.run(self._gather_apis())
-
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        self._zeroconf.close()
+        if not self._zeroconf_instance:
+            self._zeroconf.close()
         await self._session.close()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self._zeroconf.close()
+        if not self._zeroconf_instance:
+            self._zeroconf.close()
         self._session.close()
 
 
