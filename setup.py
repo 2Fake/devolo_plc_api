@@ -23,7 +23,6 @@ setuptools.setup(
     ],
     install_requires=[
         "aiohttp",
-        "asyncinit",
         "protobuf",
         "requests",
         "zeroconf>=0.27.0",
@@ -32,9 +31,11 @@ setuptools.setup(
         "pytest-runner"
     ],
     tests_require=[
+        "asynctest",
         "pytest",
         "pytest-cov",
         "pytest-mock",
+        "unittest",
     ],
     python_requires='>=3.6',
 )
