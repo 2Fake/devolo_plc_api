@@ -4,6 +4,7 @@ import socket
 import struct
 from datetime import date
 
+import requests
 from aiohttp import ClientSession
 from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
 
@@ -36,6 +37,18 @@ class Device:
         self._logger = logging.getLogger(self.__class__.__name__)
 
 
+    def __enter__(self):
+        self._info = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
+        self._session = requests.Session()
+        self._zeroconf = Zeroconf()
+
+        asyncio.run(self._gather_apis())
+
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._session.close()
+
     async def __aenter__(self):
         self._info = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
         self._session = ClientSession()
@@ -43,8 +56,6 @@ class Device:
 
         loop = asyncio.get_running_loop()
         await loop.create_task(self._gather_apis())
-
-        delattr(self, "_info")
 
         return self
 
