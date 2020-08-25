@@ -26,14 +26,15 @@ class PlcNetApi(Protobuf):
 
 
     async def async_get_network_overview(self) -> dict:
-        """ Get a PLC network overview. """
+        """ Get a PLC network overview asynchronously. """
         self._logger.debug("Getting network overview")
         network_overview = devolo_idl_proto_plcnetapi_getnetworkoverview_pb2.GetNetworkOverview()
-        responds = await self.async_get("GetNetworkOverview")
-        network_overview.ParseFromString(await responds.read())
+        response = await self.async_get("GetNetworkOverview")
+        network_overview.ParseFromString(await response.read())
         return network_overview
 
     def get_network_overview(self):
+        """ Get a PLC network overview synchronously. """
         self._logger.debug("Getting network overview")
         network_overview = devolo_idl_proto_plcnetapi_getnetworkoverview_pb2.GetNetworkOverview()
         response = self.get("GetNetworkOverview")

@@ -1,10 +1,14 @@
 import json
 import pathlib
+
 import pytest
+
 
 pytest_plugins = ['tests.fixtures.device_api',
                   'tests.fixtures.plcnet_api',
-                  'tests.fixtures.zeroconf']
+                  'tests.fixtures.zeroconf',
+                 ]
+
 
 file = pathlib.Path(__file__).parent / "test_data.json"
 with file.open("r") as fh:
@@ -15,5 +19,3 @@ with file.open("r") as fh:
 def test_data_fixture(request):
     """ Load test data. """
     request.cls.device_info = test_data['device_info']
-
-

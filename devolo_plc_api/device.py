@@ -34,23 +34,10 @@ class Device:
         self.device = None
         self.plcnet = None
 
+        self._info = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
         self._logger = logging.getLogger(self.__class__.__name__)
 
-
-    def __enter__(self):
-        self._info = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
-        self._session = requests.Session()
-        self._zeroconf = Zeroconf()
-
-        asyncio.run(self._gather_apis())
-
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self._session.close()
-
-    async def __aenter__(self):
-        self._info = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
+    async def __aenter__(self):     
         self._session = ClientSession()
         self._zeroconf = Zeroconf()
 
@@ -59,9 +46,21 @@ class Device:
 
         return self
 
-    async def __aexit__(self, exc_type, exc, tb):
+    def __enter__(self):
+        self._session = requests.Session()
+        self._zeroconf = Zeroconf()
+
+        asyncio.run(self._gather_apis())
+
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
         self._zeroconf.close()
         await self._session.close()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._zeroconf.close()
+        self._session.close()
 
 
     async def _gather_apis(self):
@@ -111,7 +110,6 @@ class Device:
             await asyncio.sleep(0.1)
         browser.cancel()
 
-
     def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange):
         """ Evaluate the query result. """
         if state_change is ServiceStateChange.Added and \
@@ -123,7 +121,7 @@ class Device:
             total_length = len(service_info)
             offset = 0
             while offset < total_length:
-                parsed_length, = struct.unpack_from('!B', service_info, offset)
+                parsed_length, = struct.unpack_from("!B", service_info, offset)
                 key_value = service_info[offset + 1:offset + 1 + parsed_length].decode("UTF-8").split("=")
                 self._info[service_type][key_value[0]] = key_value[1]
                 offset += parsed_length + 1
