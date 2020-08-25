@@ -29,7 +29,7 @@ class DeviceApi(Protobuf):
         self._logger = logging.getLogger(self.__class__.__name__)
 
 
-    def _feature(feature: str):
+    def _feature(feature: str):  # type: ignore
         """ Decorator to filter unsupported features before querying the device. """
         def feature_decorator(method: Callable):
             def wrapper(self):
