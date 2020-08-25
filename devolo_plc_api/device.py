@@ -34,7 +34,7 @@ class Device:
         self.device = None
         self.plcnet = None
 
-        self._info = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
+        self._info: dict = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
         self._logger = logging.getLogger(self.__class__.__name__)
         self._zeroconf_instance = zeroconf_instance
 
@@ -111,16 +111,16 @@ class Device:
 
     def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange):
         """ Evaluate the query result. """
-        if state_change is ServiceStateChange.Added and \
-                self.ip in [socket.inet_ntoa(address) for address in zeroconf.get_service_info(service_type, name).addresses]:
+        service_info = zeroconf.get_service_info(service_type, name)
+        if service_info and state_change is ServiceStateChange.Added and \
+                self.ip in [socket.inet_ntoa(address) for address in service_info.addresses]:
             self._logger.debug(f"Adding service info of {service_type}")
-            service_info = zeroconf.get_service_info(service_type, name).text
 
             # The answer is a byte string, that concatenates key-value pairs with their length as two byte hex value.
-            total_length = len(service_info)
+            total_length = len(service_info.text)
             offset = 0
             while offset < total_length:
-                parsed_length, = struct.unpack_from("!B", service_info, offset)
-                key_value = service_info[offset + 1:offset + 1 + parsed_length].decode("UTF-8").split("=")
+                parsed_length, = struct.unpack_from("!B", service_info.text, offset)
+                key_value = service_info.text[offset + 1:offset + 1 + parsed_length].decode("UTF-8").split("=")
                 self._info[service_type][key_value[0]] = key_value[1]
                 offset += parsed_length + 1
