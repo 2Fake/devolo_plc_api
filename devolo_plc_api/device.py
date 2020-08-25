@@ -46,6 +46,8 @@ class Device:
 
         delattr(self, "_info")
 
+        return self
+
     async def __aexit__(self, exc_type, exc, tb):
         self._zeroconf.close()
         await self._session.close()
