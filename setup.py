@@ -33,6 +33,7 @@ setuptools.setup(
     tests_require=[
         "asynctest",
         "pytest",
+        "pytest-asyncio",
         "pytest-cov",
         "pytest-mock",
     ],
