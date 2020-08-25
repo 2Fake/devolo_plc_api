@@ -1,0 +1,13 @@
+{
+  "device_info": {
+  "_dvl-deviceapi._tcp.local.": {
+        "FirmwareDate": "2020-06-29",
+        "FirmwareVersion": "5.5.1",
+        "SN": "1234567890123456",
+        "MT": "2730",
+        "Product": "dLAN pro 1200+ WiFi ac",
+        "Path": "/",
+        "Version": "v0",
+        "Features": "wifi1"
+    }}
+}

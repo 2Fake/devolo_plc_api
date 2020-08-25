@@ -1,13 +1,20 @@
+from unittest.mock import patch
+from datetime import date
 import pytest
-
-from devolo_plc_api.device import Device
+from asynctest import CoroutineMock
+from devolo_plc_api.device_api.deviceapi import DeviceApi
 
 
 class TestDevice:
-    @pytest.mark.usefixtures("mock_zeroconf")
     @pytest.mark.usefixtures("mock_device_api")
-    @pytest.mark.usefixtures("mock_plcnet_api")
-    def test___get_device_info(self):
-        device = Device(ip="192.168.0.10", session="")
-        device._get_device_info()
-        assert device.serial_number == "1234567890123456"
+    @pytest.mark.asyncio
+    async def test___get_device_info(self, mock_device):
+        with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=CoroutineMock()):
+            await mock_device._get_device_info()
+            assert mock_device.firmware_date == date.fromisoformat(self.device_info["_dvl-deviceapi._tcp.local."]["FirmwareDate"])
+            assert mock_device.firmware_version == self.device_info["_dvl-deviceapi._tcp.local."]["FirmwareVersion"]
+            assert mock_device.serial_number == self.device_info["_dvl-deviceapi._tcp.local."]["SN"]
+            assert mock_device.mt_number == self.device_info["_dvl-deviceapi._tcp.local."]["MT"]
+            assert mock_device.product == self.device_info["_dvl-deviceapi._tcp.local."]["Product"]
+            assert type(mock_device.device) == DeviceApi
+

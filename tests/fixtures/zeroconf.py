@@ -1,8 +1,11 @@
 import pytest
 
-from ..mocks.mock_zeroconf import _get_zeroconf_info
+from devolo_plc_api.device import Device
 
 
 @pytest.fixture()
-def mock_zeroconf(mocker):
-    mocker.patch("devolo_plc_api.device.Device._get_zeroconf_info", _get_zeroconf_info)
+def mock_device(request):
+    device = Device(ip="192.168.0.10")
+    device._info = request.cls.device_info
+    device._session = None
+    return device
