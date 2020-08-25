@@ -37,5 +37,5 @@ setuptools.setup(
         "pytest-cov",
         "pytest-mock",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.7',
 )
