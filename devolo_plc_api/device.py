@@ -18,10 +18,10 @@ class Device:
     Representing object for your devolo PLC device. It stores all properties and functionalities discovered during setup.
 
     :param ip: IP address of the device to communicate with.
-    :param session: HTTP client session
+    :param zeroconf_instance: Zeroconf instance to be potentially reused.
     """
 
-    def __init__(self, ip: str):
+    def __init__(self, ip: str, zeroconf_instance: Zeroconf = None):
         self.firmware_date = date.fromtimestamp(0)
         self.firmware_version = ""
         self.ip = ip
@@ -34,32 +34,31 @@ class Device:
         self.device = None
         self.plcnet = None
 
-        self._info = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
+        self._info: dict = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
         self._logger = logging.getLogger(self.__class__.__name__)
+        self._zeroconf_instance = zeroconf_instance
 
-    async def __aenter__(self):     
+    async def __aenter__(self):
         self._session = ClientSession()
-        self._zeroconf = Zeroconf()
-
+        self._zeroconf = self._zeroconf_instance or Zeroconf()
         loop = asyncio.get_running_loop()
         await loop.create_task(self._gather_apis())
-
         return self
 
     def __enter__(self):
         self._session = requests.Session()
-        self._zeroconf = Zeroconf()
-
+        self._zeroconf = self._zeroconf_instance or Zeroconf()
         asyncio.run(self._gather_apis())
-
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        self._zeroconf.close()
+        if not self._zeroconf_instance:
+            self._zeroconf.close()
         await self._session.close()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self._zeroconf.close()
+        if not self._zeroconf_instance:
+            self._zeroconf.close()
         self._session.close()
 
 
@@ -112,16 +111,16 @@ class Device:
 
     def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange):
         """ Evaluate the query result. """
-        if state_change is ServiceStateChange.Added and \
-                self.ip in [socket.inet_ntoa(address) for address in zeroconf.get_service_info(service_type, name).addresses]:
+        service_info = zeroconf.get_service_info(service_type, name)
+        if service_info and state_change is ServiceStateChange.Added and \
+                self.ip in [socket.inet_ntoa(address) for address in service_info.addresses]:
             self._logger.debug(f"Adding service info of {service_type}")
-            service_info = zeroconf.get_service_info(service_type, name).text
 
             # The answer is a byte string, that concatenates key-value pairs with their length as two byte hex value.
-            total_length = len(service_info)
+            total_length = len(service_info.text)
             offset = 0
             while offset < total_length:
-                parsed_length, = struct.unpack_from("!B", service_info, offset)
-                key_value = service_info[offset + 1:offset + 1 + parsed_length].decode("UTF-8").split("=")
+                parsed_length, = struct.unpack_from("!B", service_info.text, offset)
+                key_value = service_info.text[offset + 1:offset + 1 + parsed_length].decode("UTF-8").split("=")
                 self._info[service_type][key_value[0]] = key_value[1]
                 offset += parsed_length + 1

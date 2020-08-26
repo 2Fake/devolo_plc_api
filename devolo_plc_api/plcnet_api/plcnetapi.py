@@ -33,7 +33,7 @@ class PlcNetApi(Protobuf):
         network_overview.ParseFromString(await response.read())
         return network_overview
 
-    def get_network_overview(self):
+    def get_network_overview(self) -> dict:
         """ Get a PLC network overview synchronously. """
         self._logger.debug("Getting network overview")
         network_overview = devolo_idl_proto_plcnetapi_getnetworkoverview_pb2.GetNetworkOverview()

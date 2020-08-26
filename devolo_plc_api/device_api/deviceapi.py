@@ -29,7 +29,7 @@ class DeviceApi(Protobuf):
         self._logger = logging.getLogger(self.__class__.__name__)
 
 
-    def _feature(feature: str):
+    def _feature(feature: str):  # type: ignore
         """ Decorator to filter unsupported features before querying the device. """
         def feature_decorator(method: Callable):
             def wrapper(self):
@@ -43,7 +43,7 @@ class DeviceApi(Protobuf):
 
     @_feature("wifi1")
     async def async_get_wifi_guest_access(self) -> dict:
-        """ Get details about wifi guest access. """
+        """ Get details about wifi guest access asynchronously. """
         self._logger.debug("Getting wifi guest access")
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessGet()
         response = await self.async_get("WifiGuestAccessGet")
@@ -52,7 +52,7 @@ class DeviceApi(Protobuf):
 
     @_feature("wifi1")
     def get_wifi_guest_access(self) -> dict:
-        """ Get details about wifi guest access. """
+        """ Get details about wifi guest access synchronously. """
         self._logger.debug("Getting wifi guest access")
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessGet()
         response = self.get("WifiGuestAccessGet")

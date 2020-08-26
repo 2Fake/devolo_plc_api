@@ -5,7 +5,7 @@ class Protobuf:
 
     @property
     def url(self):
-        """ The URL to query. """
+        """ The base URL to query. """
         return f"http://{self._ip}:{self._port}/{self._path}/{self._version}/"
 
 

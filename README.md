@@ -7,16 +7,19 @@ This project implements parts of the devolo PLC devices API in Python. Communica
 Defining the system requirements with exact versions typically is difficult. But there is a tested environment:
 
 * Linux
-* Python 3.6.11
+* Python 3.7.8
 * pip 20.0.2
 * aiohttp 3.6.2
+* requests 2.24.0
 * protobuf 3.11.4
-* zeroconf 0.24.4
+* zeroconf 0.27.0
 
 Other versions and even other operating systems might work. Feel free to tell us about your experience. If you want to run our unit tests, you also need:
 
 * pytest 5.4.3
+* pytest-asyncio 0.14.0
 * pytest-mock 3.2.0
+* asynctest 0.13.0
 
 ## Versioning
 
