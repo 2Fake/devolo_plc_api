@@ -1,7 +1,7 @@
 import logging
 from typing import Callable
 
-from aiohttp import ClientSession
+from httpx import Client
 
 from ..clients.protobuf import Protobuf
 from ..exceptions.feature import FeatureNotSupported
@@ -19,7 +19,7 @@ class DeviceApi(Protobuf):
     :param features: Feature, the device has
     """
 
-    def __init__(self, ip: str, session: ClientSession, path: str, version: str, features: str):
+    def __init__(self, ip: str, session: Client, path: str, version: str, features: str, password: str):
         self._ip = ip
         self._port = 14791
         self._session = session
@@ -27,6 +27,8 @@ class DeviceApi(Protobuf):
         self._version = version
         self._features = features.split(",") if features else []
         self._logger = logging.getLogger(self.__class__.__name__)
+        self._user = "devolo"
+        self._password = password
 
 
     def _feature(feature: str, **kwargs):  # type: ignore
@@ -61,6 +63,14 @@ class DeviceApi(Protobuf):
 
     @_feature("wifi1")
     async def async_set_wifi_guest_access(self, enable):
+        wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSet()
+        wifi_guest_proto.enable = enable
+        r = await self.async_post("WifiGuestAccessSet", data=wifi_guest_proto.SerializeToString())
+        wifi_guest_proto.ParseFromString(await r.aread())
+        return wifi_guest_proto
+
+    @_feature("wifi1")
+    async def set_wifi_guest_access(self, enable):
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSet()
         wifi_guest_proto.enable = enable
         r = await self.async_post("WifiGuestAccessSet", data=wifi_guest_proto.SerializeToString())

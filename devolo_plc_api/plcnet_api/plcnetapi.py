@@ -1,6 +1,6 @@
 import logging
 
-from aiohttp import ClientSession
+from httpx import Client
 
 from ..clients.protobuf import Protobuf
 from . import devolo_idl_proto_plcnetapi_getnetworkoverview_pb2
@@ -16,13 +16,17 @@ class PlcNetApi(Protobuf):
     :param version: Version of the API to use
     """
 
-    def __init__(self, ip: str, session: ClientSession, path: str, version: str):
+    def __init__(self, ip: str, session: Client, path: str, version: str):
         self._ip = ip
         self._port = 47219
         self._session = session
         self._path = path
         self._version = version
         self._logger = logging.getLogger(self.__class__.__name__)
+        # PLC APi is not password protected.
+        self._user = None
+        self._password = None
+
 
 
     async def async_get_network_overview(self) -> dict:
@@ -30,7 +34,7 @@ class PlcNetApi(Protobuf):
         self._logger.debug("Getting network overview")
         network_overview = devolo_idl_proto_plcnetapi_getnetworkoverview_pb2.GetNetworkOverview()
         response = await self.async_get("GetNetworkOverview")
-        network_overview.ParseFromString(await response.read())
+        network_overview.ParseFromString(await response.aread())
         return network_overview
 
     def get_network_overview(self) -> dict:
