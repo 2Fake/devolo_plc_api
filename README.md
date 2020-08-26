@@ -9,8 +9,7 @@ Defining the system requirements with exact versions typically is difficult. But
 * Linux
 * Python 3.7.8
 * pip 20.0.2
-* aiohttp 3.6.2
-* requests 2.24.0
+* httpx 0.14.2
 * protobuf 3.11.4
 * zeroconf 0.27.0
 
