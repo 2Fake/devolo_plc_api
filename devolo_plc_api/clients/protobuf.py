@@ -1,10 +1,17 @@
-from httpx import DigestAuth
+from logging import Logger
+
+from google.protobuf.json_format import MessageToDict
+from httpx import DigestAuth, Response
+
+from ..exceptions.device import DevicePasswordProtected
 
 
 class Protobuf:
     """
     Google Protobuf client. This client is not usable stand alone but needs to be derived.
     """
+    _logger: Logger
+
 
     @property
     def url(self):
@@ -12,26 +19,42 @@ class Protobuf:
         return f"http://{self._ip}:{self._port}/{self._path}/{self._version}/"
 
 
-    async def async_get(self, sub_url):
+    async def _async_get(self, sub_url: str) -> Response:
         """ Query URL asynchronously. """
         url = f"{self.url}{sub_url}"
         self._logger.debug(f"Getting from {url}")
-        return await self._session.get(url, auth=DigestAuth(self._user, self._password))
+        try:
+            return await self._session.get(url, auth=DigestAuth(self._user, self._password))  # type: ignore
+        except TypeError:
+            raise DevicePasswordProtected("The used password is wrong.") from None
 
-    def get(self, sub_url):
+    def _get(self, sub_url: str) -> Response:
         """ Query URL synchronously. """
         url = f"{self.url}{sub_url}"
         self._logger.debug(f"Getting from {url}")
-        return self._session.get(url, auth=DigestAuth(self._user, self._password))
+        try:
+            return self._session.get(url, auth=DigestAuth(self._user, self._password))  # type: ignore
+        except TypeError:
+            raise DevicePasswordProtected("The used password is wrong.") from None
 
-    async def async_post(self, sub_url, data):
+    def _message_to_dict(self, message) -> dict:
+        """ Convert message to dict with certain settings. """
+        return MessageToDict(message=message, including_default_value_fields=True, preserving_proto_field_name=True)
+
+    async def _async_post(self, sub_url: str, data: str) -> Response:
         """ Post data asynchronously. """
         url = f"{self.url}{sub_url}"
         self._logger.debug(f"Posting to {url}")
-        return await self._session.post(url, auth=DigestAuth(self._user, self._password), data=data)
+        try:
+            return await self._session.post(url, auth=DigestAuth(self._user, self._password), data=data)  # type: ignore
+        except TypeError:
+            raise DevicePasswordProtected("The used password is wrong.") from None
 
-    def post(self, sub_url, data):
+    def _post(self, sub_url: str, data: str) -> Response:
         """ Post data synchronously. """
         url = f"{self.url}{sub_url}"
         self._logger.debug(f"Posting to {url}")
-        return self._session.post(url, auth=DigestAuth(self._user, self._password), data=data)
+        try:
+            return self._session.post(url, auth=DigestAuth(self._user, self._password), data=data)  # type: ignore
+        except TypeError:
+            raise DevicePasswordProtected("The used password is wrong.") from None
