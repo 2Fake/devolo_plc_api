@@ -42,6 +42,27 @@ class DeviceApi(Protobuf):
             return wrapper
         return feature_decorator
 
+    @_feature("wifi1")
+    async def async_get_wifi_connected_station(self):
+        wifi_connected_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiConnectedStationsGet()
+        response = await self.async_get("WifiConnectedStationsGet")
+        wifi_connected_proto.ParseFromString(await response.aread())
+        return wifi_connected_proto
+
+    @_feature("wifi1")
+    async def async_get_wifi_neighbor_access_points(self):
+        # ReadTimeout
+        wifi_neighbor_aps = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiNeighborAPsGet()
+        response = await self.async_get("WifiNeighborAPsGet")
+        wifi_neighbor_aps.ParseFromString(await response.aread())
+        return wifi_neighbor_aps
+
+    @_feature("wifi1")
+    async def async_get_wifi_repeated_access_points(self):
+        wifi_connected_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiRepeatedAPsGet()
+        response = await self.async_get("WifiRepeatedAPsGet")
+        wifi_connected_proto.ParseFromString(await response.aread())
+        return wifi_connected_proto
 
     @_feature("wifi1")
     async def async_get_wifi_guest_access(self) -> dict:
