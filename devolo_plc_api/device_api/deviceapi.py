@@ -29,12 +29,12 @@ class DeviceApi(Protobuf):
         self._logger = logging.getLogger(self.__class__.__name__)
 
 
-    def _feature(feature: str):  # type: ignore
+    def _feature(feature: str, **kwargs):  # type: ignore
         """ Decorator to filter unsupported features before querying the device. """
         def feature_decorator(method: Callable):
-            def wrapper(self):
+            def wrapper(self, **kwargs):
                 if feature in self._features:
-                    return method(self)
+                    return method(self, **kwargs)
                 else:
                     raise FeatureNotSupported(f"The device does not support {method}.")
             return wrapper
@@ -47,7 +47,7 @@ class DeviceApi(Protobuf):
         self._logger.debug("Getting wifi guest access")
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessGet()
         response = await self.async_get("WifiGuestAccessGet")
-        wifi_guest_proto.ParseFromString(await response.read())
+        wifi_guest_proto.ParseFromString(await response.aread())
         return wifi_guest_proto
 
     @_feature("wifi1")
@@ -60,9 +60,9 @@ class DeviceApi(Protobuf):
         return wifi_guest_proto
 
     @_feature("wifi1")
-    async def set_wifi_guest_access(self):
+    async def async_set_wifi_guest_access(self, enable):
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSet()
-        print()
-        r = await self.async_post("WifiGuestAccessSet")
-        wifi_guest_proto.ParseFromString(await r.read())
+        wifi_guest_proto.enable = enable
+        r = await self.async_post("WifiGuestAccessSet", data=wifi_guest_proto.SerializeToString())
+        wifi_guest_proto.ParseFromString(await r.aread())
         return wifi_guest_proto
