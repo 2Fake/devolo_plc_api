@@ -31,12 +31,12 @@ class DeviceApi(Protobuf):
         self._logger = logging.getLogger(self.__class__.__name__)
 
 
-    def _feature(feature: str, **kwargs):  # type: ignore
+    def _feature(feature: str, *args, **kwargs):  # type: ignore
         """ Decorator to filter unsupported features before querying the device. """
         def feature_decorator(method: Callable):
-            def wrapper(self, **kwargs):
+            def wrapper(self, *args, **kwargs):
                 if feature in self._features:
-                    return method(self, **kwargs)
+                    return method(self, *args, **kwargs)
                 else:
                     raise FeatureNotSupported(f"The device does not support {method}.")
             return wrapper
