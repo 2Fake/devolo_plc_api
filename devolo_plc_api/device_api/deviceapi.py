@@ -75,6 +75,6 @@ class DeviceApi(Protobuf):
         """ Enable wifi guest access synchronously. """
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSet()
         wifi_guest_proto.enable = enable
-        response = self.async_post("WifiGuestAccessSet", data=wifi_guest_proto.SerializeToString())
+        response = self.post("WifiGuestAccessSet", data=wifi_guest_proto.SerializeToString())
         wifi_guest_proto.ParseFromString(response.read())
         return wifi_guest_proto
