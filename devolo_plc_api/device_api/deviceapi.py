@@ -2,10 +2,12 @@ import logging
 from typing import Callable
 
 from httpx import Client
+from google.protobuf.json_format import MessageToDict
 
 from ..clients.protobuf import Protobuf
 from ..exceptions.feature import FeatureNotSupported
 from . import devolo_idl_proto_deviceapi_wifinetwork_pb2
+from . import devolo_idl_proto_deviceapi_ledsettings_pb2
 
 
 class DeviceApi(Protobuf):
@@ -42,6 +44,22 @@ class DeviceApi(Protobuf):
             return wrapper
         return feature_decorator
 
+    @_feature("led")
+    async def async_get_led_setting(self):
+        led_setting = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsGet()
+        response = await self.async_get("LedSettingsGet")
+        led_setting.ParseFromString(await response.aread())
+        return MessageToDict(message=led_setting, including_default_value_fields=True, preserving_proto_field_name=True)
+
+    @_feature("led")
+    async def async_set_led_setting(self, enable: bool):
+        led_setting = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsSet()
+        led_setting.state = int(not enable)
+        response = await self.async_post("LedSettingsSet", data=led_setting.SerializeToString())
+        r = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsSetResponse()
+        r.ParseFromString(await response.aread())
+        return MessageToDict(message=r, including_default_value_fields=True, preserving_proto_field_name=True)
+
     @_feature("wifi1")
     async def async_get_wifi_connected_station(self):
         wifi_connected_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiConnectedStationsGet()
@@ -71,7 +89,7 @@ class DeviceApi(Protobuf):
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessGet()
         response = await self.async_get("WifiGuestAccessGet")
         wifi_guest_proto.ParseFromString(await response.aread())
-        return wifi_guest_proto
+        return MessageToDict(wifi_guest_proto)
 
     @_feature("wifi1")
     def get_wifi_guest_access(self) -> dict:
@@ -88,8 +106,9 @@ class DeviceApi(Protobuf):
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSet()
         wifi_guest_proto.enable = enable
         response = await self.async_post("WifiGuestAccessSet", data=wifi_guest_proto.SerializeToString())
-        wifi_guest_proto.ParseFromString(await response.aread())
-        return wifi_guest_proto
+        r = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSetResponse()
+        r.ParseFromString(await response.aread())
+        return MessageToDict(message=r, including_default_value_fields=True, preserving_proto_field_name=True)
 
     @_feature("wifi1")
     def set_wifi_guest_access(self, enable) -> dict:

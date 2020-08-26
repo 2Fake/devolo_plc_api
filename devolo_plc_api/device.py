@@ -103,7 +103,8 @@ class Device:
         self.plcnet = PlcNetApi(ip=self.ip,
                                 session=self._session,
                                 path=self._info[service_type]['Path'],
-                                version=self._info[service_type]['Version'])
+                                version=self._info[service_type]['Version'],
+                                mac=self.mac)
 
     async def _get_zeroconf_info(self, service_type: str):
         """ Browse for the desired mDNS service types and query them. """
