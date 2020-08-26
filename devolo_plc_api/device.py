@@ -20,7 +20,7 @@ class Device:
     :param zeroconf_instance: Zeroconf instance to be potentially reused.
     """
 
-    def __init__(self, ip: str, zeroconf_instance: Zeroconf = None):
+    def __init__(self, ip: str, password: str = None, zeroconf_instance: Zeroconf = None):
         self.firmware_date = date.fromtimestamp(0)
         self.firmware_version = ""
         self.ip = ip
@@ -32,6 +32,7 @@ class Device:
 
         self.device = None
         self.plcnet = None
+        self.password = password
 
         self._info: dict = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -82,7 +83,8 @@ class Device:
                                 session=self._session,
                                 path=self._info[service_type]['Path'],
                                 version=self._info[service_type]['Version'],
-                                features=self._info[service_type].get("Features", ""))
+                                features=self._info[service_type].get("Features", ""),
+                                password=self.password)
 
     async def _get_plcnet_info(self):
         """ Get information from the plcnet API. """
