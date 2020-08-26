@@ -22,9 +22,8 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "aiohttp",
+        "httpx",
         "protobuf",
-        "requests",
         "zeroconf>=0.27.0",
     ],
     setup_requires=[
