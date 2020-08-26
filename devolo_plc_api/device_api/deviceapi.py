@@ -58,3 +58,11 @@ class DeviceApi(Protobuf):
         response = self.get("WifiGuestAccessGet")
         wifi_guest_proto.ParseFromString(response.content)
         return wifi_guest_proto
+
+    @_feature("wifi1")
+    async def set_wifi_guest_access(self):
+        wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSet()
+        print()
+        r = await self.async_post("WifiGuestAccessSet")
+        wifi_guest_proto.ParseFromString(await r.read())
+        return wifi_guest_proto
