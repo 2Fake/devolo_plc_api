@@ -1,9 +1,7 @@
 from datetime import date
 from unittest.mock import patch
-
 import pytest
 from asynctest import CoroutineMock
-
 from devolo_plc_api.device_api.deviceapi import DeviceApi
 from devolo_plc_api.plcnet_api.plcnetapi import PlcNetApi
 
@@ -12,10 +10,11 @@ class TestDevice:
 
     @pytest.mark.asyncio
     async def test__gather_apis(self, mocker, mock_device):
-        spy_device_info = mocker.spy(mock_device, "_get_device_info")
-        spy_plcnet_info = mocker.spy(mock_device, "_get_plcnet_info")
         with patch("devolo_plc_api.device.Device._get_device_info", new=CoroutineMock()), \
                 patch("devolo_plc_api.device.Device._get_plcnet_info", new=CoroutineMock()):
+            spy_device_info = mocker.spy(mock_device, "_get_device_info")
+            spy_plcnet_info = mocker.spy(mock_device, "_get_plcnet_info")
+            await mock_device._gather_apis()
             assert spy_device_info.call_count == 1
             assert spy_plcnet_info.call_count == 1
 
