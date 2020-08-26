@@ -1,3 +1,5 @@
+from httpx import DigestAuth
+
 class Protobuf:
     """
     Google Protobuf client.
@@ -15,10 +17,10 @@ class Protobuf:
         self._logger.debug(f"Calling {url}")
         return await self._session.get(url)
 
-    async def async_post(self, sub_url):
+    async def async_post(self, sub_url, data):
         url = f"{self.url}{sub_url}"
         self._logger.debug(f"Calling {url}")
-        return await self._session.post(url)
+        return await self._session.post(url, auth=DigestAuth("USER", "PASSWORD"), data=data)
 
     def get(self, sub_url):
         """ Query URL synchronously. """
