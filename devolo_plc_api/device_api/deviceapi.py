@@ -26,9 +26,9 @@ class DeviceApi(Protobuf):
         self._path = path
         self._version = version
         self._features = features.split(",") if features else []
-        self._logger = logging.getLogger(self.__class__.__name__)
         self._user = "devolo"
         self._password = password
+        self._logger = logging.getLogger(self.__class__.__name__)
 
 
     def _feature(feature: str, **kwargs):  # type: ignore
@@ -58,21 +58,23 @@ class DeviceApi(Protobuf):
         self._logger.debug("Getting wifi guest access")
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessGet()
         response = self.get("WifiGuestAccessGet")
-        wifi_guest_proto.ParseFromString(response.content)
+        wifi_guest_proto.ParseFromString(response.read())
         return wifi_guest_proto
 
     @_feature("wifi1")
-    async def async_set_wifi_guest_access(self, enable):
+    async def async_set_wifi_guest_access(self, enable) -> dict:
+        """ Enable wifi guest access asynchronously. """
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSet()
         wifi_guest_proto.enable = enable
-        r = await self.async_post("WifiGuestAccessSet", data=wifi_guest_proto.SerializeToString())
-        wifi_guest_proto.ParseFromString(await r.aread())
+        response = await self.async_post("WifiGuestAccessSet", data=wifi_guest_proto.SerializeToString())
+        wifi_guest_proto.ParseFromString(await response.aread())
         return wifi_guest_proto
 
     @_feature("wifi1")
-    async def set_wifi_guest_access(self, enable):
+    def set_wifi_guest_access(self, enable) -> dict:
+        """ Enable wifi guest access synchronously. """
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSet()
         wifi_guest_proto.enable = enable
-        r = await self.async_post("WifiGuestAccessSet", data=wifi_guest_proto.SerializeToString())
-        wifi_guest_proto.ParseFromString(await r.aread())
+        response = self.async_post("WifiGuestAccessSet", data=wifi_guest_proto.SerializeToString())
+        wifi_guest_proto.ParseFromString(response.read())
         return wifi_guest_proto

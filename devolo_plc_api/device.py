@@ -3,6 +3,7 @@ import logging
 import socket
 import struct
 from datetime import date
+from typing import Optional
 
 import httpx
 from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
@@ -17,22 +18,23 @@ class Device:
     Representing object for your devolo PLC device. It stores all properties and functionalities discovered during setup.
 
     :param ip: IP address of the device to communicate with.
+    :param password: Password of the Web-UI, if it is protected
     :param zeroconf_instance: Zeroconf instance to be potentially reused.
     """
 
-    def __init__(self, ip: str, password: str = None, zeroconf_instance: Zeroconf = None):
+    def __init__(self, ip: str, password: Optional[str] = None, zeroconf_instance: Optional[Zeroconf] = None):
         self.firmware_date = date.fromtimestamp(0)
         self.firmware_version = ""
         self.ip = ip
         self.mac = ""
         self.mt_number = 0
+        self.password = password
         self.product = ""
         self.technology = ""
         self.serial_number = 0
 
         self.device = None
         self.plcnet = None
-        self.password = password
 
         self._info: dict = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -63,10 +65,11 @@ class Device:
 
 
     async def _gather_apis(self):
+        """ Get information from all APIs. """
         await asyncio.gather(self._get_device_info(), self._get_plcnet_info())
 
     async def _get_device_info(self):
-        """ Get information from the device API. """
+        """ Get information from the devolo Device API. """
         service_type = "_dvl-deviceapi._tcp.local."
         try:
             await asyncio.wait_for(self._get_zeroconf_info(service_type=service_type), timeout=10)
@@ -87,7 +90,7 @@ class Device:
                                 password=self.password)
 
     async def _get_plcnet_info(self):
-        """ Get information from the plcnet API. """
+        """ Get information from the devolo PlcNet API. """
         service_type = "_dvl-plcnetapi._tcp.local."
         try:
             await asyncio.wait_for(self._get_zeroconf_info(service_type=service_type), timeout=10)

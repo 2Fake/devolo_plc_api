@@ -22,11 +22,9 @@ class PlcNetApi(Protobuf):
         self._session = session
         self._path = path
         self._version = version
+        self._user = None  # PLC APi is not password protected.
+        self._password = None  # PLC APi is not password protected.
         self._logger = logging.getLogger(self.__class__.__name__)
-        # PLC APi is not password protected.
-        self._user = None
-        self._password = None
-
 
 
     async def async_get_network_overview(self) -> dict:
