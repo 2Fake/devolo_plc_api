@@ -72,7 +72,7 @@ class Device:
         """ Get information from the devolo Device API. """
         service_type = "_dvl-deviceapi._tcp.local."
         try:
-            await asyncio.wait_for(self._get_zeroconf_info(service_type=service_type), timeout=10)
+            await asyncio.wait_for(self._get_zeroconf_info(service_type=service_type), timeout=3)
         except asyncio.TimeoutError:
             raise DeviceNotFound(f"The device {self.ip} did not answer.") from None
 
@@ -93,11 +93,11 @@ class Device:
         """ Get information from the devolo PlcNet API. """
         service_type = "_dvl-plcnetapi._tcp.local."
         try:
-            await asyncio.wait_for(self._get_zeroconf_info(service_type=service_type), timeout=10)
+            await asyncio.wait_for(self._get_zeroconf_info(service_type=service_type), timeout=3)
         except asyncio.TimeoutError:
             raise DeviceNotFound(f"The device {self.ip} did not answer.") from None
 
-        self.mac = self._info[service_type].get("PlcMacAddress", "")
+        self.mac = self._info[service_type]['PlcMacAddress']
         self.technology = self._info[service_type].get("PlcTechnology", "")
 
         self.plcnet = PlcNetApi(ip=self.ip,
