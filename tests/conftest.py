@@ -4,9 +4,9 @@ import pathlib
 import pytest
 
 
-pytest_plugins = ['tests.fixtures.device_api',
+pytest_plugins = ['tests.fixtures.device',
+                  'tests.fixtures.device_api',
                   'tests.fixtures.plcnet_api',
-                  'tests.fixtures.zeroconf',
                   ]
 
 
