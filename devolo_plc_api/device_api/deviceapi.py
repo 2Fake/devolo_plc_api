@@ -46,6 +46,7 @@ class DeviceApi(Protobuf):
 
     @_feature("led")
     async def async_get_led_setting(self):
+        """ Get LED setting asynchronously. """
         led_setting = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsGet()
         response = await self.async_get("LedSettingsGet")
         led_setting.ParseFromString(await response.aread())
@@ -69,7 +70,7 @@ class DeviceApi(Protobuf):
 
     @_feature("wifi1")
     async def async_get_wifi_neighbor_access_points(self):
-        # ReadTimeout
+        # TODO: Why does WifiNeighborAPsGet send a ReadTimeout
         wifi_neighbor_aps = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiNeighborAPsGet()
         response = await self.async_get("WifiNeighborAPsGet")
         wifi_neighbor_aps.ParseFromString(await response.aread())
