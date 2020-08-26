@@ -35,22 +35,22 @@ class PlcNetApi(Protobuf):
         """ Get a PLC network overview asynchronously. """
         self._logger.debug("Getting network overview")
         network_overview = devolo_idl_proto_plcnetapi_getnetworkoverview_pb2.GetNetworkOverview()
-        response = await self.async_get("GetNetworkOverview")
+        response = await self._async_get("GetNetworkOverview")
         network_overview.ParseFromString(await response.aread())
-        return network_overview
+        return self._message_to_dict(network_overview)
 
     def get_network_overview(self) -> dict:
         """ Get a PLC network overview synchronously. """
         self._logger.debug("Getting network overview")
         network_overview = devolo_idl_proto_plcnetapi_getnetworkoverview_pb2.GetNetworkOverview()
-        response = self.get("GetNetworkOverview")
+        response = self._get("GetNetworkOverview")
         network_overview.ParseFromString(response.content)
-        return network_overview
+        return self._message_to_dict(network_overview)
 
     async def identify_device_start(self):
         identify_device = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceStart()
         identify_device.mac_address = self._mac
-        response = await self.async_post("IdentifyDeviceStart", data=identify_device.SerializeToString())
+        response = await self._async_post("IdentifyDeviceStart", data=identify_device.SerializeToString())
         r = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceResponse()
         # TODO: ParseFromString --> AttributeError
         # r.ParseFromstring(await response.aread())
@@ -59,7 +59,7 @@ class PlcNetApi(Protobuf):
     async def identify_device_stop(self):
         identify_device = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceStop()
         identify_device.mac_address = self._mac
-        response = await self.async_post("IdentifyDeviceStop", data=identify_device.SerializeToString())
+        response = await self._async_post("IdentifyDeviceStop", data=identify_device.SerializeToString())
         # TODO: ParseFromString isn't working.
         identify_device.ParseFromString(await response.aread())
         r = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceResponse()
@@ -72,7 +72,7 @@ class PlcNetApi(Protobuf):
         set_user_name = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceName()
         set_user_name.mac_address = self._mac
         set_user_name.user_device_name = name
-        response = await self.async_post("SetUserDeviceName", data=set_user_name.SerializeToString())
+        response = await self._async_post("SetUserDeviceName", data=set_user_name.SerializeToString())
         r = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceNameResponse()
         r.ParseFromString(await response.aread())
         return MessageToDict(message=r, including_default_value_fields=True, preserving_proto_field_name=True)
