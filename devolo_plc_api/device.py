@@ -4,8 +4,7 @@ import socket
 import struct
 from datetime import date
 
-import requests
-from aiohttp import ClientSession
+import httpx
 from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
 
 from .device_api.deviceapi import DeviceApi
@@ -39,22 +38,22 @@ class Device:
         self._zeroconf_instance = zeroconf_instance
 
     async def __aenter__(self):
-        self._session = ClientSession()
+        self._session = httpx.AsyncClient()
         self._zeroconf = self._zeroconf_instance or Zeroconf()
         loop = asyncio.get_running_loop()
         await loop.create_task(self._gather_apis())
         return self
 
-    def __enter__(self):
-        self._session = requests.Session()
-        self._zeroconf = self._zeroconf_instance or Zeroconf()
-        asyncio.run(self._gather_apis())
-        return self
-
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         if not self._zeroconf_instance:
             self._zeroconf.close()
-        await self._session.close()
+        await self._session.aclose()
+
+    def __enter__(self):
+        self._session = httpx.Client()
+        self._zeroconf = self._zeroconf_instance or Zeroconf()
+        asyncio.run(self._gather_apis())
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if not self._zeroconf_instance:
