@@ -2,12 +2,11 @@ from datetime import date
 from unittest.mock import patch
 
 import pytest
+import zeroconf
 from asynctest import CoroutineMock
 
 from devolo_plc_api.device_api.deviceapi import DeviceApi
 from devolo_plc_api.plcnet_api.plcnetapi import PlcNetApi
-
-from .mocks.mock_service_browser import ServiceBrowser
 
 
 class TestDevice:
@@ -51,9 +50,7 @@ class TestDevice:
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_service_browser")
     async def test__get_zeroconf_info(self, mocker, mock_device):
-        # TODO: test__get_zeroconf_info failes, because the mock is not applied correctly.
-        browser = ServiceBrowser(None, None, None)
-        spy_cancel = mocker.spy(browser, "cancel")
+        spy_cancel = mocker.spy(zeroconf.ServiceBrowser, "cancel")
         await mock_device._get_zeroconf_info("_dvl-plcnetapi._tcp.local.")
 
         assert spy_cancel.call_count == 1
