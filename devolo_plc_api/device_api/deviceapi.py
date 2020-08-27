@@ -32,7 +32,7 @@ class DeviceApi(Protobuf):
         self._logger = logging.getLogger(self.__class__.__name__)
 
 
-    def _feature(feature: str, *args, **kwargs):  # type: ignore
+    def _feature(feature: str, *args, **kwargs):
         """ Decorator to filter unsupported features before querying the device. """
         def feature_decorator(method: Callable):
             def wrapper(self, *args, **kwargs):
@@ -68,7 +68,7 @@ class DeviceApi(Protobuf):
         query = await self._async_post("LedSettingsSet", data=led_setting.SerializeToString())
         response = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsSetResponse()
         response.ParseFromString(await query.aread())
-        return True if response.result == 0 else False
+        return bool(not response.result)
 
     @_feature("led")
     def set_led_setting(self, enable: bool) -> bool:
@@ -78,7 +78,7 @@ class DeviceApi(Protobuf):
         query = self._post("LedSettingsSet", data=led_setting.SerializeToString())
         response = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsSetResponse()
         response.ParseFromString(query.read())
-        return True if response.result == 0 else False
+        return bool(not response.result)
 
     @_feature("wifi1")
     async def async_get_wifi_connected_station(self) -> dict:
@@ -136,7 +136,7 @@ class DeviceApi(Protobuf):
         query = await self._async_post("WifiGuestAccessSet", data=wifi_guest_proto.SerializeToString())
         response = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSetResponse()
         response.ParseFromString(await query.aread())
-        return True if response.result == 0 else False
+        return bool(not response.result)
 
     @_feature("wifi1")
     def set_wifi_guest_access(self, enable: bool) -> bool:
@@ -146,4 +146,4 @@ class DeviceApi(Protobuf):
         query = self._post("WifiGuestAccessSet", data=wifi_guest_proto.SerializeToString())
         response = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSetResponse()
         response.ParseFromString(query.read())
-        return True if response.result == 0 else False
+        return bool(not response.result)
