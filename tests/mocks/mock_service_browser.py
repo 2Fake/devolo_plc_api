@@ -1,5 +1,5 @@
 class ServiceBrowser:
-    def __init__(self, zeroconf, service_type, handler):
+    def __init__(self, *args, **kwargs):
         pass
 
     def cancel(self):

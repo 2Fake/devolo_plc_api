@@ -1,3 +1,3 @@
 class PlcNetApi():
-    def __init__(self, ip, session, path, version, mac):
+    def __init__(self, *args, **kwargs):
         pass
