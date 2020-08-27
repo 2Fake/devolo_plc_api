@@ -50,7 +50,7 @@ class DeviceApi(Protobuf):
         led_setting = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsGet()
         response = await self._async_get("LedSettingsGet")
         led_setting.FromString(await response.aread())
-        return self._message_to_dict(message=led_setting)
+        return self._message_to_dict(led_setting)
 
     @_feature("led")
     def get_led_setting(self):
@@ -58,7 +58,7 @@ class DeviceApi(Protobuf):
         led_setting = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsGet()
         response = self._get("LedSettingsGet")
         led_setting.FromString(response.read())
-        return self._message_to_dict(message=led_setting)
+        return self._message_to_dict(led_setting)
 
     @_feature("led")
     async def async_set_led_setting(self, enable: bool) -> bool:
@@ -85,7 +85,7 @@ class DeviceApi(Protobuf):
         """ Get wifi stations connected to the device asynchronously. """
         wifi_connected_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiConnectedStationsGet()
         response = await self._async_get("WifiConnectedStationsGet")
-        wifi_connected_proto.FromString(await response.aread())
+        wifi_connected_proto.ParseFromString(await response.aread())
         return self._message_to_dict(wifi_connected_proto)
 
     @_feature("wifi1")
@@ -93,7 +93,7 @@ class DeviceApi(Protobuf):
         """ Get wifi stations connected to the device synchronously. """
         wifi_connected_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiConnectedStationsGet()
         response = self._get("WifiConnectedStationsGet")
-        wifi_connected_proto.FromString(response.read())
+        wifi_connected_proto.ParseFromString(response.read())
         return self._message_to_dict(wifi_connected_proto)
 
     @_feature("wifi1")
@@ -102,7 +102,7 @@ class DeviceApi(Protobuf):
         self._logger.debug("Getting wifi guest access")
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessGet()
         response = await self._async_get("WifiGuestAccessGet")
-        wifi_guest_proto.FromString(await response.aread())
+        wifi_guest_proto.ParseFromString(await response.aread())
         return self._message_to_dict(wifi_guest_proto)
 
     @_feature("wifi1")
@@ -111,7 +111,7 @@ class DeviceApi(Protobuf):
         self._logger.debug("Getting wifi guest access")
         wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessGet()
         response = self._get("WifiGuestAccessGet")
-        wifi_guest_proto.FromString(response.read())
+        wifi_guest_proto.ParseFromString(response.read())
         return self._message_to_dict(wifi_guest_proto)
 
     @_feature("wifi1")
@@ -139,7 +139,7 @@ class DeviceApi(Protobuf):
         """ Get wifi access point in the neighborhood asynchronously. """
         wifi_neighbor_aps = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiNeighborAPsGet()
         response = await self._async_get("WifiNeighborAPsGet", timeout=15.0)
-        wifi_neighbor_aps.FromString(await response.aread())
+        wifi_neighbor_aps.ParseFromString(await response.aread())
         return self._message_to_dict(wifi_neighbor_aps)
 
     @_feature("wifi1")
@@ -147,19 +147,19 @@ class DeviceApi(Protobuf):
         """ Get wifi access point in the neighborhood synchronously. """
         wifi_neighbor_aps = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiNeighborAPsGet()
         response = self._get("WifiNeighborAPsGet", timeout=15.0)
-        wifi_neighbor_aps.FromString(response.read())
+        wifi_neighbor_aps.ParseFromString(response.read())
         return self._message_to_dict(wifi_neighbor_aps)
 
     @_feature("wifi1")
     async def async_get_wifi_repeated_access_points(self):
         wifi_connected_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiRepeatedAPsGet()
         response = await self._async_get("WifiRepeatedAPsGet")
-        wifi_connected_proto.FromString(await response.aread())
+        wifi_connected_proto.ParseFromString(await response.aread())
         return self._message_to_dict(wifi_connected_proto)
 
     @_feature("wifi1")
     def get_wifi_repeated_access_points(self):
         wifi_connected_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiRepeatedAPsGet()
         response = self._get("WifiRepeatedAPsGet")
-        wifi_connected_proto.FromString(response.read())
+        wifi_connected_proto.ParseFromString(response.read())
         return self._message_to_dict(wifi_connected_proto)

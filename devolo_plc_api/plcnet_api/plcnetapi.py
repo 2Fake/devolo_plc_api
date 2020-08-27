@@ -39,7 +39,7 @@ class PlcNetApi(Protobuf):
         self._logger.debug("Getting network overview")
         network_overview = devolo_idl_proto_plcnetapi_getnetworkoverview_pb2.GetNetworkOverview()
         response = await self._async_get("GetNetworkOverview")
-        network_overview.FromString(await response.aread())
+        network_overview.ParseFromString(await response.aread())
         return self._message_to_dict(network_overview)
 
     def get_network_overview(self) -> dict:
@@ -51,7 +51,7 @@ class PlcNetApi(Protobuf):
         self._logger.debug("Getting network overview")
         network_overview = devolo_idl_proto_plcnetapi_getnetworkoverview_pb2.GetNetworkOverview()
         response = self._get("GetNetworkOverview")
-        network_overview.FromString(response.content)
+        network_overview.ParseFromString(response.content)
         return self._message_to_dict(network_overview)
 
     async def async_identify_device_start(self):
