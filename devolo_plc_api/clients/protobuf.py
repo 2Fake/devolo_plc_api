@@ -18,7 +18,7 @@ class Protobuf:
     @property
     def url(self) -> str:
         """ The base URL to query. """
-        return f"http://{self._ip}:{self._port}/{self._path}/{self._version}/"
+        return f"http://{self._ip}:{self._port}/{self._path}/{self._version}/"  # type: ignore
 
 
     async def _async_get(self, sub_url: str, timeout: float = TIMEOUT) -> Response:
