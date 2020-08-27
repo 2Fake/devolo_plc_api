@@ -16,7 +16,7 @@ class Protobuf:
 
 
     @property
-    def url(self):
+    def url(self) -> str:
         """ The base URL to query. """
         return f"http://{self._ip}:{self._port}/{self._path}/{self._version}/"
 
@@ -35,7 +35,7 @@ class Protobuf:
         url = f"{self.url}{sub_url}"
         self._logger.debug(f"Getting from {url}")
         try:
-            return self._session.get(url, auth=DigestAuth(self._user, self._password, timeout=timeout))  # type: ignore
+            return self._session.get(url, auth=DigestAuth(self._user, self._password), timeout=timeout)  # type: ignore
         except TypeError:
             raise DevicePasswordProtected("The used password is wrong.") from None
 
