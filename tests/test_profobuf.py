@@ -1,5 +1,6 @@
 import httpx
 import pytest
+import google.protobuf.json_format
 
 from devolo_plc_api.exceptions.device import DevicePasswordProtected
 
@@ -41,6 +42,13 @@ class TestProtobuf:
         mock_protobuf._session = httpx.Client()
         with pytest.raises(DevicePasswordProtected):
             mock_protobuf._get("LedSettingsGet")
+
+    @pytest.mark.usefixtures("mock_message_to_dict")
+    def test__message_to_dict(self, mocker, mock_protobuf):
+        spy = mocker.spy(google.protobuf.json_format, "MessageToDict")
+        mock_protobuf._message_to_dict("")
+
+        spy.assert_called_once()
 
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_post")
