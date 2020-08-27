@@ -1,7 +1,8 @@
+from copy import deepcopy
+
 import pytest
 
 from devolo_plc_api.device import Device
-
 from ..mocks.mock_service_browser import ServiceBrowser
 from ..mocks.mock_zeroconf import Zeroconf
 
@@ -9,7 +10,7 @@ from ..mocks.mock_zeroconf import Zeroconf
 @pytest.fixture()
 def mock_device(request):
     device = Device(ip=request.cls.ip)
-    device._info = request.cls.device_info
+    device._info = deepcopy(request.cls.device_info)
     device._session = None
     device._zeroconf = None
     return device
