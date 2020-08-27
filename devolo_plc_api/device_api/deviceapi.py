@@ -143,10 +143,10 @@ class DeviceApi(Protobuf):
         return self._message_to_dict(wifi_neighbor_aps)
 
     @_feature("wifi1")
-    async def get_wifi_neighbor_access_points(self) -> dict:
+    def get_wifi_neighbor_access_points(self) -> dict:
         """ Get wifi access point in the neighborhood synchronously. """
         wifi_neighbor_aps = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiNeighborAPsGet()
-        response = self._async_get("WifiNeighborAPsGet", timeout=15.0)
+        response = self._get("WifiNeighborAPsGet", timeout=15.0)
         wifi_neighbor_aps.FromString(response.read())
         return self._message_to_dict(wifi_neighbor_aps)
 
