@@ -98,9 +98,8 @@ class DeviceApi(Protobuf):
 
     @_feature("wifi1")
     async def async_get_wifi_neighbor_access_points(self):
-        # TODO: Why does WifiNeighborAPsGet send a ReadTimeout
         wifi_neighbor_aps = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiNeighborAPsGet()
-        response = await self._async_get("WifiNeighborAPsGet")
+        response = await self._async_get("WifiNeighborAPsGet", timeout=15.0)
         wifi_neighbor_aps.ParseFromString(await response.aread())
         return wifi_neighbor_aps
 

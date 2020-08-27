@@ -68,11 +68,10 @@ class PlcNetApi(Protobuf):
         return MessageToDict(message=r, including_default_value_fields=True, preserving_proto_field_name=True)
 
     async def set_user_device_name(self, name):
-        # TODO: ReadTimeout ??
         set_user_name = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceName()
         set_user_name.mac_address = self._mac
         set_user_name.user_device_name = name
-        response = await self._async_post("SetUserDeviceName", data=set_user_name.SerializeToString())
+        response = await self._async_post("SetUserDeviceName", data=set_user_name.SerializeToString(), timeout=10.0)
         r = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceNameResponse()
         r.ParseFromString(await response.aread())
         return MessageToDict(message=r, including_default_value_fields=True, preserving_proto_field_name=True)
