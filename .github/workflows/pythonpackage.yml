@@ -29,5 +29,10 @@ jobs:
     - name: Test with pytest
       run: |
         python setup.py test --addopts --cov=devolo_plc_api
+    - name: Coveralls
+      run: |
+        pip install coveralls==1.10.0
+        export COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_TOKEN }}
+        coveralls
 
 
