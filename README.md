@@ -1,5 +1,9 @@
 # devolo PLC API
 
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/2Fake/devolo_plc_api/Python%20package)](https://github.com/2Fake/devolo_plc_api/actions?query=workflow%3A%22Python+package%22)
+[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/2Fake/devolo_plc_api)](https://codeclimate.com/github/2Fake/devolo_plc_api)
+[![Coverage Status](https://coveralls.io/repos/github/2Fake/devolo_plc_api/badge.svg?branch=development)](https://coveralls.io/github/2Fake/devolo_plc_api?branch=development)
+
 This project implements parts of the devolo PLC devices API in Python. Communication to the devices is formatted in protobuf and the IDLs were kindly provided by devolo. Nevertheless, we might miss updates to the IDLs. If you discover a breakage, please feel free to [report an issue](https://github.com/2Fake/devolo_plc_api/issues).
 
 ## System requirements
