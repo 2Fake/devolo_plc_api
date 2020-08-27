@@ -19,3 +19,4 @@ with file.open("r") as fh:
 def test_data_fixture(request):
     """ Load test data. """
     request.cls.device_info = test_data['device_info']
+    request.cls.ip = test_data['ip']

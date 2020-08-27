@@ -1,3 +1,4 @@
+import asyncio
 from datetime import date
 from unittest.mock import patch
 
@@ -51,6 +52,26 @@ class TestDevice:
     @pytest.mark.usefixtures("mock_service_browser")
     async def test__get_zeroconf_info(self, mocker, mock_device):
         spy_cancel = mocker.spy(zeroconf.ServiceBrowser, "cancel")
+        spy_sleep = mocker.spy(asyncio, "sleep")
         await mock_device._get_zeroconf_info("_dvl-plcnetapi._tcp.local.")
 
         assert spy_cancel.call_count == 1
+        assert spy_sleep.call_count == 0
+
+    @pytest.mark.asyncio
+    @pytest.mark.usefixtures("mock_zeroconf")
+    def test__state_change_added(self, mock_device):
+        zc = zeroconf.Zeroconf()
+        service_type = "_dvl-plcnetapi._tcp.local."
+        mock_device._state_change(zc, service_type, service_type, zeroconf.ServiceStateChange.Added)
+
+        assert mock_device._info[service_type]['new'] == "value"
+
+    @pytest.mark.asyncio
+    @pytest.mark.usefixtures("mock_zeroconf")
+    def test__state_change_removed(self, mock_device):
+        zc = zeroconf.Zeroconf()
+        service_type = "_dvl-plcnetapi._tcp.local."
+        mock_device._state_change(zc, service_type, service_type, zeroconf.ServiceStateChange.Removed)
+
+        assert "new" not in mock_device._info[service_type]
