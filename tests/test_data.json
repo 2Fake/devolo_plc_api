@@ -6,12 +6,12 @@
             "SN": "1234567890123456",
             "MT": "2730",
             "Product": "dLAN pro 1200+ WiFi ac",
-            "Path": "/",
+            "Path": "1234567890abcdef",
             "Version": "v0",
             "Features": "wifi1"
         },
         "_dvl-plcnetapi._tcp.local.": {
-            "Path": "/",
+            "Path": "1234567890abcdef",
             "PlcMacAddress": "AABBCCDDEEFF",
             "PlcTechnology": "hpav",
             "Version": "v0"

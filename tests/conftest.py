@@ -7,6 +7,7 @@ import pytest
 pytest_plugins = ['tests.fixtures.device',
                   'tests.fixtures.device_api',
                   'tests.fixtures.plcnet_api',
+                  'tests.fixtures.protobuf',
                   ]
 
 
