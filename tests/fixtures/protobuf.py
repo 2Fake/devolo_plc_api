@@ -31,6 +31,7 @@ def mock_post(mocker):
     mocker.patch("httpx.AsyncClient.post", AsyncClient.post)
     mocker.patch("httpx.Client.post", Client.post)
 
+
 @pytest.fixture()
 def mock_wrong_password(mocker):
     mocker.patch("httpx.AsyncClient.get", AsyncClient.wrong_password)

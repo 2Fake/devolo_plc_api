@@ -1,6 +1,3 @@
-from devolo_plc_api.exceptions.device import DevicePasswordProtected
-
-
 class AsyncClient:
     async def get(self, url, auth, timeout):
         pass
