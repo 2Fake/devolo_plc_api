@@ -44,9 +44,7 @@ class TestProtobuf:
         with pytest.raises(DevicePasswordProtected):
             mock_protobuf._get("LedSettingsGet")
 
-    @pytest.mark.usefixtures("mock_message_to_dict")
     def test__message_to_dict(self, mocker, mock_protobuf):
-
         spy = mocker.spy(google.protobuf.json_format._Printer, "_MessageToJsonObject")
         mock_protobuf._message_to_dict(LedSettingsSetResponse())
 
