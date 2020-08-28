@@ -1,7 +1,8 @@
+import google.protobuf.json_format
 import httpx
 import pytest
-import google.protobuf.json_format
 
+from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import LedSettingsSetResponse
 from devolo_plc_api.exceptions.device import DevicePasswordProtected
 
 
@@ -45,8 +46,9 @@ class TestProtobuf:
 
     @pytest.mark.usefixtures("mock_message_to_dict")
     def test__message_to_dict(self, mocker, mock_protobuf):
-        spy = mocker.spy(google.protobuf.json_format, "MessageToDict")
-        mock_protobuf._message_to_dict("")
+
+        spy = mocker.spy(google.protobuf.json_format._Printer, "_MessageToJsonObject")
+        mock_protobuf._message_to_dict(LedSettingsSetResponse())
 
         spy.assert_called_once()
 
