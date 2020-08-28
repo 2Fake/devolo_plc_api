@@ -1,6 +1,7 @@
 # devolo PLC API
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/2Fake/devolo_plc_api/Python%20package)](https://github.com/2Fake/devolo_plc_api/actions?query=workflow%3A%22Python+package%22)
+[![PyPI - Downloads](https://img.shields.io/pypi/dd/devolo-plc-api)](https://pypi.org/project/devolo-plc-api/)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/2Fake/devolo_plc_api)](https://codeclimate.com/github/2Fake/devolo_plc_api)
 [![Coverage Status](https://coveralls.io/repos/github/2Fake/devolo_plc_api/badge.svg?branch=development)](https://coveralls.io/github/2Fake/devolo_plc_api?branch=development)
 
