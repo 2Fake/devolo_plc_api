@@ -6,9 +6,9 @@ from google.protobuf.json_format import MessageToDict
 from httpx import AsyncClient, Client, Response
 
 from devolo_plc_api.device_api.deviceapi import DeviceApi
-from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import LedSettingsGet
+from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import LedSettingsGet, LedSettingsSetResponse
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_wifinetwork_pb2 import (
-    WifiConnectedStationsGet, WifiGuestAccessGet, WifiNeighborAPsGet, WifiRepeatedAPsGet)
+    WifiConnectedStationsGet, WifiGuestAccessGet, WifiGuestAccessSetResponse, WifiNeighborAPsGet, WifiRepeatedAPsGet)
 from devolo_plc_api.exceptions.feature import FeatureNotSupported
 
 
@@ -58,6 +58,33 @@ class TestDeviceApi:
         assert led_setting == MessageToDict(led_setting_get,
                                             including_default_value_fields=True,
                                             preserving_proto_field_name=True)
+
+    @pytest.mark.asyncio
+    async def test_async_set_led_setting(self, request):
+        led_setting_set = LedSettingsSetResponse()
+
+        with patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=CoroutineMock(return_value=Response)), \
+             patch("httpx.Response.aread", new=CoroutineMock(return_value=led_setting_set.SerializeToString())):
+            device_api = DeviceApi(request.cls.ip,
+                                   AsyncClient(),
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
+                                   "led",
+                                   "password")
+            assert await device_api.async_set_led_setting(True)
+
+    def test_set_led_setting(self, request):
+        led_setting_set = LedSettingsSetResponse()
+
+        with patch("devolo_plc_api.clients.protobuf.Protobuf._post", return_value=Response), \
+             patch("httpx.Response.read", return_value=led_setting_set.SerializeToString()):
+            device_api = DeviceApi(request.cls.ip,
+                                   Client(),
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
+                                   "led",
+                                   "password")
+            assert device_api.set_led_setting(True)
 
     @pytest.mark.asyncio
     async def test_async_get_wifi_connected_station(self, request):
@@ -130,11 +157,38 @@ class TestDeviceApi:
                                                   preserving_proto_field_name=True)
 
     @pytest.mark.asyncio
+    async def test_async_set_wifi_guest_access(self, request):
+        wifi_guest_access_set = WifiGuestAccessSetResponse()
+
+        with patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=CoroutineMock(return_value=Response)), \
+             patch("httpx.Response.aread", new=CoroutineMock(return_value=wifi_guest_access_set.SerializeToString())):
+            device_api = DeviceApi(request.cls.ip,
+                                   AsyncClient(),
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
+                                   "wifi1",
+                                   "password")
+            assert await device_api.async_set_wifi_guest_access(True)
+
+    def test_set_wifi_guest_access(self, request):
+        wifi_guest_access_set = WifiGuestAccessSetResponse()
+
+        with patch("devolo_plc_api.clients.protobuf.Protobuf._post", return_value=Response), \
+             patch("httpx.Response.read", return_value=wifi_guest_access_set.SerializeToString()):
+            device_api = DeviceApi(request.cls.ip,
+                                   Client(),
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
+                                   "wifi1",
+                                   "password")
+            assert device_api.set_wifi_guest_access(True)
+
+    @pytest.mark.asyncio
     async def test_async_get_wifi_neighbor_access_points(self, request):
-        wifi_neighbor_access_points_get = WifiNeighborAPsGet()
+        wifi_neighbor_accesspoints_get = WifiNeighborAPsGet()
 
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
-             patch("httpx.Response.aread", new=CoroutineMock(return_value=wifi_neighbor_access_points_get.SerializeToString())):
+             patch("httpx.Response.aread", new=CoroutineMock(return_value=wifi_neighbor_accesspoints_get.SerializeToString())):
             device_api = DeviceApi(request.cls.ip,
                                    AsyncClient(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
@@ -143,7 +197,7 @@ class TestDeviceApi:
                                    "password")
             wifi_neighbor_access_points = await device_api.async_get_wifi_neighbor_access_points()
 
-        assert wifi_neighbor_access_points == MessageToDict(wifi_neighbor_access_points_get,
+        assert wifi_neighbor_access_points == MessageToDict(wifi_neighbor_accesspoints_get,
                                                             including_default_value_fields=True,
                                                             preserving_proto_field_name=True)
 
@@ -166,10 +220,10 @@ class TestDeviceApi:
 
     @pytest.mark.asyncio
     async def test_async_get_wifi_repeated_access_points(self, request):
-        wifi_repeated_access_points_get = WifiRepeatedAPsGet()
+        wifi_repeated_accesspoints_get = WifiRepeatedAPsGet()
 
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
-             patch("httpx.Response.aread", new=CoroutineMock(return_value=wifi_repeated_access_points_get.SerializeToString())):
+             patch("httpx.Response.aread", new=CoroutineMock(return_value=wifi_repeated_accesspoints_get.SerializeToString())):
             device_api = DeviceApi(request.cls.ip,
                                    AsyncClient(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
@@ -178,7 +232,7 @@ class TestDeviceApi:
                                    "password")
             wifi_repeated_access_points = await device_api.async_get_wifi_repeated_access_points()
 
-        assert wifi_repeated_access_points == MessageToDict(wifi_repeated_access_points_get,
+        assert wifi_repeated_access_points == MessageToDict(wifi_repeated_accesspoints_get,
                                                             including_default_value_fields=True,
                                                             preserving_proto_field_name=True)
 
