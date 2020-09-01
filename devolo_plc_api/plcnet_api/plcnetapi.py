@@ -101,7 +101,7 @@ class PlcNetApi(Protobuf):
         """
         identify_device = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceStop()
         identify_device.mac_address = self._mac
-        query = self._async_post("IdentifyDeviceStop", data=identify_device.SerializeToString())
+        query = self._post("IdentifyDeviceStop", data=identify_device.SerializeToString())
         response = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceResponse()
         response.FromString(query.read())
         return bool(not response.result)
@@ -131,7 +131,7 @@ class PlcNetApi(Protobuf):
         set_user_name = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceName()
         set_user_name.mac_address = self._mac
         set_user_name.user_device_name = name
-        query = self._async_post("SetUserDeviceName", data=set_user_name.SerializeToString(), timeout=10.0)
+        query = self._post("SetUserDeviceName", data=set_user_name.SerializeToString(), timeout=10.0)
         response = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceNameResponse()
         response.FromString(query.read())
         return bool(not response.result)
