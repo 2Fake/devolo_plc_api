@@ -71,6 +71,7 @@ class TestDeviceApi:
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
                                    "led",
                                    "password")
+
             assert await device_api.async_set_led_setting(True)
 
     def test_set_led_setting(self, request):
@@ -84,6 +85,7 @@ class TestDeviceApi:
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
                                    "led",
                                    "password")
+
             assert device_api.set_led_setting(True)
 
     @pytest.mark.asyncio
@@ -168,6 +170,7 @@ class TestDeviceApi:
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
                                    "wifi1",
                                    "password")
+
             assert await device_api.async_set_wifi_guest_access(True)
 
     def test_set_wifi_guest_access(self, request):
@@ -181,6 +184,7 @@ class TestDeviceApi:
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
                                    "wifi1",
                                    "password")
+
             assert device_api.set_wifi_guest_access(True)
 
     @pytest.mark.asyncio
