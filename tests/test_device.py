@@ -8,6 +8,7 @@ from asynctest import CoroutineMock
 
 from devolo_plc_api.device_api.deviceapi import DeviceApi
 from devolo_plc_api.plcnet_api.plcnetapi import PlcNetApi
+from devolo_plc_api.exceptions.device import DeviceNotFound
 
 
 class TestDevice:
@@ -38,6 +39,14 @@ class TestDevice:
             assert type(mock_device.device) == DeviceApi
 
     @pytest.mark.asyncio
+    @pytest.mark.usefixtures("mock_device_api")
+    async def test__get_device_info_timeout(self, mock_device):
+        with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=CoroutineMock()), \
+             patch("asyncio.wait_for", new=CoroutineMock(side_effect=asyncio.TimeoutError())), \
+             pytest.raises(DeviceNotFound):
+            await mock_device._get_device_info()
+
+    @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_plcnet_api")
     async def test__get_plcnet_info(self, mock_device):
         with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=CoroutineMock()):
@@ -47,6 +56,14 @@ class TestDevice:
             assert mock_device.mac == device_info['PlcMacAddress']
             assert mock_device.technology == device_info['PlcTechnology']
             assert type(mock_device.plcnet) == PlcNetApi
+
+    @pytest.mark.asyncio
+    @pytest.mark.usefixtures("mock_device_api")
+    async def test__get_plcnet_info_timeout(self, mock_device):
+        with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=CoroutineMock()), \
+             patch("asyncio.wait_for", new=CoroutineMock(side_effect=asyncio.TimeoutError())), \
+             pytest.raises(DeviceNotFound):
+            await mock_device._get_plcnet_info()
 
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_service_browser")
