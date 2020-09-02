@@ -99,6 +99,7 @@ class DeviceApi(Protobuf):
         response.FromString(query.read())
         return bool(not response.result)
 
+
     @_feature("update")
     async def async_check_firmware_available(self) -> dict:
         """
@@ -122,6 +123,33 @@ class DeviceApi(Protobuf):
         response = self._get("UpdateFirmwareCheck")
         update_firmware_check.ParseFromString(response.read())
         return self._message_to_dict(update_firmware_check)
+
+    @_feature("update")
+    async def async_start_firmware_update(self) -> bool:
+        """
+        Start firmware update asynchronously, if a firmware update is available for the device. Important: The response does
+        not tell you anything about the success of the update itself.
+
+        :return: True, if the firmware update was started, False if there is no update
+        """
+        update_firmware = devolo_idl_proto_deviceapi_updatefirmware_pb2.UpdateFirmwareStart()
+        response = await self._async_get("UpdateFirmwareStart")
+        update_firmware.FromString(await response.aread())
+        return bool(not update_firmware.result)
+
+    @_feature("update")
+    def start_firmware_update(self) -> bool:
+        """
+        Start firmware update synchronously, if a firmware update is available for the device. Important: The response does
+        not tell you anything about the success of the update itself.
+
+        :return: True, if the firmware update was started, False if there is no update
+        """
+        update_firmware = devolo_idl_proto_deviceapi_updatefirmware_pb2.UpdateFirmwareStart()
+        response = self._get("UpdateFirmwareStart")
+        update_firmware.FromString(response.read())
+        return bool(not update_firmware.result)
+
 
     @_feature("wifi1")
     async def async_get_wifi_connected_station(self) -> dict:

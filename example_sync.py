@@ -20,6 +20,14 @@ def run():
         # If the state was changed successfully, True is returned, otherwise False.
         print("success" if dpa.device.set_led_setting(enable=True) else "failed")
 
+        # Check for new firmware versions
+        # {'result': 'UPDATE_NOT_AVAILABLE', 'new_firmware_version': ''}
+        print(dpa.device.check_firmware_available())
+
+        # Start firmware update, if new version is available. Important: The response does not tell you anything about the
+        # success of the update itself.
+        print("update started" if dpa.device.start_firmware_update() else "no update available")
+
         # Get details of wifi stations connected to the device: MAC address, wifi band and connection rates.
         # {'connected_stations':
         #   [
