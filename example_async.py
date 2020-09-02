@@ -30,7 +30,8 @@ async def run():
         # success of the update itself.
         print("update started" if await dpa.device.async_start_firmware_update() else "no update available")
 
-        # Get details of wifi stations connected to the device: MAC address, wifi band and connection rates.
+        # Get details of wifi stations connected to the device: MAC address, access point type (main or guest), wifi band and
+        # connection rates.
         # {'connected_stations':
         #   [
         #     {'mac_address': 'AA:BB:CC:DD:EE:FF',
