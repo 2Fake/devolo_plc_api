@@ -157,7 +157,7 @@ class DeviceApi(Protobuf):
         Get wifi stations connected to the device asynchronously. This feature only works on devices, that announce the wifi1
         feature.
 
-        :return: All connected wifi stations including connection rate data.
+        :return: All connected wifi stations including connection rate data
         """
         wifi_connected_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiConnectedStationsGet()
         response = await self._async_get("WifiConnectedStationsGet")
@@ -170,7 +170,7 @@ class DeviceApi(Protobuf):
         Get wifi stations connected to the device synchronously. This feature only works on devices, that announce the wifi1
         feature.
 
-        :return: All connected wifi stations including connection rate data.
+        :return: All connected wifi stations including connection rate data
         """
         wifi_connected_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiConnectedStationsGet()
         response = self._get("WifiConnectedStationsGet")
@@ -241,7 +241,7 @@ class DeviceApi(Protobuf):
         Get wifi access point in the neighborhood asynchronously. This feature only works on devices, that announce the wifi1
         feature.
 
-        :return: Visible access points in the neighborhood including connection rate data.
+        :return: Visible access points in the neighborhood including connection rate data
         """
         wifi_neighbor_aps = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiNeighborAPsGet()
         response = await self._async_get("WifiNeighborAPsGet", timeout=15.0)
@@ -254,7 +254,7 @@ class DeviceApi(Protobuf):
         Get wifi access point in the neighborhood synchronously. This feature only works on devices, that announce the wifi1
         feature.
 
-        :return: Visible access points in the neighborhood including connection rate data.
+        :return: Visible access points in the neighborhood including connection rate data
         """
         wifi_neighbor_aps = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiNeighborAPsGet()
         response = self._get("WifiNeighborAPsGet", timeout=15.0)
@@ -267,7 +267,7 @@ class DeviceApi(Protobuf):
         Get repeated wifi access point asynchronously. This feature only works on repeater devices, that announce the wifi1
         feature.
 
-        :return: Repeated access points in the neighborhood including connection rate data.
+        :return: Repeated access points in the neighborhood including connection rate data
         """
         wifi_connected_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiRepeatedAPsGet()
         response = await self._async_get("WifiRepeatedAPsGet")
@@ -280,9 +280,33 @@ class DeviceApi(Protobuf):
         Get repeated wifi access point synchronously. This feature only works on repeater devices, that announce the wifi1
         feature.
 
-        :return: Repeated access points in the neighborhood including connection rate data.
+        :return: Repeated access points in the neighborhood including connection rate data
         """
         wifi_connected_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiRepeatedAPsGet()
         response = self._get("WifiRepeatedAPsGet")
         wifi_connected_proto.ParseFromString(response.read())
         return self._message_to_dict(wifi_connected_proto)
+
+    @_feature("wifi1")
+    async def async_start_wps(self):
+        """
+        Start WPS push button configuration.
+
+        :return: True, if the WPS was successfully started, otherwise False
+        """
+        wps_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiWpsPbcStart()
+        response = await self._async_get("WifiWpsPbcStart")
+        wps_proto.FromString(await response.aread())
+        return bool(not wps_proto.result)
+
+    @_feature("wifi1")
+    def start_wps(self):
+        """
+        Start WPS push button configuration.
+
+        :return: True, if the WPS was successfully started, otherwise False
+        """
+        wps_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiWpsPbcStart()
+        response = self._get("WifiWpsPbcStart")
+        wps_proto.FromString(response.read())
+        return bool(not wps_proto.result)

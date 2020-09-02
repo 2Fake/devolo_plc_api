@@ -8,7 +8,8 @@ from httpx import AsyncClient, Client, Response
 from devolo_plc_api.device_api.deviceapi import DeviceApi
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import LedSettingsGet, LedSettingsSetResponse
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_wifinetwork_pb2 import (
-    WifiConnectedStationsGet, WifiGuestAccessGet, WifiGuestAccessSetResponse, WifiNeighborAPsGet, WifiRepeatedAPsGet)
+    WifiConnectedStationsGet, WifiGuestAccessGet, WifiGuestAccessSetResponse, WifiNeighborAPsGet, WifiRepeatedAPsGet,
+    WifiWpsPbcStart)
 from devolo_plc_api.exceptions.feature import FeatureNotSupported
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_updatefirmware_pb2 import UpdateFirmwareCheck, UpdateFirmwareStart
 
@@ -321,3 +322,32 @@ class TestDeviceApi:
         assert wifi_repeated_access_points == MessageToDict(wifi_repeated_access_points_get,
                                                             including_default_value_fields=True,
                                                             preserving_proto_field_name=True)
+
+    @pytest.mark.asyncio
+    async def test_async_start_wps(self, request):
+        wps = WifiWpsPbcStart()
+
+        with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
+             patch("httpx.Response.aread", new=CoroutineMock(return_value=wps.SerializeToString())):
+            device_api = DeviceApi(request.cls.ip,
+                                   AsyncClient(),
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
+                                   "wifi1",
+                                   "password")
+
+            assert await device_api.async_start_wps()
+
+    def test_start_wps(self, request):
+        wps = WifiWpsPbcStart()
+
+        with patch("devolo_plc_api.clients.protobuf.Protobuf._get", return_value=Response), \
+             patch("httpx.Response.read", return_value=wps.SerializeToString()):
+            device_api = DeviceApi(request.cls.ip,
+                                   Client(),
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
+                                   "wifi1",
+                                   "password")
+
+            assert device_api.start_wps()
