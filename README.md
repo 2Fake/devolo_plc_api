@@ -61,3 +61,16 @@ python setup.py test
 ## Usage
 
 All features we currently support are shown in our examples. If you want to use the package asynchronously, please check [example_async.py](https://github.com/2Fake/devolo_plc_api/blob/master/example_async.py). If you want to use it synchronously, please check [example_sync.py](https://github.com/2Fake/devolo_plc_api/blob/master/example_sync.py).
+
+## Supported device
+
+The following devolo devices were queried with at least one call to verify functionality:
+
+* Magic 2 WiFi next
+* Magic 2 WiFi 2-1
+* Magic 1 WiFi mini
+* Magic 1 WiFi 2-1
+* dLAN 1200+ WiFi ac
+* dLAN 550 WiFi
+
+However, other devices might work, some might have a limited functionality. If you discover something weird, [we want to know](https://github.com/2Fake/devolo_plc_api/issues).
