@@ -7,6 +7,7 @@ from ..clients.protobuf import Protobuf
 from ..exceptions.feature import FeatureNotSupported
 from . import devolo_idl_proto_deviceapi_wifinetwork_pb2
 from . import devolo_idl_proto_deviceapi_ledsettings_pb2
+from . import devolo_idl_proto_deviceapi_updatefirmware_pb2
 
 
 class DeviceApi(Protobuf):
@@ -26,7 +27,7 @@ class DeviceApi(Protobuf):
         self._session = session
         self._path = path
         self._version = version
-        self._features = features.split(",") if features else []
+        self._features = features.split(",") if features else ['reset', 'update', 'led', 'intmtg']
         self._user = "devolo"
         self._password = password
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -97,6 +98,30 @@ class DeviceApi(Protobuf):
         response = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsSetResponse()
         response.FromString(query.read())
         return bool(not response.result)
+
+    @_feature("update")
+    async def async_check_firmware_available(self) -> dict:
+        """
+        Check asynchronously, if a firmware update is available for the device.
+
+        :return: Result and new firmware version, if newer one is available
+        """
+        update_firmware_check = devolo_idl_proto_deviceapi_updatefirmware_pb2.UpdateFirmwareCheck()
+        response = await self._async_get("UpdateFirmwareCheck")
+        update_firmware_check.ParseFromString(await response.aread())
+        return self._message_to_dict(update_firmware_check)
+
+    @_feature("update")
+    def check_firmware_available(self) -> dict:
+        """
+        Check synchronously, if a firmware update is available for the device.
+
+        :return: Result and new firmware version, if newer one is available
+        """
+        update_firmware_check = devolo_idl_proto_deviceapi_updatefirmware_pb2.UpdateFirmwareCheck()
+        response = self._get("UpdateFirmwareCheck")
+        update_firmware_check.ParseFromString(response.read())
+        return self._message_to_dict(update_firmware_check)
 
     @_feature("wifi1")
     async def async_get_wifi_connected_station(self) -> dict:

@@ -10,6 +10,7 @@ from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_wifinetwork_pb2 import (
     WifiConnectedStationsGet, WifiGuestAccessGet, WifiGuestAccessSetResponse, WifiNeighborAPsGet, WifiRepeatedAPsGet)
 from devolo_plc_api.exceptions.feature import FeatureNotSupported
+from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_updatefirmware_pb2 import UpdateFirmwareCheck
 
 
 class TestDeviceApi:
@@ -20,7 +21,7 @@ class TestDeviceApi:
                                    Client(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
-                                   "",
+                                   "[]",
                                    "password")
             device_api.get_led_setting()
 
@@ -87,6 +88,41 @@ class TestDeviceApi:
                                    "password")
 
             assert device_api.set_led_setting(True)
+
+    @pytest.mark.asyncio
+    async def test_async_check_firmware_available(self, request):
+        firmware_available = UpdateFirmwareCheck()
+
+        with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
+             patch("httpx.Response.aread", new=CoroutineMock(return_value=firmware_available.SerializeToString())):
+            device_api = DeviceApi(request.cls.ip,
+                                   AsyncClient(),
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
+                                   "update",
+                                   "password")
+            firmware = await device_api.async_check_firmware_available()
+
+            assert firmware == MessageToDict(firmware_available,
+                                             including_default_value_fields=True,
+                                             preserving_proto_field_name=True)
+
+    def test_check_firmware_available(self, request):
+        firmware_available = UpdateFirmwareCheck()
+
+        with patch("devolo_plc_api.clients.protobuf.Protobuf._get", return_value=Response), \
+             patch("httpx.Response.read", return_value=firmware_available.SerializeToString()):
+            device_api = DeviceApi(request.cls.ip,
+                                   Client(),
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
+                                   "update",
+                                   "password")
+            firmware = device_api.check_firmware_available()
+
+            assert firmware == MessageToDict(firmware_available,
+                                             including_default_value_fields=True,
+                                             preserving_proto_field_name=True)
 
     @pytest.mark.asyncio
     async def test_async_get_wifi_connected_station(self, request):
