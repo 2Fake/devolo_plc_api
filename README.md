@@ -68,6 +68,7 @@ The following devolo devices were queried with at least one call to verify funct
 
 * Magic 2 WiFi next
 * Magic 2 WiFi 2-1
+* Magic 2 LAN triple
 * Magic 1 WiFi mini
 * Magic 1 WiFi 2-1
 * dLAN 1200+ WiFi ac
