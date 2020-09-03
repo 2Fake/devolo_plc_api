@@ -65,6 +65,9 @@ def run():
         # }
         print(dpa.device.get_wifi_neighbor_access_points())
 
+        # Start WPS push button configuration. If WPS was started successfully, True is returned, otherwise False.
+        print("WPS started" if dpa.device.start_wps() else "WPS start failed")
+
 
         # Get PLC network overview with enriched information like firmware version,
         # {'network':
