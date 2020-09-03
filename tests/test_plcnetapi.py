@@ -20,6 +20,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=network_overview.SerializeToString())):
             plcnet_api = PlcNetApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    AsyncClient(),
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Version'],
@@ -36,6 +37,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._get", return_value=Response), \
              patch("httpx.Response.read", return_value=network_overview.SerializeToString()):
             plcnet_api = PlcNetApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Version'],
@@ -53,6 +55,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=identify_device.SerializeToString())):
             plcnet_api = PlcNetApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Version'],
@@ -66,6 +69,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._post", return_value=Response), \
              patch("httpx.Response.read", return_value=identify_device.SerializeToString()):
             plcnet_api = PlcNetApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Version'],
@@ -80,6 +84,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=identify_device.SerializeToString())):
             plcnet_api = PlcNetApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Version'],
@@ -93,6 +98,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._post", return_value=Response), \
              patch("httpx.Response.read", return_value=identify_device.SerializeToString()):
             plcnet_api = PlcNetApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Version'],
@@ -107,6 +113,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=user_device_name_set.SerializeToString())):
             plcnet_api = PlcNetApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Version'],
@@ -120,6 +127,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._post", return_value=Response), \
              patch("httpx.Response.read", return_value=user_device_name_set.SerializeToString()):
             plcnet_api = PlcNetApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Version'],

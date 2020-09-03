@@ -19,6 +19,7 @@ class TestDeviceApi:
     def test_unsupported_feature(self, request):
         with pytest.raises(FeatureNotSupported):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -33,6 +34,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=led_setting_get.SerializeToString())):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    AsyncClient(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -50,6 +52,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._get", return_value=Response), \
              patch("httpx.Response.read", return_value=led_setting_get.SerializeToString()):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -68,6 +71,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=led_setting_set.SerializeToString())):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    AsyncClient(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -82,6 +86,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._post", return_value=Response), \
              patch("httpx.Response.read", return_value=led_setting_set.SerializeToString()):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -97,6 +102,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=firmware_available.SerializeToString())):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    AsyncClient(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -114,6 +120,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._get", return_value=Response), \
              patch("httpx.Response.read", return_value=firmware_available.SerializeToString()):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -132,6 +139,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=firmware_update.SerializeToString())):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    AsyncClient(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -146,6 +154,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._get", return_value=Response), \
              patch("httpx.Response.read", return_value=firmware_update.SerializeToString()):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -161,6 +170,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=wifi_connected_stations_get.SerializeToString())):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    AsyncClient(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -178,6 +188,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._get", return_value=Response), \
              patch("httpx.Response.read", return_value=wifi_connected_stations_get.SerializeToString()):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -196,6 +207,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=wifi_guest_access_get.SerializeToString())):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    AsyncClient(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -213,6 +225,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._get", return_value=Response), \
              patch("httpx.Response.read", return_value=wifi_guest_access_get.SerializeToString()):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -231,6 +244,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=wifi_guest_access_set.SerializeToString())):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    AsyncClient(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -245,6 +259,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._post", return_value=Response), \
              patch("httpx.Response.read", return_value=wifi_guest_access_set.SerializeToString()):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -260,6 +275,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=wifi_neighbor_accesspoints_get.SerializeToString())):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    AsyncClient(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -277,6 +293,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._get", return_value=Response), \
              patch("httpx.Response.read", return_value=wifi_neighbor_access_points_get.SerializeToString()):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -295,6 +312,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=wifi_repeated_accesspoints_get.SerializeToString())):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    AsyncClient(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -312,6 +330,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._get", return_value=Response), \
              patch("httpx.Response.read", return_value=wifi_repeated_access_points_get.SerializeToString()):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -330,6 +349,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
              patch("httpx.Response.aread", new=CoroutineMock(return_value=wps.SerializeToString())):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    AsyncClient(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
@@ -344,6 +364,7 @@ class TestDeviceApi:
         with patch("devolo_plc_api.clients.protobuf.Protobuf._get", return_value=Response), \
              patch("httpx.Response.read", return_value=wps.SerializeToString()):
             device_api = DeviceApi(request.cls.ip,
+                                   request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
