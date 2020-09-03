@@ -18,9 +18,9 @@ class PlcNetApi(Protobuf):
     :param version: Version of the API to use
     """
 
-    def __init__(self, ip: str, session: Client, path: str, version: str, mac: str):
+    def __init__(self, ip: str, port: int, session: Client, path: str, version: str, mac: str):
         self._ip = ip
-        self._port = 47219
+        self._port = port
         self._session = session
         self._path = path
         self._version = version

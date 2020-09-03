@@ -21,9 +21,9 @@ class DeviceApi(Protobuf):
     :param features: Feature, the device has
     """
 
-    def __init__(self, ip: str, session: Client, path: str, version: str, features: str, password: str):
+    def __init__(self, ip: str, port: int, session: Client, path: str, version: str, features: str, password: str):
         self._ip = ip
-        self._port = 14791
+        self._port = port
         self._session = session
         self._path = path
         self._version = version

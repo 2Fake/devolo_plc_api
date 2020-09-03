@@ -12,9 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Check for firmware updates
 - Start firmware updates
+- Start WPS
 
 ### Fixed
 
+- Port from mDNS query is now used
 - Get network overview now also works synchroniously
 - Sopping identify device now also works synchroniously
 - Set user device name now also works synchroniously
