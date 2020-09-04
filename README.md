@@ -69,9 +69,14 @@ The following devolo devices were queried with at least one call to verify funct
 * Magic 2 WiFi next
 * Magic 2 WiFi 2-1
 * Magic 2 LAN triple
+* Magic 2 DinRail
+* Magic 2 LAN 1-1
 * Magic 1 WiFi mini
 * Magic 1 WiFi 2-1
+* Magic 1 LAN 1-1
 * dLAN 1200+ WiFi ac
+* dLAN 550+ Wifi
 * dLAN 550 WiFi
+* dLAN 500 WiFi
 
-However, other devices might work, some might have a limited functionality. If you discover something weird, [we want to know](https://github.com/2Fake/devolo_plc_api/issues).
+However, other devices might work, some might have a limited functionality. Also firmware version will matter. If you discover something weird, [we want to know](https://github.com/2Fake/devolo_plc_api/issues).
