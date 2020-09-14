@@ -83,6 +83,7 @@ class Device:
         self.product = self._info[service_type].get("Product", "")
 
         self.device = DeviceApi(ip=self.ip,
+                                port=self._info[service_type]['Port'],
                                 session=self._session,
                                 path=self._info[service_type]['Path'],
                                 version=self._info[service_type]['Version'],
@@ -101,6 +102,7 @@ class Device:
         self.technology = self._info[service_type].get("PlcTechnology", "")
 
         self.plcnet = PlcNetApi(ip=self.ip,
+                                port=self._info[service_type]['Port'],
                                 session=self._session,
                                 path=self._info[service_type]['Path'],
                                 version=self._info[service_type]['Version'],
@@ -120,6 +122,8 @@ class Device:
         if service_info and state_change is ServiceStateChange.Added and \
                 self.ip in [socket.inet_ntoa(address) for address in service_info.addresses]:
             self._logger.debug(f"Adding service info of {service_type}")
+
+            self._info[service_type]['Port'] = service_info.port
 
             # The answer is a byte string, that concatenates key-value pairs with their length as two byte hex value.
             total_length = len(service_info.text)

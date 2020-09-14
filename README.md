@@ -1,6 +1,7 @@
 # devolo PLC API
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/2Fake/devolo_plc_api/Python%20package)](https://github.com/2Fake/devolo_plc_api/actions?query=workflow%3A%22Python+package%22)
+[![PyPI - Downloads](https://img.shields.io/pypi/dd/devolo-plc-api)](https://pypi.org/project/devolo-plc-api/)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/2Fake/devolo_plc_api)](https://codeclimate.com/github/2Fake/devolo_plc_api)
 [![Coverage Status](https://coveralls.io/repos/github/2Fake/devolo_plc_api/badge.svg?branch=development)](https://coveralls.io/github/2Fake/devolo_plc_api?branch=development)
 
@@ -59,4 +60,23 @@ python setup.py test
 
 ## Usage
 
-All features we currently support are shown in our [example.py](https://github.com/2Fake/devolo_plc_api/blob/master/example.py)
+All features we currently support are shown in our examples. If you want to use the package asynchronously, please check [example_async.py](https://github.com/2Fake/devolo_plc_api/blob/master/example_async.py). If you want to use it synchronously, please check [example_sync.py](https://github.com/2Fake/devolo_plc_api/blob/master/example_sync.py).
+
+## Supported device
+
+The following devolo devices were queried with at least one call to verify functionality:
+
+* Magic 2 WiFi next
+* Magic 2 WiFi 2-1
+* Magic 2 LAN triple
+* Magic 2 DinRail
+* Magic 2 LAN 1-1
+* Magic 1 WiFi mini
+* Magic 1 WiFi 2-1
+* Magic 1 LAN 1-1
+* dLAN 1200+ WiFi ac
+* dLAN 550+ Wifi
+* dLAN 550 WiFi
+* dLAN 500 WiFi
+
+However, other devices might work, some might have a limited functionality. Also firmware version will matter. If you discover something weird, [we want to know](https://github.com/2Fake/devolo_plc_api/issues).

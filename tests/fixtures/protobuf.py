@@ -38,8 +38,3 @@ def mock_wrong_password(mocker):
     mocker.patch("httpx.Client.get", Client.wrong_password)
     mocker.patch("httpx.AsyncClient.post", AsyncClient.wrong_password)
     mocker.patch("httpx.Client.post", Client.wrong_password)
-
-
-@pytest.fixture()
-def mock_message_to_dict(mocker):
-    mocker.patch("google.protobuf.json_format.MessageToDict", return_value=None)
