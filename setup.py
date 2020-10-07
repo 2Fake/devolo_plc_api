@@ -22,7 +22,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "httpx>=0.14,<0.15",
+        "httpx>=0.14,<0.17",
         "protobuf",
         "zeroconf>=0.27.0",
     ],
@@ -30,7 +30,7 @@ setuptools.setup(
         "pytest-runner"
     ],
     tests_require=[
-        "asynctest",
+        "asynctest;python_version<'3.8'",
         "pytest",
         "pytest-asyncio",
         "pytest-cov",

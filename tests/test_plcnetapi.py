@@ -1,9 +1,13 @@
 from unittest.mock import patch
 
 import pytest
-from asynctest import CoroutineMock
 from google.protobuf.json_format import MessageToDict
 from httpx import AsyncClient, Client, Response
+
+try:
+    from unittest.mock import AsyncMock
+except ImportError:
+    from asynctest import CoroutineMock as AsyncMock
 
 from devolo_plc_api.plcnet_api.devolo_idl_proto_plcnetapi_getnetworkoverview_pb2 import GetNetworkOverview
 from devolo_plc_api.plcnet_api.devolo_idl_proto_plcnetapi_identifydevice_pb2 import IdentifyDeviceResponse
@@ -17,8 +21,8 @@ class TestDeviceApi:
     async def test_async_get_network_overview(self, request):
         network_overview = GetNetworkOverview()
 
-        with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=CoroutineMock(return_value=Response)), \
-             patch("httpx.Response.aread", new=CoroutineMock(return_value=network_overview.SerializeToString())):
+        with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=AsyncMock(return_value=Response)), \
+             patch("httpx.Response.aread", new=AsyncMock(return_value=network_overview.SerializeToString())):
             plcnet_api = PlcNetApi(request.cls.ip,
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    AsyncClient(),
@@ -52,8 +56,8 @@ class TestDeviceApi:
     async def test_async_identify_device_start(self, request):
         identify_device = IdentifyDeviceResponse()
 
-        with patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=CoroutineMock(return_value=Response)), \
-             patch("httpx.Response.aread", new=CoroutineMock(return_value=identify_device.SerializeToString())):
+        with patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=AsyncMock(return_value=Response)), \
+             patch("httpx.Response.aread", new=AsyncMock(return_value=identify_device.SerializeToString())):
             plcnet_api = PlcNetApi(request.cls.ip,
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
@@ -81,8 +85,8 @@ class TestDeviceApi:
     async def test_async_identify_device_stop(self, request):
         identify_device = IdentifyDeviceResponse()
 
-        with patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=CoroutineMock(return_value=Response)), \
-             patch("httpx.Response.aread", new=CoroutineMock(return_value=identify_device.SerializeToString())):
+        with patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=AsyncMock(return_value=Response)), \
+             patch("httpx.Response.aread", new=AsyncMock(return_value=identify_device.SerializeToString())):
             plcnet_api = PlcNetApi(request.cls.ip,
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
@@ -110,8 +114,8 @@ class TestDeviceApi:
     async def test_async_set_user_device_name(self, request):
         user_device_name_set = SetUserDeviceNameResponse()
 
-        with patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=CoroutineMock(return_value=Response)), \
-             patch("httpx.Response.aread", new=CoroutineMock(return_value=user_device_name_set.SerializeToString())):
+        with patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=AsyncMock(return_value=Response)), \
+             patch("httpx.Response.aread", new=AsyncMock(return_value=user_device_name_set.SerializeToString())):
             plcnet_api = PlcNetApi(request.cls.ip,
                                    request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                                    Client(),
