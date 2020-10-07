@@ -30,7 +30,7 @@ setuptools.setup(
         "pytest-runner"
     ],
     tests_require=[
-        "asynctest",
+        "asynctest;python_version<'3.8'",
         "pytest",
         "pytest-asyncio",
         "pytest-cov",
