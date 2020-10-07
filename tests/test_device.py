@@ -6,7 +6,7 @@ import pytest
 import zeroconf
 
 try:
-    from mock import AsyncMock
+    from unittest.mock import AsyncMock
 except ImportError:
     from asynctest import CoroutineMock as AsyncMock
 

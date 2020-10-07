@@ -5,7 +5,7 @@ from google.protobuf.json_format import MessageToDict
 from httpx import AsyncClient, Client, Response
 
 try:
-    from mock import AsyncMock
+    from unittest.mock import AsyncMock
 except ImportError:
     from asynctest import CoroutineMock as AsyncMock
 
