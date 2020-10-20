@@ -31,6 +31,17 @@ class TestDeviceApi:
                                    "password")
             device_api.get_led_setting()
 
+    def test_feature(self, request):
+        device_api = DeviceApi(request.cls.ip,
+                               request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
+                               Client(),
+                               request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
+                               request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
+                               "",
+                               "password")
+
+        assert device_api.features == ['reset', 'update', 'led', 'intmtg']
+
     @pytest.mark.asyncio
     async def test_async_get_led_setting(self, request):
         led_setting_get = LedSettingsGet()

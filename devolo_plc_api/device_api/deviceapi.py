@@ -45,6 +45,12 @@ class DeviceApi(Protobuf):
         return feature_decorator
 
 
+    @property
+    def features(self) -> list:
+        """ Get all features this device supports regarding the device API. """
+        return self._features
+
+
     @_feature("led")
     async def async_get_led_setting(self) -> dict:
         """
