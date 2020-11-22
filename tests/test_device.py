@@ -20,11 +20,10 @@ class TestDevice:
     @pytest.mark.asyncio
     async def test__gather_apis(self, mocker, mock_device):
         with patch("devolo_plc_api.device.Device._get_device_info", new=AsyncMock()), \
-                patch("devolo_plc_api.device.Device._get_plcnet_info", new=AsyncMock()):
+             patch("devolo_plc_api.device.Device._get_plcnet_info", new=AsyncMock()):
             spy_device_info = mocker.spy(mock_device, "_get_device_info")
             spy_plcnet_info = mocker.spy(mock_device, "_get_plcnet_info")
             await mock_device._gather_apis()
-
             assert spy_device_info.call_count == 1
             assert spy_plcnet_info.call_count == 1
 
@@ -34,7 +33,6 @@ class TestDevice:
         with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=AsyncMock()):
             device_info = self.device_info['_dvl-deviceapi._tcp.local.']
             await mock_device._get_device_info()
-
             assert mock_device.firmware_date == date.fromisoformat(device_info['FirmwareDate'])
             assert mock_device.firmware_version == device_info['FirmwareVersion']
             assert mock_device.serial_number == device_info['SN']
@@ -56,7 +54,6 @@ class TestDevice:
         with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=AsyncMock()):
             device_info = self.device_info['_dvl-plcnetapi._tcp.local.']
             await mock_device._get_plcnet_info()
-
             assert mock_device.mac == device_info['PlcMacAddress']
             assert mock_device.technology == device_info['PlcTechnology']
             assert type(mock_device.plcnet) == PlcNetApi
@@ -75,7 +72,6 @@ class TestDevice:
         spy_cancel = mocker.spy(zeroconf.ServiceBrowser, "cancel")
         spy_sleep = mocker.spy(asyncio, "sleep")
         await mock_device._get_zeroconf_info("_dvl-plcnetapi._tcp.local.")
-
         assert spy_cancel.call_count == 1
         assert spy_sleep.call_count == 0
 
@@ -85,7 +81,6 @@ class TestDevice:
         zc = zeroconf.Zeroconf()
         service_type = "_dvl-plcnetapi._tcp.local."
         mock_device._state_change(zc, service_type, service_type, zeroconf.ServiceStateChange.Added)
-
         assert mock_device._info[service_type]['new'] == "value"
 
     @pytest.mark.asyncio
@@ -94,5 +89,4 @@ class TestDevice:
         zc = zeroconf.Zeroconf()
         service_type = "_dvl-plcnetapi._tcp.local."
         mock_device._state_change(zc, service_type, service_type, zeroconf.ServiceStateChange.Removed)
-
         assert "new" not in mock_device._info[service_type]
