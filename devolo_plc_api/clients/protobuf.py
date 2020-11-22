@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from logging import Logger
 from typing import Union
 
@@ -14,17 +14,14 @@ class Protobuf(ABC):
     """
     Google Protobuf client.
     """
+    _ip: str
     _logger: Logger
-
-    @abstractmethod
-    def __init__(self):
-        self._ip: str
-        self._password: str
-        self._path: str
-        self._port: int
-        self._session: Union[AsyncClient, Client]
-        self._user: str
-        self._version: str
+    _password: str
+    _path: str
+    _port: int
+    _session: Union[AsyncClient, Client]
+    _user: str
+    _version: str
 
 
     @property

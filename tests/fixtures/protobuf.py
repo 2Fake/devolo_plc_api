@@ -7,7 +7,7 @@ try:
 except ImportError:
     from asynctest import CoroutineMock as AsyncMock
 
-from ..stubs.protobuf import Protobuf
+from devolo_plc_api.clients.protobuf import Protobuf
 
 
 @pytest.fixture()

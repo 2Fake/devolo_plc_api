@@ -28,7 +28,6 @@ class PlcNetApi(Protobuf):
                  path: str,
                  version: str,
                  mac: str):
-        super().__init__()
         self._ip = ip
         self._port = port
         self._session = session

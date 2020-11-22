@@ -31,7 +31,6 @@ class DeviceApi(Protobuf):
                  version: str,
                  features: str,
                  password: Optional[str]):
-        super().__init__()
         self._ip = ip
         self._port = port
         self._session = session
