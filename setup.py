@@ -26,15 +26,14 @@ setuptools.setup(
         "protobuf",
         "zeroconf>=0.27.0",
     ],
-    setup_requires=[
-        "pytest-runner"
-    ],
-    tests_require=[
-        "asynctest;python_version<'3.8'",
-        "pytest",
-        "pytest-asyncio",
-        "pytest-cov",
-        "pytest-mock",
-    ],
+    extras_require={
+        "test": [
+            "asynctest;python_version<'3.8'",
+            "pytest",
+            "pytest-asyncio",
+            "pytest-cov",
+            "pytest-mock",
+        ]
+    },
     python_requires='>=3.7',
 )

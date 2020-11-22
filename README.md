@@ -52,10 +52,11 @@ cd devolo_plc_api
 python setup.py install
 ```
 
-If you want to run out tests, change to the tests directory and start pytest via setup.py.
+If you want to run out tests, install the extra requirements and start pytest.
 
 ```bash
-python setup.py test
+pip install -e .[test]
+pytest
 ```
 
 ## Usage
