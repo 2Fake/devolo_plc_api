@@ -3,7 +3,7 @@ import logging
 import socket
 import struct
 from datetime import date
-from typing import Optional
+from typing import Optional, Union
 
 import httpx
 from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
@@ -39,6 +39,9 @@ class Device:
         self._info: dict = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
         self._logger = logging.getLogger(self.__class__.__name__)
         self._zeroconf_instance = zeroconf_instance
+
+        self._session: Union[httpx.AsyncClient, httpx.Client]
+        self._zeroconf: Zeroconf
 
     async def __aenter__(self):
         self._session = httpx.AsyncClient()
@@ -110,7 +113,7 @@ class Device:
 
     async def _get_zeroconf_info(self, service_type: str):
         """ Browse for the desired mDNS service types and query them. """
-        self._logger.debug(f"Browsing for {service_type}")
+        self._logger.debug("Browsing for %s", service_type)
         browser = ServiceBrowser(self._zeroconf, service_type, [self._state_change])
         while not self._info[service_type]:
             await asyncio.sleep(0.1)
@@ -121,7 +124,7 @@ class Device:
         service_info = zeroconf.get_service_info(service_type, name)
         if service_info and state_change is ServiceStateChange.Added and \
                 self.ip in [socket.inet_ntoa(address) for address in service_info.addresses]:
-            self._logger.debug(f"Adding service info of {service_type}")
+            self._logger.debug("Adding service info of %s", service_type)
 
             self._info[service_type]['Port'] = service_info.port
 

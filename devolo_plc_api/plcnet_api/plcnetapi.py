@@ -1,11 +1,12 @@
 import logging
+from typing import Union
 
-from httpx import Client
+from httpx import AsyncClient, Client
 
 from ..clients.protobuf import Protobuf
-from . import devolo_idl_proto_plcnetapi_getnetworkoverview_pb2
-from . import devolo_idl_proto_plcnetapi_identifydevice_pb2
-from . import devolo_idl_proto_plcnetapi_setuserdevicename_pb2
+from . import (devolo_idl_proto_plcnetapi_getnetworkoverview_pb2,
+               devolo_idl_proto_plcnetapi_identifydevice_pb2,
+               devolo_idl_proto_plcnetapi_setuserdevicename_pb2)
 
 
 class PlcNetApi(Protobuf):
@@ -13,20 +14,29 @@ class PlcNetApi(Protobuf):
     Implementation of the devolo plcnet API.
 
     :param ip: IP address of the device to communicate with
+    :param port: Port to communicate with
     :param session: HTTP client session
     :param path: Path to send queries to
     :param version: Version of the API to use
+    :param mac: Mac address of the to communicate with
     """
 
-    def __init__(self, ip: str, port: int, session: Client, path: str, version: str, mac: str):
+    def __init__(self,
+                 ip: str,
+                 port: int,
+                 session: Union[AsyncClient, Client],
+                 path: str,
+                 version: str,
+                 mac: str):
+        super().__init__()
         self._ip = ip
         self._port = port
         self._session = session
         self._path = path
         self._version = version
         self._mac = mac
-        self._user = None  # PLC API is not password protected.
-        self._password = None  # PLC API is not password protected.
+        self._user = ""  # PLC API is not password protected.
+        self._password = ""  # PLC API is not password protected.
         self._logger = logging.getLogger(self.__class__.__name__)
 
 
@@ -62,10 +72,10 @@ class PlcNetApi(Protobuf):
         """
         identify_device = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceStart()
         identify_device.mac_address = self._mac
-        query = await self._async_post("IdentifyDeviceStart", data=identify_device.SerializeToString())
+        query = await self._async_post("IdentifyDeviceStart", content=identify_device.SerializeToString())
         response = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceResponse()
-        response.FromString(await query.aread())
-        return bool(not response.result)
+        response.FromString(await query.aread())  # pylint: disable=no-member
+        return bool(not response.result)  # pylint: disable=no-member
 
     def identify_device_start(self):
         """
@@ -75,10 +85,10 @@ class PlcNetApi(Protobuf):
         """
         identify_device = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceStart()
         identify_device.mac_address = self._mac
-        query = self._post("IdentifyDeviceStart", data=identify_device.SerializeToString())
+        query = self._post("IdentifyDeviceStart", content=identify_device.SerializeToString())
         response = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceResponse()
-        response.FromString(query.read())
-        return bool(not response.result)
+        response.FromString(query.read())  # pylint: disable=no-member
+        return bool(not response.result)  # pylint: disable=no-member
 
     async def async_identify_device_stop(self):
         """
@@ -88,10 +98,10 @@ class PlcNetApi(Protobuf):
         """
         identify_device = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceStop()
         identify_device.mac_address = self._mac
-        query = await self._async_post("IdentifyDeviceStop", data=identify_device.SerializeToString())
+        query = await self._async_post("IdentifyDeviceStop", content=identify_device.SerializeToString())
         response = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceResponse()
-        response.FromString(await query.aread())
-        return bool(not response.result)
+        response.FromString(await query.aread())  # pylint: disable=no-member
+        return bool(not response.result)  # pylint: disable=no-member
 
     def identify_device_stop(self):
         """
@@ -101,10 +111,10 @@ class PlcNetApi(Protobuf):
         """
         identify_device = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceStop()
         identify_device.mac_address = self._mac
-        query = self._post("IdentifyDeviceStop", data=identify_device.SerializeToString())
+        query = self._post("IdentifyDeviceStop", content=identify_device.SerializeToString())
         response = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceResponse()
-        response.FromString(query.read())
-        return bool(not response.result)
+        response.FromString(query.read())  # pylint: disable=no-member
+        return bool(not response.result)  # pylint: disable=no-member
 
     async def async_set_user_device_name(self, name):
         """
@@ -116,10 +126,10 @@ class PlcNetApi(Protobuf):
         set_user_name = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceName()
         set_user_name.mac_address = self._mac
         set_user_name.user_device_name = name
-        query = await self._async_post("SetUserDeviceName", data=set_user_name.SerializeToString(), timeout=10.0)
+        query = await self._async_post("SetUserDeviceName", content=set_user_name.SerializeToString(), timeout=10.0)
         response = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceNameResponse()
-        response.FromString(await query.aread())
-        return bool(not response.result)
+        response.FromString(await query.aread())  # pylint: disable=no-member
+        return bool(not response.result)  # pylint: disable=no-member
 
     def set_user_device_name(self, name):
         """
@@ -131,7 +141,7 @@ class PlcNetApi(Protobuf):
         set_user_name = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceName()
         set_user_name.mac_address = self._mac
         set_user_name.user_device_name = name
-        query = self._post("SetUserDeviceName", data=set_user_name.SerializeToString(), timeout=10.0)
+        query = self._post("SetUserDeviceName", content=set_user_name.SerializeToString(), timeout=10.0)
         response = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceNameResponse()
-        response.FromString(query.read())
-        return bool(not response.result)
+        response.FromString(query.read())  # pylint: disable=no-member
+        return bool(not response.result)  # pylint: disable=no-member
