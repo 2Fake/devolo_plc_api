@@ -45,7 +45,7 @@ class PlcNetApi(Protobuf):
 
         :return: Network overview
         """
-        self._logger.debug("Getting network overview")
+        self._logger.debug("Getting network overview.")
         network_overview = devolo_idl_proto_plcnetapi_getnetworkoverview_pb2.GetNetworkOverview()
         response = await self._async_get("GetNetworkOverview")
         network_overview.ParseFromString(await response.aread())
@@ -57,7 +57,7 @@ class PlcNetApi(Protobuf):
 
         :return: Network overview
         """
-        self._logger.debug("Getting network overview")
+        self._logger.debug("Getting network overview.")
         network_overview = devolo_idl_proto_plcnetapi_getnetworkoverview_pb2.GetNetworkOverview()
         response = self._get("GetNetworkOverview")
         network_overview.ParseFromString(response.read())
@@ -69,6 +69,7 @@ class PlcNetApi(Protobuf):
 
         :return: True, if identifying was successfully started, otherwise False
         """
+        self._logger.debug("Starting LED blinking.")
         identify_device = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceStart()
         identify_device.mac_address = self._mac
         query = await self._async_post("IdentifyDeviceStart", content=identify_device.SerializeToString())
@@ -82,6 +83,7 @@ class PlcNetApi(Protobuf):
 
         :return: True, if identifying was successfully started, otherwise False
         """
+        self._logger.debug("Starting LED blinking.")
         identify_device = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceStart()
         identify_device.mac_address = self._mac
         query = self._post("IdentifyDeviceStart", content=identify_device.SerializeToString())
@@ -95,6 +97,7 @@ class PlcNetApi(Protobuf):
 
         :return: True, if identifying was successfully stopped, otherwise False
         """
+        self._logger.debug("Stopping LED blinking.")
         identify_device = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceStop()
         identify_device.mac_address = self._mac
         query = await self._async_post("IdentifyDeviceStop", content=identify_device.SerializeToString())
@@ -108,6 +111,7 @@ class PlcNetApi(Protobuf):
 
         :return: True, if identifying was successfully stopped, otherwise False
         """
+        self._logger.debug("Stopping LED blinking.")
         identify_device = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceStop()
         identify_device.mac_address = self._mac
         query = self._post("IdentifyDeviceStop", content=identify_device.SerializeToString())
@@ -122,6 +126,7 @@ class PlcNetApi(Protobuf):
         :param name: Name, the device shall have
         :return: True, if the device was successfully renamed, otherwise False
         """
+        self._logger.debug("Setting device name.")
         set_user_name = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceName()
         set_user_name.mac_address = self._mac
         set_user_name.user_device_name = name
@@ -137,6 +142,7 @@ class PlcNetApi(Protobuf):
         :param name: Name, the device shall have
         :return: True, if the device was successfully renamed, otherwise False
         """
+        self._logger.debug("Setting device name.")
         set_user_name = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceName()
         set_user_name.mac_address = self._mac
         set_user_name.user_device_name = name
