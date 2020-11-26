@@ -15,6 +15,7 @@ class DeviceApi(Protobuf):
 
     :param ip: IP address of the device to communicate with
     :param session: HTTP client session
+    :param info: Information collected from the mDNS query
     :param password: Password of the device
     """
 
