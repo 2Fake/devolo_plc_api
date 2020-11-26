@@ -40,14 +40,13 @@ class Device:
         self._logger = logging.getLogger(self.__class__.__name__)
         self._zeroconf_instance = zeroconf_instance
 
+        self._loop: asyncio.AbstractEventLoop
         self._session: Union[httpx.AsyncClient, httpx.Client]
         self._zeroconf: Zeroconf
 
     async def __aenter__(self):
-        self._session = httpx.AsyncClient()
-        self._zeroconf = self._zeroconf_instance or Zeroconf()
-        loop = asyncio.get_running_loop()
-        await loop.create_task(self._gather_apis())
+        self._loop = asyncio.get_running_loop()
+        await self._setup_device()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -56,20 +55,13 @@ class Device:
         await self._session.aclose()
 
     def __enter__(self):
-        self._session = httpx.Client()
-        self._zeroconf = self._zeroconf_instance or Zeroconf()
-        asyncio.run(self._gather_apis())
+        self._loop = asyncio.new_event_loop()
+        self._loop.run_until_complete(self._setup_device())
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if not self._zeroconf_instance:
-            self._zeroconf.close()
-        self._session.close()
-
-
-    async def _gather_apis(self):
-        """ Get information from all APIs. """
-        await asyncio.gather(self._get_device_info(), self._get_plcnet_info())
+        self._loop.run_until_complete(self.__aexit__(exc_type, exc_val, exc_tb))
+        self._loop.close()
 
     async def _get_device_info(self):
         """ Get information from the devolo Device API. """
@@ -118,6 +110,12 @@ class Device:
         while not self._info[service_type]:
             await asyncio.sleep(0.1)
         browser.cancel()
+
+    async def _setup_device(self):
+        """ Setup device. """
+        self._session = httpx.AsyncClient()
+        self._zeroconf = self._zeroconf_instance or Zeroconf()
+        await asyncio.gather(self._get_device_info(), self._get_plcnet_info())
 
     def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange):
         """ Evaluate the query result. """

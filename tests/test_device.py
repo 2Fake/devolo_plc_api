@@ -18,16 +18,6 @@ from devolo_plc_api.plcnet_api.plcnetapi import PlcNetApi
 class TestDevice:
 
     @pytest.mark.asyncio
-    async def test__gather_apis(self, mocker, mock_device):
-        with patch("devolo_plc_api.device.Device._get_device_info", new=AsyncMock()), \
-             patch("devolo_plc_api.device.Device._get_plcnet_info", new=AsyncMock()):
-            spy_device_info = mocker.spy(mock_device, "_get_device_info")
-            spy_plcnet_info = mocker.spy(mock_device, "_get_plcnet_info")
-            await mock_device._gather_apis()
-            assert spy_device_info.call_count == 1
-            assert spy_plcnet_info.call_count == 1
-
-    @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_device_api")
     async def test__get_device_info(self, mock_device):
         with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=AsyncMock()):
@@ -74,6 +64,16 @@ class TestDevice:
         await mock_device._get_zeroconf_info("_dvl-plcnetapi._tcp.local.")
         assert spy_cancel.call_count == 1
         assert spy_sleep.call_count == 0
+
+    @pytest.mark.asyncio
+    async def test__setup_device(self, mocker, mock_device):
+        with patch("devolo_plc_api.device.Device._get_device_info", new=AsyncMock()), \
+             patch("devolo_plc_api.device.Device._get_plcnet_info", new=AsyncMock()):
+            spy_device_info = mocker.spy(mock_device, "_get_device_info")
+            spy_plcnet_info = mocker.spy(mock_device, "_get_plcnet_info")
+            await mock_device._setup_device()
+            assert spy_device_info.call_count == 1
+            assert spy_plcnet_info.call_count == 1
 
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_zeroconf")
