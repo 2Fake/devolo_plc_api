@@ -45,7 +45,7 @@ class Protobuf(ABC):
     async def _async_get(self, sub_url: str, timeout: float = TIMEOUT) -> Response:
         """ Query URL asynchronously. """
         url = f"{self.url}{sub_url}"
-        self._logger.debug(f"Getting from {url}")
+        self._logger.debug("Getting from %s", url)
         try:
             return await self._session.get(url,
                                            auth=DigestAuth(self._user, self._password),
@@ -56,7 +56,7 @@ class Protobuf(ABC):
     async def _async_post(self, sub_url: str, content: bytes, timeout: float = TIMEOUT) -> Response:
         """ Post data asynchronously. """
         url = f"{self.url}{sub_url}"
-        self._logger.debug(f"Posting to {url}")
+        self._logger.debug("Posting to %s", url)
         try:
             return await self._session.post(url,
                                             auth=DigestAuth(self._user, self._password),
