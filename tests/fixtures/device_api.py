@@ -1,8 +1,9 @@
+import asyncio
 from unittest.mock import patch
 
 import pytest
 from devolo_plc_api.device_api.deviceapi import DeviceApi
-from httpx import AsyncClient, Client, Response
+from httpx import AsyncClient, Response
 
 try:
     from unittest.mock import AsyncMock
@@ -11,25 +12,14 @@ except ImportError:
 
 
 @pytest.fixture()
-def device_api_async(request, feature):
+def device_api(request, feature):
     with patch("devolo_plc_api.clients.protobuf.Protobuf._async_get", new=AsyncMock(return_value=Response)), \
-         patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=AsyncMock(return_value=Response)):
+         patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=AsyncMock(return_value=Response)), \
+         patch("asyncio.get_running_loop", asyncio.new_event_loop):
+        asyncio.new_event_loop()
         yield DeviceApi(request.cls.ip,
                         request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                         AsyncClient(),
-                        request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
-                        request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
-                        feature,
-                        "password")
-
-
-@pytest.fixture()
-def device_api_sync(request, feature):
-    with patch("devolo_plc_api.clients.protobuf.Protobuf._get", return_value=Response), \
-         patch("devolo_plc_api.clients.protobuf.Protobuf._post", return_value=Response):
-        yield DeviceApi(request.cls.ip,
-                        request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
-                        Client(),
                         request.cls.device_info['_dvl-deviceapi._tcp.local.']['Path'],
                         request.cls.device_info['_dvl-deviceapi._tcp.local.']['Version'],
                         feature,
