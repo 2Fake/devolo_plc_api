@@ -1,3 +1,5 @@
+from typing import Dict
+
 from httpx import AsyncClient
 
 from ..clients.protobuf import Protobuf
@@ -11,27 +13,21 @@ class PlcNetApi(Protobuf):
     Implementation of the devolo plcnet API.
 
     :param ip: IP address of the device to communicate with
-    :param port: Port to communicate with
     :param session: HTTP client session
-    :param path: Path to send queries to
-    :param version: Version of the API to use
-    :param mac: Mac address of the to communicate with
+    :param info: Information collected from the mDNS query
     """
 
     def __init__(self,
                  ip: str,
-                 port: int,
                  session: AsyncClient,
-                 path: str,
-                 version: str,
-                 mac: str):
+                 info: Dict):
         super().__init__()
         self._ip = ip
-        self._port = port
+        self._mac = info['PlcMacAddress']
+        self._path = info['Path']
+        self._port = info['Port']
         self._session = session
-        self._path = path
-        self._version = version
-        self._mac = mac
+        self._version = info['Version']
         self._user = ""  # PLC API is not password protected.
         self._password = ""  # PLC API is not password protected.
 

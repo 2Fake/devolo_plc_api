@@ -18,11 +18,8 @@ def plcnet_api(request):
          patch("asyncio.get_running_loop", asyncio.new_event_loop):
         asyncio.new_event_loop()
         yield PlcNetApi(request.cls.ip,
-                        request.cls.device_info['_dvl-deviceapi._tcp.local.']['Port'],
                         AsyncClient(),
-                        request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Path'],
-                        request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Version'],
-                        request.cls.device_info['_dvl-plcnetapi._tcp.local.']['PlcMacAddress'])
+                        request.cls.device_info["_dvl-plcnetapi._tcp.local."])
 
 
 @pytest.fixture()

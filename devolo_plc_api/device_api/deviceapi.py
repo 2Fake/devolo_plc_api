@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, Dict, Optional
 
 from httpx import AsyncClient
 
@@ -14,31 +14,25 @@ class DeviceApi(Protobuf):
     Implementation of the devolo device API.
 
     :param ip: IP address of the device to communicate with
-    :param port: Port to communicate with
     :param session: HTTP client session
-    :param path: Path to send queries to
-    :param version: Version of the API to use
-    :param features: Feature, the device has
     :param password: Password of the device
     """
 
     def __init__(self,
                  ip: str,
-                 port: int,
                  session: AsyncClient,
-                 path: str,
-                 version: str,
-                 features: str,
+                 info: Dict,
                  password: Optional[str]):
         super().__init__()
         self._ip = ip
-        self._port = port
+        self._port = info['Port']
         self._session = session
-        self._path = path
-        self._version = version
+        self._path = info['Path']
+        self._version = info['Version']
         self._user = "devolo"
         self._password = password or ""
 
+        features = info.get("Features", "")
         self.features = features.split(",") if features else ['reset', 'update', 'led', 'intmtg']
 
     def _feature(feature: str):  # type: ignore  # pylint: disable=no-self-argument

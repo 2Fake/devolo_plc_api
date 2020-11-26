@@ -3,7 +3,7 @@ import logging
 import socket
 import struct
 from datetime import date
-from typing import Optional, Union
+from typing import Dict, Optional
 
 import httpx
 from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
@@ -36,12 +36,12 @@ class Device:
         self.device = None
         self.plcnet = None
 
-        self._info: dict = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
+        self._info: Dict = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
         self._logger = logging.getLogger(self.__class__.__name__)
         self._zeroconf_instance = zeroconf_instance
 
         self._loop: asyncio.AbstractEventLoop
-        self._session: Union[httpx.AsyncClient, httpx.Client]
+        self._session: httpx.AsyncClient
         self._zeroconf: Zeroconf
 
     async def __aenter__(self):
@@ -78,11 +78,8 @@ class Device:
         self.product = self._info[service_type].get("Product", "")
 
         self.device = DeviceApi(ip=self.ip,
-                                port=self._info[service_type]['Port'],
                                 session=self._session,
-                                path=self._info[service_type]['Path'],
-                                version=self._info[service_type]['Version'],
-                                features=self._info[service_type].get("Features", ""),
+                                info=self._info[service_type],
                                 password=self.password)
 
     async def _get_plcnet_info(self):
@@ -97,11 +94,8 @@ class Device:
         self.technology = self._info[service_type].get("PlcTechnology", "")
 
         self.plcnet = PlcNetApi(ip=self.ip,
-                                port=self._info[service_type]['Port'],
                                 session=self._session,
-                                path=self._info[service_type]['Path'],
-                                version=self._info[service_type]['Version'],
-                                mac=self.mac)
+                                info=self._info[service_type])
 
     async def _get_zeroconf_info(self, service_type: str):
         """ Browse for the desired mDNS service types and query them. """
