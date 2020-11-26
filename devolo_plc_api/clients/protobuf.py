@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from abc import ABC, abstractclassmethod
+from typing import Callable
 
 from google.protobuf.json_format import MessageToDict
 from httpx import AsyncClient, DigestAuth, Response
@@ -28,7 +29,7 @@ class Protobuf(ABC):
         self._user: str
         self._version: str
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str) -> Callable:
         """ Catch attempts to call methods synchronously. """
         def method(*args, **kwargs):
             return self._loop.run_until_complete(getattr(self, async_method)(*args, **kwargs))
