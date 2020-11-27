@@ -2,7 +2,6 @@ import asyncio
 
 from devolo_plc_api.device import Device
 
-
 # IP of the device to query
 IP = "192.168.0.10"
 
