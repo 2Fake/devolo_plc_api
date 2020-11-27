@@ -34,9 +34,9 @@ class TestDevice:
     @pytest.mark.usefixtures("mock_device_api")
     async def test__get_device_info_timeout(self, mock_device):
         with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=AsyncMock()), \
-             patch("asyncio.wait_for", new=AsyncMock(side_effect=asyncio.TimeoutError())), \
-             pytest.raises(DeviceNotFound):
+             patch("asyncio.wait_for", new=AsyncMock(side_effect=asyncio.TimeoutError())):
             await mock_device._get_device_info()
+            assert mock_device.device is None
 
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_plcnet_api")
@@ -49,12 +49,12 @@ class TestDevice:
             assert type(mock_device.plcnet) == PlcNetApi
 
     @pytest.mark.asyncio
-    @pytest.mark.usefixtures("mock_device_api")
+    @pytest.mark.usefixtures("mock_plcnet_api")
     async def test__get_plcnet_info_timeout(self, mock_device):
         with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=AsyncMock()), \
-             patch("asyncio.wait_for", new=AsyncMock(side_effect=asyncio.TimeoutError())), \
-             pytest.raises(DeviceNotFound):
+             patch("asyncio.wait_for", new=AsyncMock(side_effect=asyncio.TimeoutError())):
             await mock_device._get_plcnet_info()
+            assert mock_device.plcnet is None
 
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_service_browser")
@@ -71,9 +71,18 @@ class TestDevice:
              patch("devolo_plc_api.device.Device._get_plcnet_info", new=AsyncMock()):
             spy_device_info = mocker.spy(mock_device, "_get_device_info")
             spy_plcnet_info = mocker.spy(mock_device, "_get_plcnet_info")
+            mock_device.device = object
+            mock_device.plcnet = object
             await mock_device._setup_device()
             assert spy_device_info.call_count == 1
             assert spy_plcnet_info.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test__setup_device_not_found(self, mock_device):
+        with patch("devolo_plc_api.device.Device._get_device_info", new=AsyncMock()), \
+             patch("devolo_plc_api.device.Device._get_plcnet_info", new=AsyncMock()), \
+             pytest.raises(DeviceNotFound):
+            await mock_device._setup_device()
 
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_zeroconf")

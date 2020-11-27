@@ -69,7 +69,7 @@ class Device:
         try:
             await asyncio.wait_for(self._get_zeroconf_info(service_type=service_type), timeout=3)
         except asyncio.TimeoutError:
-            raise DeviceNotFound(f"The device {self.ip} did not answer.") from None
+            return
 
         self.firmware_date = date.fromisoformat(self._info[service_type].get("FirmwareDate", "1970-01-01"))
         self.firmware_version = self._info[service_type].get("FirmwareVersion", "")
@@ -88,7 +88,7 @@ class Device:
         try:
             await asyncio.wait_for(self._get_zeroconf_info(service_type=service_type), timeout=3)
         except asyncio.TimeoutError:
-            raise DeviceNotFound(f"The device {self.ip} did not answer.") from None
+            return
 
         self.mac = self._info[service_type]['PlcMacAddress']
         self.technology = self._info[service_type].get("PlcTechnology", "")
@@ -110,6 +110,8 @@ class Device:
         self._session = httpx.AsyncClient()
         self._zeroconf = self._zeroconf_instance or Zeroconf()
         await asyncio.gather(self._get_device_info(), self._get_plcnet_info())
+        if not self.device and not self.plcnet:
+            raise DeviceNotFound(f"The device {self.ip} did not answer.")
 
     def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange):
         """ Evaluate the query result. """
