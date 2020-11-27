@@ -138,6 +138,5 @@ dmypy.json
 ### PyCharm ###
 .idea
 
-
 ### Testfile ###
 test.py

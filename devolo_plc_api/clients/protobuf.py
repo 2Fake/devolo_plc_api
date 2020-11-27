@@ -31,8 +31,10 @@ class Protobuf(ABC):
 
     def __getattr__(self, attr: str) -> Callable:
         """ Catch attempts to call methods synchronously. """
+
         def method(*args, **kwargs):
             return self._loop.run_until_complete(getattr(self, async_method)(*args, **kwargs))
+
         async_method = f"async_{attr}"
         if hasattr(self.__class__, async_method):
             return method
@@ -48,9 +50,7 @@ class Protobuf(ABC):
         url = f"{self.url}{sub_url}"
         self._logger.debug("Getting from %s", url)
         try:
-            return await self._session.get(url,
-                                           auth=DigestAuth(self._user, self._password),
-                                           timeout=timeout)
+            return await self._session.get(url, auth=DigestAuth(self._user, self._password), timeout=timeout)
         except TypeError:
             raise DevicePasswordProtected("The used password is wrong.") from None
 
@@ -59,10 +59,7 @@ class Protobuf(ABC):
         url = f"{self.url}{sub_url}"
         self._logger.debug("Posting to %s", url)
         try:
-            return await self._session.post(url,
-                                            auth=DigestAuth(self._user, self._password),
-                                            content=content,
-                                            timeout=timeout)
+            return await self._session.post(url, auth=DigestAuth(self._user, self._password), content=content, timeout=timeout)
         except TypeError:
             raise DevicePasswordProtected("The used password is wrong.") from None
 

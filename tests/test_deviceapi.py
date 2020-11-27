@@ -9,11 +9,14 @@ except ImportError:
     from asynctest import CoroutineMock as AsyncMock
 
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import LedSettingsGet, LedSettingsSetResponse
-from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_wifinetwork_pb2 import (
-    WifiConnectedStationsGet, WifiGuestAccessGet, WifiGuestAccessSetResponse, WifiNeighborAPsGet, WifiRepeatedAPsGet,
-    WifiWpsPbcStart)
-from devolo_plc_api.exceptions.feature import FeatureNotSupported
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_updatefirmware_pb2 import UpdateFirmwareCheck, UpdateFirmwareStart
+from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_wifinetwork_pb2 import (WifiConnectedStationsGet,
+                                                                                  WifiGuestAccessGet,
+                                                                                  WifiGuestAccessSetResponse,
+                                                                                  WifiNeighborAPsGet,
+                                                                                  WifiRepeatedAPsGet,
+                                                                                  WifiWpsPbcStart)
+from devolo_plc_api.exceptions.feature import FeatureNotSupported
 
 
 class TestDeviceApi:

@@ -19,11 +19,7 @@ class DeviceApi(Protobuf):
     :param password: Password of the device
     """
 
-    def __init__(self,
-                 ip: str,
-                 session: AsyncClient,
-                 info: Dict,
-                 password: Optional[str]):
+    def __init__(self, ip: str, session: AsyncClient, info: Dict, password: Optional[str]):
         super().__init__()
         self._ip = ip
         self._port = info['Port']
@@ -38,13 +34,17 @@ class DeviceApi(Protobuf):
 
     def _feature(feature: str):  # type: ignore  # pylint: disable=no-self-argument
         """ Decorator to filter unsupported features before querying the device. """
+
         def feature_decorator(method: Callable):
+
             def wrapper(self, *args, **kwargs):
                 if feature in self.features:
                     return method(self, *args, **kwargs)
                 else:
                     raise FeatureNotSupported(f"The device does not support {method}.")
+
             return wrapper
+
         return feature_decorator
 
     @_feature("led")
