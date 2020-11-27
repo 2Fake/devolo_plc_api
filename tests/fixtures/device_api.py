@@ -2,8 +2,9 @@ import asyncio
 from unittest.mock import patch
 
 import pytest
-from devolo_plc_api.device_api.deviceapi import DeviceApi
 from httpx import AsyncClient, Response
+
+from devolo_plc_api.device_api.deviceapi import DeviceApi
 
 try:
     from unittest.mock import AsyncMock
@@ -18,10 +19,7 @@ def device_api(request, feature):
          patch("asyncio.get_running_loop", asyncio.new_event_loop):
         asyncio.new_event_loop()
         request.cls.device_info["_dvl-deviceapi._tcp.local."]["Features"] = feature
-        yield DeviceApi(request.cls.ip,
-                        AsyncClient(),
-                        request.cls.device_info["_dvl-deviceapi._tcp.local."],
-                        "password")
+        yield DeviceApi(request.cls.ip, AsyncClient(), request.cls.device_info["_dvl-deviceapi._tcp.local."], "password")
 
 
 @pytest.fixture()

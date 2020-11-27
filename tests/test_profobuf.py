@@ -7,6 +7,7 @@ from devolo_plc_api.exceptions.device import DevicePasswordProtected
 
 
 class TestProtobuf:
+
     def test_attribute_error(self, mock_protobuf):
         with pytest.raises(AttributeError):
             mock_protobuf.test()

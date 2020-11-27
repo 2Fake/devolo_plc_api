@@ -2,8 +2,9 @@ import asyncio
 from unittest.mock import patch
 
 import pytest
-from devolo_plc_api.plcnet_api.plcnetapi import PlcNetApi
 from httpx import AsyncClient, Response
+
+from devolo_plc_api.plcnet_api.plcnetapi import PlcNetApi
 
 try:
     from unittest.mock import AsyncMock
@@ -17,9 +18,7 @@ def plcnet_api(request):
          patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=AsyncMock(return_value=Response)), \
          patch("asyncio.get_running_loop", asyncio.new_event_loop):
         asyncio.new_event_loop()
-        yield PlcNetApi(request.cls.ip,
-                        AsyncClient(),
-                        request.cls.device_info["_dvl-plcnetapi._tcp.local."])
+        yield PlcNetApi(request.cls.ip, AsyncClient(), request.cls.device_info["_dvl-plcnetapi._tcp.local."])
 
 
 @pytest.fixture()

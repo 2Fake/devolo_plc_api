@@ -36,7 +36,10 @@ class Device:
         self.device = None
         self.plcnet = None
 
-        self._info: Dict = {"_dvl-plcnetapi._tcp.local.": {}, "_dvl-deviceapi._tcp.local.": {}}
+        self._info: Dict = {
+            "_dvl-plcnetapi._tcp.local.": {},
+            "_dvl-deviceapi._tcp.local.": {},
+        }
         self._logger = logging.getLogger(self.__class__.__name__)
         self._zeroconf_instance = zeroconf_instance
 
@@ -77,10 +80,7 @@ class Device:
         self.mt_number = self._info[service_type].get("MT", 0)
         self.product = self._info[service_type].get("Product", "")
 
-        self.device = DeviceApi(ip=self.ip,
-                                session=self._session,
-                                info=self._info[service_type],
-                                password=self.password)
+        self.device = DeviceApi(ip=self.ip, session=self._session, info=self._info[service_type], password=self.password)
 
     async def _get_plcnet_info(self):
         """ Get information from the devolo PlcNet API. """
@@ -93,9 +93,7 @@ class Device:
         self.mac = self._info[service_type]['PlcMacAddress']
         self.technology = self._info[service_type].get("PlcTechnology", "")
 
-        self.plcnet = PlcNetApi(ip=self.ip,
-                                session=self._session,
-                                info=self._info[service_type])
+        self.plcnet = PlcNetApi(ip=self.ip, session=self._session, info=self._info[service_type])
 
     async def _get_zeroconf_info(self, service_type: str):
         """ Browse for the desired mDNS service types and query them. """

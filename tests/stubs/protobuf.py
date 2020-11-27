@@ -11,6 +11,7 @@ with file.open("r") as fh:
 
 
 class StubProtobuf(Protobuf):
+
     def __init__(self):
         self._logger = logging.getLogger("ProtobufMock")
         self._loop = asyncio.new_event_loop()

@@ -17,10 +17,7 @@ class PlcNetApi(Protobuf):
     :param info: Information collected from the mDNS query
     """
 
-    def __init__(self,
-                 ip: str,
-                 session: AsyncClient,
-                 info: Dict):
+    def __init__(self, ip: str, session: AsyncClient, info: Dict):
         super().__init__()
         self._ip = ip
         self._mac = info['PlcMacAddress']

@@ -10,6 +10,7 @@ with file.open("r") as fh:
 
 
 class Zeroconf:
+
     def get_service_info(self, service_type, name):
         service_info = ServiceInfo(service_type, name)
         service_info.addresses = [socket.inet_aton(test_data['ip'])]
