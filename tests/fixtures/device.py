@@ -14,7 +14,7 @@ def mock_device(request):
     device._info = deepcopy(request.cls.device_info)
     device._session = None
     device._zeroconf = None
-    yield device
+    return device
 
 
 @pytest.fixture()
@@ -26,4 +26,4 @@ def mock_service_browser(mocker):
 @pytest.fixture()
 def mock_zeroconf(mocker):
     mocker.patch("zeroconf.Zeroconf.get_service_info", MockZeroconf.get_service_info)
-    yield Zeroconf()
+    return Zeroconf()

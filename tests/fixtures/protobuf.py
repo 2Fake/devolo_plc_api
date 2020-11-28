@@ -10,8 +10,7 @@ from ..stubs.protobuf import StubProtobuf
 
 @pytest.fixture()
 def mock_protobuf():
-    protobuf = StubProtobuf()
-    yield protobuf
+    return StubProtobuf()
 
 
 @pytest.fixture()
