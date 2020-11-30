@@ -19,14 +19,16 @@ class PlcNetApi(Protobuf):
 
     def __init__(self, ip: str, session: AsyncClient, info: Dict):
         super().__init__()
+
         self._ip = ip
         self._mac = info['PlcMacAddress']
         self._path = info['Path']
         self._port = info['Port']
         self._session = session
-        self._version = info['Version']
         self._user = ""  # PLC API is not password protected.
-        self._password = ""  # PLC API is not password protected.
+        self._version = info['Version']
+
+        self.password = ""  # PLC API is not password protected.
 
     async def async_get_network_overview(self) -> dict:
         """

@@ -18,17 +18,15 @@ class Device:
     Representing object for your devolo PLC device. It stores all properties and functionalities discovered during setup.
 
     :param ip: IP address of the device to communicate with.
-    :param password: Password of the Web-UI, if it is protected
     :param zeroconf_instance: Zeroconf instance to be potentially reused.
     """
 
-    def __init__(self, ip: str, password: Optional[str] = None, zeroconf_instance: Optional[Zeroconf] = None):
+    def __init__(self, ip: str, zeroconf_instance: Optional[Zeroconf] = None):
         self.firmware_date = date.fromtimestamp(0)
         self.firmware_version = ""
         self.ip = ip
         self.mac = ""
         self.mt_number = 0
-        self.password = password
         self.product = ""
         self.technology = ""
         self.serial_number = 0
@@ -41,6 +39,7 @@ class Device:
             "_dvl-deviceapi._tcp.local.": {},
         }
         self._logger = logging.getLogger(self.__class__.__name__)
+        self._password = ""
         self._zeroconf_instance = zeroconf_instance
 
         self._loop: asyncio.AbstractEventLoop
@@ -66,6 +65,17 @@ class Device:
         self._loop.run_until_complete(self.__aexit__(exc_type, exc_val, exc_tb))
         self._loop.close()
 
+    @property
+    def password(self):
+        """ The currently set device password. """
+        return self._password
+
+    @password.setter
+    def password(self, password):
+        """ Change the currently set device password. """
+        self._password = password
+        self.device.password = password
+
     async def _get_device_info(self):
         """ Get information from the devolo Device API. """
         service_type = "_dvl-deviceapi._tcp.local."
@@ -80,7 +90,7 @@ class Device:
         self.mt_number = self._info[service_type].get("MT", 0)
         self.product = self._info[service_type].get("Product", "")
 
-        self.device = DeviceApi(ip=self.ip, session=self._session, info=self._info[service_type], password=self.password)
+        self.device = DeviceApi(ip=self.ip, session=self._session, info=self._info[service_type])
 
     async def _get_plcnet_info(self):
         """ Get information from the devolo PlcNet API. """

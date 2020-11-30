@@ -19,7 +19,7 @@ def device_api(request, feature):
          patch("asyncio.get_running_loop", asyncio.new_event_loop):
         asyncio.new_event_loop()
         request.cls.device_info["_dvl-deviceapi._tcp.local."]["Features"] = feature
-        yield DeviceApi(request.cls.ip, AsyncClient(), request.cls.device_info["_dvl-deviceapi._tcp.local."], "password")
+        yield DeviceApi(request.cls.ip, AsyncClient(), request.cls.device_info["_dvl-deviceapi._tcp.local."])
 
 
 @pytest.fixture()

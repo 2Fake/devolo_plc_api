@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict
 
 from httpx import AsyncClient
 
@@ -16,21 +16,21 @@ class DeviceApi(Protobuf):
     :param ip: IP address of the device to communicate with
     :param session: HTTP client session
     :param info: Information collected from the mDNS query
-    :param password: Password of the device
     """
 
-    def __init__(self, ip: str, session: AsyncClient, info: Dict, password: Optional[str]):
+    def __init__(self, ip: str, session: AsyncClient, info: Dict):
         super().__init__()
+
         self._ip = ip
+        self._path = info['Path']
         self._port = info['Port']
         self._session = session
-        self._path = info['Path']
-        self._version = info['Version']
         self._user = "devolo"
-        self._password = password or ""
+        self._version = info['Version']
 
         features = info.get("Features", "")
         self.features = features.split(",") if features else ['reset', 'update', 'led', 'intmtg']
+        self.password = ""
 
     def _feature(feature: str):  # type: ignore  # pylint: disable=no-self-argument
         """ Decorator to filter unsupported features before querying the device. """

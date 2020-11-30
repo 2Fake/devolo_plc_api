@@ -20,4 +20,5 @@ class StubProtobuf(Protobuf):
         self._path = test_data["device_info"]["_dvl-plcnetapi._tcp.local."]["Path"]
         self._version = test_data["device_info"]["_dvl-plcnetapi._tcp.local."]["Version"]
         self._user = "user"
-        self._password = "password"
+
+        self.password = "password"
