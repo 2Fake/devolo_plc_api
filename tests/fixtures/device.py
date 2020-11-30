@@ -1,9 +1,11 @@
 from copy import deepcopy
 
 import pytest
+from zeroconf import Zeroconf
 
 from devolo_plc_api.device import Device
-from ..mocks.mock_zeroconf import Zeroconf
+
+from ..mocks.mock_zeroconf import MockZeroconf
 
 
 @pytest.fixture()
@@ -23,4 +25,5 @@ def mock_service_browser(mocker):
 
 @pytest.fixture()
 def mock_zeroconf(mocker):
-    mocker.patch("zeroconf.Zeroconf.get_service_info", Zeroconf.get_service_info)
+    mocker.patch("zeroconf.Zeroconf.get_service_info", MockZeroconf.get_service_info)
+    return Zeroconf()

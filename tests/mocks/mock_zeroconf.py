@@ -9,7 +9,7 @@ with file.open("r") as fh:
     test_data = json.load(fh)
 
 
-class Zeroconf:
+class MockZeroconf:
 
     def get_service_info(self, service_type, name):
         service_info = ServiceInfo(service_type, name)
