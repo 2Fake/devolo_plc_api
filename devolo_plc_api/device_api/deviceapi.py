@@ -22,14 +22,14 @@ class DeviceApi(Protobuf):
         super().__init__()
 
         self._ip = ip
-        self._path = info['Path']
-        self._port = info['Port']
+        self._path = info["properties"]["Path"]
+        self._port = info["port"]
         self._session = session
         self._user = "devolo"
-        self._version = info['Version']
+        self._version = info["properties"]["Version"]
 
-        features = info.get("Features", "")
-        self.features = features.split(",") if features else ['reset', 'update', 'led', 'intmtg']
+        features = info["properties"].get("Features", "")
+        self.features = features.split(",") if features else ["reset", "update", "led", "intmtg"]
         self.password = ""
 
     def _feature(feature: str):  # type: ignore  # pylint: disable=no-self-argument

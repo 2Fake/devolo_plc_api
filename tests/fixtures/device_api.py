@@ -18,7 +18,7 @@ def device_api(request, feature):
          patch("devolo_plc_api.clients.protobuf.Protobuf._async_post", new=AsyncMock(return_value=Response)), \
          patch("asyncio.get_running_loop", asyncio.new_event_loop):
         asyncio.new_event_loop()
-        request.cls.device_info["_dvl-deviceapi._tcp.local."]["Features"] = feature
+        request.cls.device_info["_dvl-deviceapi._tcp.local."]["properties"]["Features"] = feature
         yield DeviceApi(request.cls.ip, AsyncClient(), request.cls.device_info["_dvl-deviceapi._tcp.local."])
 
 

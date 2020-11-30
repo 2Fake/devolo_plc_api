@@ -21,12 +21,12 @@ class PlcNetApi(Protobuf):
         super().__init__()
 
         self._ip = ip
-        self._mac = info['PlcMacAddress']
-        self._path = info['Path']
-        self._port = info['Port']
+        self._mac = info["properties"]["PlcMacAddress"]
+        self._path = info["properties"]["Path"]
+        self._port = info["port"]
         self._session = session
         self._user = ""  # PLC API is not password protected.
-        self._version = info['Version']
+        self._version = info["properties"]["Version"]
 
         self.password = ""  # PLC API is not password protected.
 

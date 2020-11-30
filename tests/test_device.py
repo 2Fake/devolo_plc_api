@@ -10,9 +10,12 @@ try:
 except ImportError:
     from asynctest import CoroutineMock as AsyncMock
 
+from devolo_plc_api.device import EMPTY_INFO
 from devolo_plc_api.device_api.deviceapi import DeviceApi
 from devolo_plc_api.exceptions.device import DeviceNotFound
 from devolo_plc_api.plcnet_api.plcnetapi import PlcNetApi
+
+from .mocks.mock_devices import state_change
 
 
 class TestDevice:
@@ -23,11 +26,11 @@ class TestDevice:
         with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=AsyncMock()):
             device_info = self.device_info['_dvl-deviceapi._tcp.local.']
             await mock_device._get_device_info()
-            assert mock_device.firmware_date == date.fromisoformat(device_info['FirmwareDate'])
-            assert mock_device.firmware_version == device_info['FirmwareVersion']
-            assert mock_device.serial_number == device_info['SN']
-            assert mock_device.mt_number == device_info['MT']
-            assert mock_device.product == device_info['Product']
+            assert mock_device.firmware_date == date.fromisoformat(device_info["properties"]["FirmwareDate"])
+            assert mock_device.firmware_version == device_info["properties"]["FirmwareVersion"]
+            assert mock_device.serial_number == device_info["properties"]["SN"]
+            assert mock_device.mt_number == device_info["properties"]["MT"]
+            assert mock_device.product == device_info["properties"]["Product"]
             assert type(mock_device.device) == DeviceApi
 
     @pytest.mark.asyncio
@@ -42,10 +45,10 @@ class TestDevice:
     @pytest.mark.usefixtures("mock_plcnet_api")
     async def test__get_plcnet_info(self, mock_device):
         with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=AsyncMock()):
-            device_info = self.device_info['_dvl-plcnetapi._tcp.local.']
+            device_info = self.device_info["_dvl-plcnetapi._tcp.local."]
             await mock_device._get_plcnet_info()
-            assert mock_device.mac == device_info['PlcMacAddress']
-            assert mock_device.technology == device_info['PlcTechnology']
+            assert mock_device.mac == device_info["properties"]["PlcMacAddress"]
+            assert mock_device.technology == device_info["properties"]["PlcTechnology"]
             assert type(mock_device.plcnet) == PlcNetApi
 
     @pytest.mark.asyncio
@@ -59,11 +62,18 @@ class TestDevice:
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_service_browser")
     async def test__get_zeroconf_info(self, mocker, mock_device):
+        with patch("devolo_plc_api.device.Device._state_change", state_change):
+            mock_device._info["_dvl-plcnetapi._tcp.local."] = EMPTY_INFO
+            spy_cancel = mocker.spy(ServiceBrowser, "cancel")
+            await mock_device._get_zeroconf_info("_dvl-plcnetapi._tcp.local.")
+            assert spy_cancel.call_count == 1
+
+    @pytest.mark.asyncio
+    @pytest.mark.usefixtures("mock_service_browser")
+    async def test__get_zeroconf_info_early_return(self, mocker, mock_device):
         spy_cancel = mocker.spy(ServiceBrowser, "cancel")
-        spy_sleep = mocker.spy(asyncio, "sleep")
         await mock_device._get_zeroconf_info("_dvl-plcnetapi._tcp.local.")
-        assert spy_cancel.call_count == 1
-        assert spy_sleep.call_count == 0
+        assert spy_cancel.call_count == 0
 
     @pytest.mark.asyncio
     async def test__setup_device(self, mocker, mock_device):
@@ -88,7 +98,7 @@ class TestDevice:
     def test__state_change_added(self, mock_device, mock_zeroconf):
         service_type = "_dvl-plcnetapi._tcp.local."
         mock_device._state_change(mock_zeroconf, service_type, service_type, ServiceStateChange.Added)
-        assert mock_device._info[service_type]['new'] == "value"
+        assert mock_device._info[service_type]["properties"]["new"] == "value"
 
     @pytest.mark.asyncio
     def test__state_change_removed(self, mock_device, mock_zeroconf):

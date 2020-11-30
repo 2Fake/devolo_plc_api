@@ -5,7 +5,7 @@ from zeroconf import Zeroconf
 
 from devolo_plc_api.device import Device
 
-from ..mocks.mock_zeroconf import MockZeroconf
+from ..mocks.mock_zeroconf import MockServiceBrowser, MockZeroconf
 
 
 @pytest.fixture()
@@ -19,7 +19,7 @@ def mock_device(request):
 
 @pytest.fixture()
 def mock_service_browser(mocker):
-    mocker.patch("zeroconf.ServiceBrowser.__init__", return_value=None)
+    mocker.patch("zeroconf.ServiceBrowser.__init__", MockServiceBrowser.__init__)
     mocker.patch("zeroconf.ServiceBrowser.cancel", return_value=None)
 
 

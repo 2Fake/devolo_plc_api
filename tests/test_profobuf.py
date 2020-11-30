@@ -14,8 +14,8 @@ class TestProtobuf:
 
     def test_url(self, request, mock_protobuf):
         ip = request.cls.ip
-        path = request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Path']
-        version = request.cls.device_info['_dvl-plcnetapi._tcp.local.']['Version']
+        path = request.cls.device_info["_dvl-plcnetapi._tcp.local."]["properties"]["Path"]
+        version = request.cls.device_info["_dvl-plcnetapi._tcp.local."]["properties"]["Version"]
         assert mock_protobuf.url == f"http://{ip}:14791/{path}/{version}/"
 
     @pytest.mark.asyncio
