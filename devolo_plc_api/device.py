@@ -148,7 +148,7 @@ class Device:
             return  # Early return, if device info already exist
 
         self._logger.debug("Browsing for %s", service_type)
-        browser = ServiceBrowser(self._zeroconf, service_type, [self._state_change])
+        browser = ServiceBrowser(self._zeroconf, service_type, [self._state_change], addr=self.ip)
         while not self._info[service_type]["properties"]:
             await asyncio.sleep(0.1)
         browser.cancel()
@@ -156,8 +156,7 @@ class Device:
     def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange):
         """ Evaluate the query result. """
         service_info = zeroconf.get_service_info(service_type, name)
-        if service_info and state_change is ServiceStateChange.Added and \
-                self.ip in [socket.inet_ntoa(address) for address in service_info.addresses]:
+        if state_change is ServiceStateChange.Added:
             self._logger.debug("Adding service info of %s", service_type)
             self._info[service_type] = self.info_from_service(service_info)
 

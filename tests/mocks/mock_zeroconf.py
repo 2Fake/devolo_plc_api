@@ -20,5 +20,5 @@ class MockZeroconf:
 
 class MockServiceBrowser:
 
-    def __init__(self, zc, st, sc):
+    def __init__(self, zc, st, sc, addr):
         sc[0]()
