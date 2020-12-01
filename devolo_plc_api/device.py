@@ -40,6 +40,12 @@ class Device:
         self._logger = logging.getLogger(self.__class__.__name__)
         self._zeroconf_instance = zeroconf_instance
 
+    async def connect(self):
+        return await self.__aenter__()
+
+    async def disconnect(self):
+        await self.__aexit__()
+
     async def __aenter__(self):
         self._session = httpx.AsyncClient()
         self._zeroconf = self._zeroconf_instance or Zeroconf()

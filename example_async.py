@@ -121,6 +121,12 @@ async def run():
         # Set the user device name. If the name was changed successfully, True is returned, otherwise False.
         print("success" if await dpa.plcnet.async_set_user_device_name(name="New name") else "failed")
 
+async def without_context_manager():
+    dpa = Device(ip=IP, password=PASSWORD)
+    await dpa.connect()
+    print(await dpa.device.async_get_led_setting())
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    # asyncio.run(run())
+    asyncio.run(without_context_manager())
+    
