@@ -38,5 +38,5 @@ def discover_network():
     browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [add])
     time.sleep(3)
     browser.cancel()
-    [device.connect() for device in devices.values()]
+    [device.connect() for device in devices.values()]  # pylint: disable=expression-not-assigned
     return devices

@@ -1,7 +1,6 @@
 import asyncio
 import ipaddress
 import logging
-import socket
 import struct
 from datetime import date
 from typing import Dict, Optional
@@ -145,7 +144,7 @@ class Device:
     async def _get_zeroconf_info(self, service_type: str):
         """ Browse for the desired mDNS service types and query them. """
         if self._info[service_type]["properties"]:
-            return  # Early return, if device info already exist
+            return  # No need to continue, if device info already exist
 
         self._logger.debug("Browsing for %s", service_type)
         browser = ServiceBrowser(self._zeroconf, service_type, [self._state_change], addr=self.ip)
@@ -165,7 +164,7 @@ class Device:
         """Return prepared info from mDNS entries."""
         properties = {}
         if not service_info.addresses:
-            return None
+            return None  # No need to continue, if there is no IP address to contact the device
 
         total_length = len(service_info.text)
         offset = 0
