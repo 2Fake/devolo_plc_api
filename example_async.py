@@ -125,6 +125,7 @@ async def without_context_manager():
     dpa = Device(ip=IP, password=PASSWORD)
     await dpa.connect()
     print(await dpa.device.async_get_led_setting())
+    await dpa.disconnect()
 
 if __name__ == "__main__":
     # asyncio.run(run())

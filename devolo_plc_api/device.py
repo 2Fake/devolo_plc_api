@@ -41,22 +41,22 @@ class Device:
         self._zeroconf_instance = zeroconf_instance
 
     async def connect(self):
-        return await self.__aenter__()
-
-    async def disconnect(self):
-        await self.__aexit__()
-
-    async def __aenter__(self):
         self._session = httpx.AsyncClient()
         self._zeroconf = self._zeroconf_instance or Zeroconf()
         loop = asyncio.get_running_loop()
         await loop.create_task(self._gather_apis())
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def disconnect(self):
         if not self._zeroconf_instance:
             self._zeroconf.close()
         await self._session.aclose()
+
+    async def __aenter__(self):
+        return await self.connect()
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.disconnect()
 
     def __enter__(self):
         self._session = httpx.Client()
