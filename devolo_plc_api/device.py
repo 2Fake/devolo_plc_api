@@ -6,7 +6,7 @@ from datetime import date
 from typing import Dict, Optional
 
 import httpx
-from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
+from zeroconf import ServiceBrowser, ServiceInfo, ServiceStateChange, Zeroconf
 
 from .device_api.deviceapi import DeviceApi
 from .exceptions.device import DeviceNotFound
@@ -155,12 +155,16 @@ class Device:
     def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange):
         """ Evaluate the query result. """
         service_info = zeroconf.get_service_info(service_type, name)
+
+        if service_info is None:
+            return  # No need to continue, if there are no service information
+
         if state_change is ServiceStateChange.Added:
             self._logger.debug("Adding service info of %s", service_type)
             self._info[service_type] = self.info_from_service(service_info)
 
     @staticmethod
-    def info_from_service(service_info):
+    def info_from_service(service_info: ServiceInfo) -> Optional[Dict]:
         """Return prepared info from mDNS entries."""
         properties = {}
         if not service_info.addresses:
