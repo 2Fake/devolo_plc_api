@@ -1,4 +1,5 @@
 from copy import deepcopy
+from unittest.mock import Mock
 
 import pytest
 from zeroconf import Zeroconf
@@ -9,9 +10,11 @@ from ..mocks.mock_zeroconf import MockServiceBrowser, MockZeroconf
 
 
 @pytest.fixture()
-def mock_device(request):
+def mock_device(mocker, request):
     device = Device(ip=request.cls.ip)
     device._info = deepcopy(request.cls.device_info)
+    device._loop = Mock()
+    device._loop.is_running = lambda: False
     device._session = None
     device._zeroconf = None
     return device

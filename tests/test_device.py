@@ -76,23 +76,23 @@ class TestDevice:
         assert spy_cancel.call_count == 0
 
     @pytest.mark.asyncio
-    async def test__setup_device(self, mocker, mock_device):
+    async def test_async_connect(self, mocker, mock_device):
         with patch("devolo_plc_api.device.Device._get_device_info", new=AsyncMock()), \
              patch("devolo_plc_api.device.Device._get_plcnet_info", new=AsyncMock()):
             spy_device_info = mocker.spy(mock_device, "_get_device_info")
             spy_plcnet_info = mocker.spy(mock_device, "_get_plcnet_info")
             mock_device.device = object
             mock_device.plcnet = object
-            await mock_device._setup_device()
+            await mock_device.async_connect()
             assert spy_device_info.call_count == 1
             assert spy_plcnet_info.call_count == 1
 
     @pytest.mark.asyncio
-    async def test__setup_device_not_found(self, mock_device):
+    async def test_async_connect_not_found(self, mock_device):
         with patch("devolo_plc_api.device.Device._get_device_info", new=AsyncMock()), \
              patch("devolo_plc_api.device.Device._get_plcnet_info", new=AsyncMock()), \
              pytest.raises(DeviceNotFound):
-            await mock_device._setup_device()
+            await mock_device.async_connect()
 
     @pytest.mark.asyncio
     def test__state_change_added(self, mock_device, mock_zeroconf):

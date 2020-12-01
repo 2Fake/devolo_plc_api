@@ -1,4 +1,5 @@
 import asyncio
+import ipaddress
 import logging
 import socket
 import struct
@@ -51,29 +52,29 @@ class Device:
         self._logger = logging.getLogger(self.__class__.__name__)
         self._password = ""
         self._zeroconf_instance = zeroconf_instance
+        logging.captureWarnings(True)
 
         self._loop: asyncio.AbstractEventLoop
         self._session: httpx.AsyncClient
         self._zeroconf: Zeroconf
 
+    def __del__(self):
+        if self._loop.is_running():
+            self._logger.warning("Please disconnect properly from the device.")
+
     async def __aenter__(self):
-        self._loop = asyncio.get_running_loop()
-        await self._setup_device()
+        await self.async_connect()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        if not self._zeroconf_instance:
-            self._zeroconf.close()
-        await self._session.aclose()
+        await self.async_disconnect()
 
     def __enter__(self):
-        self._loop = asyncio.new_event_loop()
-        self._loop.run_until_complete(self._setup_device())
+        self.connect()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self._loop.run_until_complete(self.__aexit__(exc_type, exc_val, exc_tb))
-        self._loop.close()
+        self.disconnect()
 
     @property
     def password(self) -> str:
@@ -86,6 +87,31 @@ class Device:
         self._password = password
         if self.device:
             self.device.password = password
+
+    async def async_connect(self):
+        """ Connect to a device asynchronous. """
+        self._loop = asyncio.get_running_loop()
+        self._session = httpx.AsyncClient()
+        self._zeroconf = self._zeroconf_instance or Zeroconf()
+        await asyncio.gather(self._get_device_info(), self._get_plcnet_info())
+        if not self.device and not self.plcnet:
+            raise DeviceNotFound(f"The device {self.ip} did not answer.")
+
+    def connect(self):
+        """ Connect to a device synchronous. """
+        self._loop = asyncio.new_event_loop()
+        self._loop.run_until_complete(self.async_connect())
+
+    async def async_disconnect(self):
+        """ Disconnect from a device asynchronous. """
+        if not self._zeroconf_instance:
+            self._zeroconf.close()
+        await self._session.aclose()
+
+    def disconnect(self):
+        """ Disconnect from a device asynchronous. """
+        self._loop.run_until_complete(self.async_disconnect())
+        self._loop.close()
 
     async def _get_device_info(self):
         """ Get information from the devolo Device API. """
@@ -127,28 +153,33 @@ class Device:
             await asyncio.sleep(0.1)
         browser.cancel()
 
-    async def _setup_device(self):
-        """ Setup device. """
-        self._session = httpx.AsyncClient()
-        self._zeroconf = self._zeroconf_instance or Zeroconf()
-        await asyncio.gather(self._get_device_info(), self._get_plcnet_info())
-        if not self.device and not self.plcnet:
-            raise DeviceNotFound(f"The device {self.ip} did not answer.")
-
     def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange):
         """ Evaluate the query result. """
         service_info = zeroconf.get_service_info(service_type, name)
         if service_info and state_change is ServiceStateChange.Added and \
                 self.ip in [socket.inet_ntoa(address) for address in service_info.addresses]:
             self._logger.debug("Adding service info of %s", service_type)
+            self._info[service_type] = self.info_from_service(service_info)
 
-            self._info[service_type]["port"] = service_info.port
+    @staticmethod
+    def info_from_service(service_info):
+        """Return prepared info from mDNS entries."""
+        properties = {}
+        if not service_info.addresses:
+            return None
 
-            # The answer is a byte string, that concatenates key-value pairs with their length as two byte hex value.
-            total_length = len(service_info.text)
-            offset = 0
-            while offset < total_length:
-                parsed_length, = struct.unpack_from("!B", service_info.text, offset)
-                key_value = service_info.text[offset + 1:offset + 1 + parsed_length].decode("UTF-8").split("=")
-                self._info[service_type]["properties"][key_value[0]] = key_value[1]
-                offset += parsed_length + 1
+        total_length = len(service_info.text)
+        offset = 0
+        while offset < total_length:
+            parsed_length, = struct.unpack_from("!B", service_info.text, offset)
+            key_value = service_info.text[offset + 1:offset + 1 + parsed_length].decode("UTF-8").split("=")
+            properties[key_value[0]] = key_value[1]
+            offset += parsed_length + 1
+
+        address = service_info.addresses[0]
+
+        return {
+            "address": str(ipaddress.ip_address(address)),
+            "port": service_info.port,
+            "properties": properties,
+        }
