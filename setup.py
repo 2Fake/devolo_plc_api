@@ -10,6 +10,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 
+print(find_packages(exclude=("tests*",)))
 # Create post develop command class for hooking into the python setup process
 # This command will run after dependencies are installed
 class PostDevelopCommand(develop):
