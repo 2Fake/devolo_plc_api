@@ -32,7 +32,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/2Fake/devolo_plc_api",
     packages=find_packages(exclude=("tests*",
-                                   )),
+                                    )),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
