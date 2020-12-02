@@ -11,6 +11,11 @@ _devices: Dict[str,
 
 
 async def async_discover_network() -> Dict[str, Device]:
+    """
+    Discover all devices that expose the devolo device API via mDNS asynchronous.
+
+    :return: Devices accessible via serial number.
+    """
     browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [_add])
     await asyncio.sleep(3)
     browser.cancel()
@@ -19,6 +24,11 @@ async def async_discover_network() -> Dict[str, Device]:
 
 
 def discover_network() -> Dict[str, Device]:
+    """
+    Discover devices that expose the devolo device API via mDNS synchronous.
+
+    :return: Devices accessible via serial number.
+    """
     browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [_add])
     time.sleep(3)
     browser.cancel()

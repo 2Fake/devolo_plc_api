@@ -165,10 +165,10 @@ class Device:
 
     @staticmethod
     def info_from_service(service_info: ServiceInfo) -> Optional[Dict]:
-        """Return prepared info from mDNS entries."""
+        """ Return prepared info from mDNS entries. """
         properties = {}
         if not service_info.addresses:
-            return  # No need to continue, if there is no IP address to contact the device
+            return None  # No need to continue, if there is no IP address to contact the device
 
         total_length = len(service_info.text)
         offset = 0
