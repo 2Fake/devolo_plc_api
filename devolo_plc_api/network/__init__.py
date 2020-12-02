@@ -22,7 +22,8 @@ def discover_network() -> Dict[str, Device]:
     browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [_add])
     time.sleep(3)
     browser.cancel()
-    [device.connect() for device in _devices.values()]  # pylint: disable=expression-not-assigned
+    for device in _devices.values():
+        device.connect()
     return _devices
 
 

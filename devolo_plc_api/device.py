@@ -168,7 +168,7 @@ class Device:
         """Return prepared info from mDNS entries."""
         properties = {}
         if not service_info.addresses:
-            return None  # No need to continue, if there is no IP address to contact the device
+            return  # No need to continue, if there is no IP address to contact the device
 
         total_length = len(service_info.text)
         offset = 0

@@ -73,7 +73,7 @@ devices = await async_discover_network()
 await asyncio.gather(*[device.async_disconnect() for device in devices.values()])
 ```
 
-Or in a synchronious setup:
+Or in a synchronous setup:
 
 ```python
 from devolo_plc_api.network import discover_network
