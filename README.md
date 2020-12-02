@@ -52,15 +52,36 @@ cd devolo_plc_api
 python setup.py install
 ```
 
-If you want to run out tests, change to the tests directory and start pytest via setup.py.
+If you want to run out tests, install the extra requirements and start pytest.
 
 ```bash
-python setup.py test
+pip install -e .[test]
+pytest
 ```
 
 ## Usage
 
-All features we currently support are shown in our examples. If you want to use the package asynchronously, please check [example_async.py](https://github.com/2Fake/devolo_plc_api/blob/master/example_async.py). If you want to use it synchronously, please check [example_sync.py](https://github.com/2Fake/devolo_plc_api/blob/master/example_sync.py).
+All features we currently support on device basis are shown in our examples. If you want to use the package asynchronously, please check [example_async.py](https://github.com/2Fake/devolo_plc_api/blob/master/example_async.py). If you want to use it synchronously, please check [example_sync.py](https://github.com/2Fake/devolo_plc_api/blob/master/example_sync.py).
+
+If you don't know the IP addresses of your devices, you can discover them. You will get a dictionary with the device's serial number as key. The connections to the devices will be already established, but you will have to take about disconnecting.
+
+```python
+from devolo_plc_api.network import async_discover_network
+
+devices = await async_discover_network()
+# Do your magic
+await asyncio.gather(*[device.async_disconnect() for device in devices.values()])
+```
+
+Or in a synchronous setup:
+
+```python
+from devolo_plc_api.network import discover_network
+
+devices = discover_network()
+# Do your magic
+[device.disconnect() for device in devices.values()]
+```
 
 ## Supported device
 

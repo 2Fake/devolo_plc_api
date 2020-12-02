@@ -1,6 +1,5 @@
 from devolo_plc_api.device import Device
 
-
 # IP of the device to query
 IP = "192.168.0.10"
 
@@ -10,7 +9,9 @@ PASSWORD = "super_secret"
 
 
 def run():
-    with Device(ip=IP, password=PASSWORD) as dpa:
+    with Device(ip=IP) as dpa:
+        # Set the password
+        dpa.password = PASSWORD
 
         # Get LED settings of the device. The state might be LED_ON or LED_OFF.
         # {'state': 'LED_ON'}
@@ -67,7 +68,6 @@ def run():
 
         # Start WPS push button configuration. If WPS was started successfully, True is returned, otherwise False.
         print("WPS started" if dpa.device.start_wps() else "WPS start failed")
-
 
         # Get PLC network overview with enriched information like firmware version,
         # {'network':

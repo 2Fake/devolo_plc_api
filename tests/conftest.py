@@ -3,13 +3,12 @@ import pathlib
 
 import pytest
 
-
-pytest_plugins = ['tests.fixtures.device',
-                  'tests.fixtures.device_api',
-                  'tests.fixtures.plcnet_api',
-                  'tests.fixtures.protobuf',
-                  ]
-
+pytest_plugins = [
+    'tests.fixtures.device',
+    'tests.fixtures.device_api',
+    'tests.fixtures.plcnet_api',
+    'tests.fixtures.protobuf',
+]
 
 file = pathlib.Path(__file__).parent / "test_data.json"
 with file.open("r") as fh:

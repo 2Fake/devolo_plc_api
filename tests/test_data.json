@@ -1,22 +1,26 @@
 {
     "device_info": {
         "_dvl-deviceapi._tcp.local.": {
-            "FirmwareDate": "2020-06-29",
-            "FirmwareVersion": "5.5.1",
-            "SN": "1234567890123456",
-            "MT": "2730",
-            "Product": "dLAN pro 1200+ WiFi ac",
-            "Path": "1234567890abcdef",
-            "Port": 80,
-            "Version": "v0",
-            "Features": "wifi1"
+            "port": 80,
+            "properties": {
+                "FirmwareDate": "2020-06-29",
+                "FirmwareVersion": "5.5.1",
+                "SN": "1234567890123456",
+                "MT": "2730",
+                "Product": "dLAN pro 1200+ WiFi ac",
+                "Path": "1234567890abcdef",
+                "Version": "v0",
+                "Features": "wifi1"
+            }
         },
         "_dvl-plcnetapi._tcp.local.": {
-            "Path": "1234567890abcdef",
-            "PlcMacAddress": "AABBCCDDEEFF",
-            "PlcTechnology": "hpav",
-            "Port": 80,
-            "Version": "v0"
+            "port": 80,
+            "properties": {
+                "Path": "1234567890abcdef",
+                "PlcMacAddress": "AABBCCDDEEFF",
+                "PlcTechnology": "hpav",
+                "Version": "v0"
+            }
         }
     },
     "ip": "192.168.0.10"
