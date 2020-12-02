@@ -21,8 +21,9 @@ class Protobuf(ABC):
         self._loop = asyncio.get_running_loop()
         self._logger = logging.getLogger(self.__class__.__name__)
 
+        self.password: str
+
         self._ip: str
-        self._password: str
         self._path: str
         self._port: int
         self._session: AsyncClient
@@ -50,7 +51,7 @@ class Protobuf(ABC):
         url = f"{self.url}{sub_url}"
         self._logger.debug("Getting from %s", url)
         try:
-            return await self._session.get(url, auth=DigestAuth(self._user, self._password), timeout=timeout)
+            return await self._session.get(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
         except TypeError:
             raise DevicePasswordProtected("The used password is wrong.") from None
 
@@ -59,7 +60,7 @@ class Protobuf(ABC):
         url = f"{self.url}{sub_url}"
         self._logger.debug("Posting to %s", url)
         try:
-            return await self._session.post(url, auth=DigestAuth(self._user, self._password), content=content, timeout=timeout)
+            return await self._session.post(url, auth=DigestAuth(self._user, self.password), content=content, timeout=timeout)
         except TypeError:
             raise DevicePasswordProtected("The used password is wrong.") from None
 

@@ -11,7 +11,9 @@ PASSWORD = "super_secret"
 
 
 async def run():
-    async with Device(ip=IP, password=PASSWORD) as dpa:
+    async with Device(ip=IP) as dpa:
+        # Set the password
+        dpa.password = PASSWORD
 
         # Get LED settings of the device. The state might be LED_ON or LED_OFF.
         # {'state': 'LED_ON'}

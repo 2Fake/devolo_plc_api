@@ -17,7 +17,8 @@ class StubProtobuf(Protobuf):
         self._loop = asyncio.new_event_loop()
         self._ip = test_data["ip"]
         self._port = 14791
-        self._path = test_data["device_info"]["_dvl-plcnetapi._tcp.local."]["Path"]
-        self._version = test_data["device_info"]["_dvl-plcnetapi._tcp.local."]["Version"]
+        self._path = test_data["device_info"]["_dvl-plcnetapi._tcp.local."]["properties"]["Path"]
+        self._version = test_data["device_info"]["_dvl-plcnetapi._tcp.local."]["properties"]["Version"]
         self._user = "user"
-        self._password = "password"
+
+        self.password = "password"

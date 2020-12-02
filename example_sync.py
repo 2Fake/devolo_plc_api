@@ -9,7 +9,9 @@ PASSWORD = "super_secret"
 
 
 def run():
-    with Device(ip=IP, password=PASSWORD) as dpa:
+    with Device(ip=IP) as dpa:
+        # Set the password
+        dpa.password = PASSWORD
 
         # Get LED settings of the device. The state might be LED_ON or LED_OFF.
         # {'state': 'LED_ON'}
