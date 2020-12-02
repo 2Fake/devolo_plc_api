@@ -4,6 +4,11 @@ from unittest.mock import Mock
 import pytest
 from zeroconf import Zeroconf
 
+try:
+    from unittest.mock import AsyncMock
+except ImportError:
+    from asynctest import CoroutineMock as AsyncMock
+
 from devolo_plc_api.device import Device
 
 from ..mocks.mock_zeroconf import MockServiceBrowser, MockZeroconf
@@ -15,8 +20,10 @@ def mock_device(mocker, request):
     device._info = deepcopy(request.cls.device_info)
     device._loop = Mock()
     device._loop.is_running = lambda: False
-    device._session = None
-    device._zeroconf = None
+    device._session = Mock()
+    device._session.aclose = AsyncMock()
+    device._zeroconf = Mock()
+    device._zeroconf.close = lambda: None
     return device
 
 
