@@ -10,7 +10,6 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 
-print(find_packages(exclude=("tests*",)))
 # Create post develop command class for hooking into the python setup process
 # This command will run after dependencies are installed
 class PostDevelopCommand(develop):
@@ -32,7 +31,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/2Fake/devolo_plc_api",
-    packages=find_packages(exclude=("tests*")),
+    packages=find_packages(exclude=("tests*",)),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
