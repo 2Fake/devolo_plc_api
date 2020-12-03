@@ -34,6 +34,7 @@ class Device:
                  zeroconf_instance: Optional[Zeroconf] = None):
         self.firmware_date = date.fromtimestamp(0)
         self.firmware_version = ""
+        self.hostname = ""
         self.ip = ip
         self.mac = ""
         self.mt_number = 0
@@ -122,9 +123,10 @@ class Device:
 
         self.firmware_date = date.fromisoformat(self._info[service_type]["properties"].get("FirmwareDate", "1970-01-01"))
         self.firmware_version = self._info[service_type]["properties"].get("FirmwareVersion", "")
-        self.serial_number = self._info[service_type]["properties"].get("SN", 0)
+        self.hostname = self._info[service_type].get("hostname", "")
         self.mt_number = self._info[service_type]["properties"].get("MT", 0)
         self.product = self._info[service_type]["properties"].get("Product", "")
+        self.serial_number = self._info[service_type]["properties"]["SN"]
 
         self.device = DeviceApi(ip=self.ip, session=self._session, info=self._info[service_type])
 
@@ -182,6 +184,7 @@ class Device:
 
         return {
             "address": str(ipaddress.ip_address(address)),
+            "hostname": service_info.server,
             "port": service_info.port,
             "properties": properties,
         }
