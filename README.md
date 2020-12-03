@@ -69,6 +69,7 @@ If you don't know the IP addresses of your devices, you can discover them. You w
 from devolo_plc_api.network import async_discover_network
 
 devices = await async_discover_network()
+await asyncio.gather(*[device.async_connect() for device in _devices.values()])
 # Do your magic
 await asyncio.gather(*[device.async_disconnect() for device in devices.values()])
 ```
@@ -79,6 +80,8 @@ Or in a synchronous setup:
 from devolo_plc_api.network import discover_network
 
 devices = discover_network()
+for device in _devices.values():
+        device.connect()
 # Do your magic
 [device.disconnect() for device in devices.values()]
 ```
