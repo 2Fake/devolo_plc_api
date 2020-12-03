@@ -51,6 +51,7 @@ class Device:
         }
         self._logger = logging.getLogger(self.__class__.__name__)
         self._password = ""
+        self._session_instance: Optional[httpx.AsyncClient] = None
         self._zeroconf_instance = zeroconf_instance
         logging.captureWarnings(True)
 
@@ -88,10 +89,15 @@ class Device:
         if self.device:
             self.device.password = password
 
-    async def async_connect(self):
-        """ Connect to a device asynchronous. """
+    async def async_connect(self, session_instance: Optional[httpx.AsyncClient] = None):
+        """
+        Connect to a device asynchronous.
+
+        :param: session_instance: Session client instance to be potentially reused.
+        """
         self._loop = asyncio.get_running_loop()
-        self._session = httpx.AsyncClient()
+        self._session_instance = session_instance
+        self._session = self._session_instance or httpx.AsyncClient()
         self._zeroconf = self._zeroconf_instance or Zeroconf()
         await asyncio.gather(self._get_device_info(), self._get_plcnet_info())
         if not self.device and not self.plcnet:
@@ -106,7 +112,8 @@ class Device:
         """ Disconnect from a device asynchronous. """
         if not self._zeroconf_instance:
             self._zeroconf.close()
-        await self._session.aclose()
+        if not self._session_instance:
+            await self._session.aclose()
 
     def disconnect(self):
         """ Disconnect from a device asynchronous. """

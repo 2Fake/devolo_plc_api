@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - mDNS hostname is now stored in the device object
+- Add possibility to pass in an httpx AsyncClient instance
 
 ### Changed
 
