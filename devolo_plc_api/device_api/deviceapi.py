@@ -22,7 +22,8 @@ class DeviceApi(Protobuf):
         super().__init__()
 
         self._ip = ip
-        self._path = info["properties"]["Path"]
+        # HC gateway has no Path, it has a path.
+        self._path = info["properties"].get("Path") or info["properties"].get("path")
         self._port = info["port"]
         self._session = session
         self._user = "devolo"
