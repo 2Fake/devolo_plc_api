@@ -23,9 +23,7 @@ class TestNetwork:
              patch("asyncio.sleep", new=AsyncMock()), \
              patch("devolo_plc_api.device.Device.async_connect", new=AsyncMock()):
             network._devices = device
-            spy_connect = mocker.spy(Device, "async_connect")
             discovered = await network.async_discover_network()
-            assert spy_connect.call_count == 1
             assert discovered == device
 
     def test_discover_network(self, mocker):
@@ -36,9 +34,7 @@ class TestNetwork:
              patch("time.sleep", new=Mock()), \
              patch("devolo_plc_api.device.Device.connect", new=Mock()):
             network._devices = device
-            spy_connect = mocker.spy(Device, "connect")
             discovered = network.discover_network()
-            assert spy_connect.call_count == 1
             assert discovered == device
 
     def test__add(self, mocker):

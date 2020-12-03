@@ -19,7 +19,6 @@ async def async_discover_network() -> Dict[str, Device]:
     browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [_add])
     await asyncio.sleep(3)
     browser.cancel()
-    await asyncio.gather(*[device.async_connect() for device in _devices.values()])
     return _devices
 
 
@@ -32,8 +31,6 @@ def discover_network() -> Dict[str, Device]:
     browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [_add])
     time.sleep(3)
     browser.cancel()
-    for device in _devices.values():
-        device.connect()
     return _devices
 
 
