@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ** BREAKING**: The discovery function does no longer connect to the device automatically
 
+### Fixed
+
+- Under unfavorable conditions incorrect PLC API data was collected
+
 ## [v0.3.0] - 02.12.2020
 
 ### Added
