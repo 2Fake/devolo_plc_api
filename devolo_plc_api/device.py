@@ -165,7 +165,8 @@ class Device:
         """ Evaluate the query result. """
         service_info = zeroconf.get_service_info(service_type, name)
 
-        if service_info is None:
+
+        if service_info is None or str(ipaddress.ip_address(service_info.addresses[0])) != self.ip:
             return  # No need to continue, if there are no service information
 
         if state_change is ServiceStateChange.Added:
