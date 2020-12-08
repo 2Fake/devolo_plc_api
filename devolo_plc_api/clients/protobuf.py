@@ -8,7 +8,7 @@ from httpx import AsyncClient, DigestAuth, Response
 
 from ..exceptions.device import DevicePasswordProtected
 
-TIMEOUT = 3.0
+TIMEOUT = 5.0
 
 
 class Protobuf(ABC):
