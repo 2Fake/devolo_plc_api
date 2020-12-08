@@ -36,13 +36,15 @@ def discover_network() -> Dict[str, Device]:
 
 def _add(zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange):
     """" Create a device object to each matching device. """
-    if state_change is ServiceStateChange.Added:
-        service_info = zeroconf.get_service_info(service_type, name)
-        if service_info is None:
-            return
+    if state_change is not ServiceStateChange.Added:
+        return
 
-        info = Device.info_from_service(service_info)
-        if info is None or info["properties"]["MT"] in ("2600", "2601"):
-            return  # Don't react on devolo Home Control central units
+    service_info = zeroconf.get_service_info(service_type, name)
+    if service_info is None:
+        return
 
-        _devices[info["properties"]["SN"]] = Device(ip=info["address"], deviceapi=info, zeroconf_instance=zeroconf)
+    info = Device.info_from_service(service_info)
+    if info is None or info["properties"]["MT"] in ("2600", "2601"):
+        return  # Don't react on devolo Home Control central units
+
+    _devices[info["properties"]["SN"]] = Device(ip=info["address"], deviceapi=info, zeroconf_instance=zeroconf)

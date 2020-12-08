@@ -50,6 +50,13 @@ class TestNetwork:
             network._add(Zeroconf(), "_dvl-deviceapi._tcp.local.", "_dvl-deviceapi._tcp.local.", ServiceStateChange.Added)
             assert "1234567890123456" in network._devices
 
+    def test__add_wrong_state(self, mocker):
+        with patch("zeroconf.Zeroconf.get_service_info", return_value="service_info"), \
+             patch("devolo_plc_api.device.Device.info_from_service", return_value=None):
+            spy_device = mocker.spy(Device, "__init__")
+            network._add(Zeroconf(), "_dvl-deviceapi._tcp.local.", "_dvl-deviceapi._tcp.local.", ServiceStateChange.Removed)
+            assert spy_device.call_count == 0
+
     def test__add_no_device(self, mocker):
         with patch("zeroconf.Zeroconf.get_service_info", return_value=None):
             spy_info = mocker.spy(Device, "info_from_service")
