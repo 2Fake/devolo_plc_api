@@ -4,12 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v0.4.0] - 2020/12/08
 
 ### Added
 
 - mDNS hostname is now stored in the device object
 - Add possibility to pass in an httpx AsyncClient instance
+- Ignore devolo Home Control Central Units in discovery function as they offer a device API record but no real device API
 
 ### Changed
 
@@ -19,7 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Under unfavorable conditions incorrect PLC API data was collected
 
-## [v0.3.0] - 02.12.2020
+## [v0.3.0] - 2020/12/02
 
 ### Added
 
@@ -31,7 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - **BREAKING**: The device password must be specified by setting an attribute now
 
-## [v0.2.0] - 14.09.2020
+## [v0.2.0] - 2020/09/14
 
 ### Added
 
@@ -48,7 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Sopping identify device now also works synchroniously
 - Set user device name now also works synchroniously
 
-## [v0.1.0] - 28.08.2020
+## [v0.1.0] - 2020/08/28
 
 ### Added
 
