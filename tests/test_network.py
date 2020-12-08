@@ -23,9 +23,7 @@ class TestNetwork:
              patch("asyncio.sleep", new=AsyncMock()), \
              patch("devolo_plc_api.device.Device.async_connect", new=AsyncMock()):
             network._devices = device
-            spy_connect = mocker.spy(Device, "async_connect")
             discovered = await network.async_discover_network()
-            assert spy_connect.call_count == 1
             assert discovered == device
 
     def test_discover_network(self, mocker):
@@ -36,14 +34,13 @@ class TestNetwork:
              patch("time.sleep", new=Mock()), \
              patch("devolo_plc_api.device.Device.connect", new=Mock()):
             network._devices = device
-            spy_connect = mocker.spy(Device, "connect")
             discovered = network.discover_network()
-            assert spy_connect.call_count == 1
             assert discovered == device
 
     def test__add(self, mocker):
         service_info = {
             "properties": {
+                "MT": "2673",
                 "SN": "1234567890123456"
             },
             "address": "123.123.123.123",
@@ -63,5 +60,16 @@ class TestNetwork:
         with patch("zeroconf.Zeroconf.get_service_info", return_value="service_info"), \
              patch("devolo_plc_api.device.Device.info_from_service", return_value=None):
             spy_device = mocker.spy(Device, "__init__")
+            network._add(Zeroconf(), "_dvl-deviceapi._tcp.local.", "_dvl-deviceapi._tcp.local.", ServiceStateChange.Added)
+            assert spy_device.call_count == 0
+
+    def test__add_hcu(self, mocker):
+        spy_device = mocker.spy(Device, "__init__")
+        with patch("zeroconf.Zeroconf.get_service_info", return_value="service_info"), \
+             patch("devolo_plc_api.device.Device.info_from_service", return_value={"properties": {"MT": "2600"}}):
+            network._add(Zeroconf(), "_dvl-deviceapi._tcp.local.", "_dvl-deviceapi._tcp.local.", ServiceStateChange.Added)
+            assert spy_device.call_count == 0
+        with patch("zeroconf.Zeroconf.get_service_info", return_value="service_info"), \
+             patch("devolo_plc_api.device.Device.info_from_service", return_value={"properties": {"MT": "2601"}}):
             network._add(Zeroconf(), "_dvl-deviceapi._tcp.local.", "_dvl-deviceapi._tcp.local.", ServiceStateChange.Added)
             assert spy_device.call_count == 0

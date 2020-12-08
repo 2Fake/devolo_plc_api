@@ -19,7 +19,6 @@ async def async_discover_network() -> Dict[str, Device]:
     browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [_add])
     await asyncio.sleep(3)
     browser.cancel()
-    await asyncio.gather(*[device.async_connect() for device in _devices.values()])
     return _devices
 
 
@@ -32,8 +31,6 @@ def discover_network() -> Dict[str, Device]:
     browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [_add])
     time.sleep(3)
     browser.cancel()
-    for device in _devices.values():
-        device.connect()
     return _devices
 
 
@@ -45,7 +42,7 @@ def _add(zeroconf: Zeroconf, service_type: str, name: str, state_change: Service
             return
 
         info = Device.info_from_service(service_info)
-        if info is None:
-            return
+        if info is None or info["properties"]["MT"] in ("2600", "2601"):
+            return  # Don't react on devolo Home Control central units
 
         _devices[info["properties"]["SN"]] = Device(ip=info["address"], deviceapi=info, zeroconf_instance=zeroconf)

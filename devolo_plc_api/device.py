@@ -34,6 +34,7 @@ class Device:
                  zeroconf_instance: Optional[Zeroconf] = None):
         self.firmware_date = date.fromtimestamp(0)
         self.firmware_version = ""
+        self.hostname = ""
         self.ip = ip
         self.mac = ""
         self.mt_number = 0
@@ -50,6 +51,7 @@ class Device:
         }
         self._logger = logging.getLogger(self.__class__.__name__)
         self._password = ""
+        self._session_instance: Optional[httpx.AsyncClient] = None
         self._zeroconf_instance = zeroconf_instance
         logging.captureWarnings(True)
 
@@ -87,10 +89,15 @@ class Device:
         if self.device:
             self.device.password = password
 
-    async def async_connect(self):
-        """ Connect to a device asynchronous. """
+    async def async_connect(self, session_instance: Optional[httpx.AsyncClient] = None):
+        """
+        Connect to a device asynchronous.
+
+        :param: session_instance: Session client instance to be potentially reused.
+        """
         self._loop = asyncio.get_running_loop()
-        self._session = httpx.AsyncClient()
+        self._session_instance = session_instance
+        self._session = self._session_instance or httpx.AsyncClient()
         self._zeroconf = self._zeroconf_instance or Zeroconf()
         await asyncio.gather(self._get_device_info(), self._get_plcnet_info())
         if not self.device and not self.plcnet:
@@ -105,7 +112,8 @@ class Device:
         """ Disconnect from a device asynchronous. """
         if not self._zeroconf_instance:
             self._zeroconf.close()
-        await self._session.aclose()
+        if not self._session_instance:
+            await self._session.aclose()
 
     def disconnect(self):
         """ Disconnect from a device asynchronous. """
@@ -122,9 +130,10 @@ class Device:
 
         self.firmware_date = date.fromisoformat(self._info[service_type]["properties"].get("FirmwareDate", "1970-01-01"))
         self.firmware_version = self._info[service_type]["properties"].get("FirmwareVersion", "")
-        self.serial_number = self._info[service_type]["properties"].get("SN", 0)
+        self.hostname = self._info[service_type].get("hostname", "")
         self.mt_number = self._info[service_type]["properties"].get("MT", 0)
         self.product = self._info[service_type]["properties"].get("Product", "")
+        self.serial_number = self._info[service_type]["properties"]["SN"]
 
         self.device = DeviceApi(ip=self.ip, session=self._session, info=self._info[service_type])
 
@@ -156,8 +165,8 @@ class Device:
         """ Evaluate the query result. """
         service_info = zeroconf.get_service_info(service_type, name)
 
-        if service_info is None:
-            return  # No need to continue, if there are no service information
+        if service_info is None or str(ipaddress.ip_address(service_info.addresses[0])) != self.ip:
+            return  # No need to continue, if there are no relevant service information
 
         if state_change is ServiceStateChange.Added:
             self._logger.debug("Adding service info of %s", service_type)
@@ -182,6 +191,7 @@ class Device:
 
         return {
             "address": str(ipaddress.ip_address(address)),
+            "hostname": service_info.server,
             "port": service_info.port,
             "properties": properties,
         }
