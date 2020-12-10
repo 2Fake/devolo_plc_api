@@ -194,7 +194,7 @@ class Device:
                                       session_instance: Optional[httpx.AsyncClient] = None) -> bool:
         """ Validate password asynchronous. """
 
-        async def wifi() -> bool:
+        async def wifi() -> Optional[bool]:
             headers = {
                 "Content-Type": "application/json"
             }
@@ -215,10 +215,11 @@ class Device:
             response = await session.post(f"http://{ip}/ubus", headers=headers, json=payload).json()
             return not bool(response["result"][0])
 
-        async def lan() -> bool:
+        async def lan() -> Optional[bool]:
             return False
 
         session = session_instance or httpx.AsyncClient()
+        password_valid = None
 
         if "wifi1" in features:
             first = wifi
@@ -227,23 +228,20 @@ class Device:
             second = lan
             first = wifi
 
-        try:
-            password_valid = await first()
-        except:
-            password_valid = await second()
+        password_valid = await first() or await second()
 
         if not session_instance:
             await session.aclose()
 
+        if password_valid is None:
+            raise DeviceNotFound
+
         return password_valid
 
     @staticmethod
-    def validate_password(ip: str,
-                          password: str,
-                          features: Dict,
-                          session_instance: Optional[httpx.AsyncClient] = None) -> bool:
+    def validate_password(ip: str, password: str, features: Dict) -> bool:
         """ Validate password synchronous. """
-        return asyncio.run(Device.async_validate_password(ip, password, features, session_instance))
+        return asyncio.run(Device.async_validate_password(ip, password, features))
 
     @staticmethod
     def info_from_service(service_info: ServiceInfo) -> Optional[Dict]:
