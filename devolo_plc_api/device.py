@@ -59,9 +59,34 @@ class Device:
         self._session: httpx.AsyncClient
         self._zeroconf: Zeroconf
 
+    @staticmethod
+    async def async_validate_password(ip_address: str, password: str, device: str = "wifi"):
+        async with httpx.AsyncClient() as client:
+            if device == "wifi":
+                headers = {"Content-Type": "application/json"}
+                json_data = {"username": "root", "password": password, "timeout": 900}
+                payload = {"id": "8df89bc3-29b7-4d7e-9168-1ef1449aecf0",
+                        "jsonrpc": "2.0",
+                        "method": "call",
+                        "params": ["00000000000000000000000000000000",
+                                    "session",
+                                    "login",
+                                    json_data]}
+                r = await client.post(f"http://{ip_address}/ubus", headers=headers, json=payload)
+                return not bool(r.json()["result"][0])
+            elif device == "lan":
+                # LAN device
+                pass
+            else:
+                # Unknown device
+                pass
+
     def __del__(self):
-        if self._loop.is_running():
-            self._logger.warning("Please disconnect properly from the device.")
+        try:
+            if self._loop.is_running():
+                self._logger.warning("Please disconnect properly from the device.")
+        except AttributeError:
+            pass
 
     async def __aenter__(self):
         await self.async_connect()
