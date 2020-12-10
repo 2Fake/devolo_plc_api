@@ -59,28 +59,6 @@ class Device:
         self._session: httpx.AsyncClient
         self._zeroconf: Zeroconf
 
-    @staticmethod
-    async def async_validate_password(ip_address: str, password: str, device: str = "wifi"):
-        async with httpx.AsyncClient() as client:
-            if device == "wifi":
-                headers = {"Content-Type": "application/json"}
-                json_data = {"username": "root", "password": password, "timeout": 900}
-                payload = {"id": "8df89bc3-29b7-4d7e-9168-1ef1449aecf0",
-                        "jsonrpc": "2.0",
-                        "method": "call",
-                        "params": ["00000000000000000000000000000000",
-                                    "session",
-                                    "login",
-                                    json_data]}
-                r = await client.post(f"http://{ip_address}/ubus", headers=headers, json=payload)
-                return not bool(r.json()["result"][0])
-            elif device == "lan":
-                # LAN device
-                pass
-            else:
-                # Unknown device
-                pass
-
     def __del__(self):
         try:
             if self._loop.is_running():
@@ -145,6 +123,18 @@ class Device:
         self._loop.run_until_complete(self.async_disconnect())
         self._loop.close()
 
+    async def async_validate_login(self) -> bool:
+        """ Validate password of a connected device asynchronous. """
+        return await Device.async_validate_password(self.ip, self.password, self.device.features, self._session)
+
+    def validate_login(self) -> bool:
+        """ Validate password of a connected device synchronous. """
+        return self._loop.run_until_complete(
+            Device.async_validate_password(self.ip,
+                                           self.password,
+                                           self.device.features,
+                                           self._session))
+
     async def _get_device_info(self):
         """ Get information from the devolo Device API. """
         service_type = "_dvl-deviceapi._tcp.local."
@@ -196,6 +186,64 @@ class Device:
         if state_change is ServiceStateChange.Added:
             self._logger.debug("Adding service info of %s", service_type)
             self._info[service_type] = self.info_from_service(service_info)
+
+    @staticmethod
+    async def async_validate_password(ip: str,
+                                      password: str,
+                                      features: Dict,
+                                      session_instance: Optional[httpx.AsyncClient] = None) -> bool:
+        """ Validate password asynchronous. """
+
+        async def wifi() -> bool:
+            headers = {
+                "Content-Type": "application/json"
+            }
+            content = {
+                "username": "root",
+                "password": password,
+                "timeout": 900
+            }
+            payload = {
+                "id": "8df89bc3-29b7-4d7e-9168-1ef1449aecf0",
+                "jsonrpc": "2.0",
+                "method": "call",
+                "params": ["00000000000000000000000000000000",
+                           "session",
+                           "login",
+                           content]
+            }
+            response = await session.post(f"http://{ip}/ubus", headers=headers, json=payload).json()
+            return not bool(response["result"][0])
+
+        async def lan() -> bool:
+            return False
+
+        session = session_instance or httpx.AsyncClient()
+
+        if "wifi1" in features:
+            first = wifi
+            second = lan
+        else:
+            second = lan
+            first = wifi
+
+        try:
+            password_valid = await first()
+        except:
+            password_valid = await second()
+
+        if not session_instance:
+            await session.aclose()
+
+        return password_valid
+
+    @staticmethod
+    def validate_password(ip: str,
+                          password: str,
+                          features: Dict,
+                          session_instance: Optional[httpx.AsyncClient] = None) -> bool:
+        """ Validate password synchronous. """
+        return asyncio.run(Device.async_validate_password(ip, password, features, session_instance))
 
     @staticmethod
     def info_from_service(service_info: ServiceInfo) -> Optional[Dict]:
