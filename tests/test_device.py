@@ -37,6 +37,7 @@ class TestDevice:
             await mock_device.async_connect()
             assert spy_device_info.call_count == 1
             assert spy_plcnet_info.call_count == 1
+            assert mock_device._connected
 
     @pytest.mark.asyncio
     async def test_async_connect_not_found(self, mock_device):
@@ -44,6 +45,7 @@ class TestDevice:
              patch("devolo_plc_api.device.Device._get_plcnet_info", new=AsyncMock()), \
              pytest.raises(DeviceNotFound):
             await mock_device.async_connect()
+        assert not mock_device._connected
 
     def test_connect(self, mocker, mock_device):
         with patch("devolo_plc_api.device.Device.async_connect", new=AsyncMock()):
@@ -58,6 +60,7 @@ class TestDevice:
         await mock_device.async_disconnect()
         assert spy_zeroconf.call_count == 1
         assert spy_session.call_count == 1
+        assert not mock_device._connected
 
     def test_disconnect(self, mocker, mock_device):
         with patch("devolo_plc_api.device.Device.async_disconnect", new=AsyncMock()):

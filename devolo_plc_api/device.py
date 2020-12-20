@@ -45,11 +45,12 @@ class Device:
         self.device = None
         self.plcnet = None
 
+        self._connected = False
         self._info: Dict = {
             "_dvl-plcnetapi._tcp.local.": plcnetapi or EMPTY_INFO,
             "_dvl-deviceapi._tcp.local.": deviceapi or EMPTY_INFO,
         }
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
         self._password = ""
         self._session_instance: Optional[httpx.AsyncClient] = None
         self._zeroconf_instance = zeroconf_instance
@@ -59,34 +60,9 @@ class Device:
         self._session: httpx.AsyncClient
         self._zeroconf: Zeroconf
 
-    @staticmethod
-    async def async_validate_password(ip_address: str, password: str, device: str = "wifi"):
-        async with httpx.AsyncClient() as client:
-            if device == "wifi":
-                headers = {"Content-Type": "application/json"}
-                json_data = {"username": "root", "password": password, "timeout": 900}
-                payload = {"id": "8df89bc3-29b7-4d7e-9168-1ef1449aecf0",
-                        "jsonrpc": "2.0",
-                        "method": "call",
-                        "params": ["00000000000000000000000000000000",
-                                    "session",
-                                    "login",
-                                    json_data]}
-                r = await client.post(f"http://{ip_address}/ubus", headers=headers, json=payload)
-                return not bool(r.json()["result"][0])
-            elif device == "lan":
-                # LAN device
-                pass
-            else:
-                # Unknown device
-                pass
-
     def __del__(self):
-        try:
-            if self._loop.is_running():
-                self._logger.warning("Please disconnect properly from the device.")
-        except AttributeError:
-            pass
+        if self._connected and self._session_instance is None:
+            self._logger.warning("Please disconnect properly from the device.")
 
     async def __aenter__(self):
         await self.async_connect()
@@ -127,6 +103,7 @@ class Device:
         await asyncio.gather(self._get_device_info(), self._get_plcnet_info())
         if not self.device and not self.plcnet:
             raise DeviceNotFound(f"The device {self.ip} did not answer.")
+        self._connected = True
 
     def connect(self):
         """ Connect to a device synchronous. """
@@ -139,6 +116,7 @@ class Device:
             self._zeroconf.close()
         if not self._session_instance:
             await self._session.aclose()
+        self._connected = False
 
     def disconnect(self):
         """ Disconnect from a device asynchronous. """

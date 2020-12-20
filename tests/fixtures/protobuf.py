@@ -1,4 +1,5 @@
 import pytest
+from httpx import ConnectTimeout
 
 try:
     from unittest.mock import AsyncMock
@@ -21,6 +22,12 @@ def mock_get(mocker):
 @pytest.fixture()
 def mock_post(mocker):
     mocker.patch("httpx.AsyncClient.post", new=AsyncMock())
+
+
+@pytest.fixture()
+def mock_device_unavailable(mocker):
+    mocker.patch("httpx.AsyncClient.get", side_effect=ConnectTimeout(message="", request=""))
+    mocker.patch("httpx.AsyncClient.post", side_effect=ConnectTimeout(message="", request=""))
 
 
 @pytest.fixture()
