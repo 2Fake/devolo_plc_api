@@ -3,7 +3,7 @@ import httpx
 import pytest
 
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import LedSettingsSetResponse
-from devolo_plc_api.exceptions.device import DevicePasswordProtected
+from devolo_plc_api.exceptions.device import DevicePasswordProtected, DeviceUnavailable
 
 
 class TestProtobuf:
@@ -33,6 +33,13 @@ class TestProtobuf:
         with pytest.raises(DevicePasswordProtected):
             await mock_protobuf._async_get("LedSettingsGet")
 
+    @pytest.mark.asyncio
+    @pytest.mark.usefixtures("mock_device_unavailable")
+    async def test__async_get_device_unavailable(self, mock_protobuf):
+        mock_protobuf._session = httpx.AsyncClient()
+        with pytest.raises(DeviceUnavailable):
+            await mock_protobuf._async_get("LedSettingsGet")
+
     def test__message_to_dict(self, mocker, mock_protobuf):
         spy = mocker.spy(google.protobuf.json_format._Printer, "_MessageToJsonObject")
         mock_protobuf._message_to_dict(LedSettingsSetResponse())
@@ -51,4 +58,11 @@ class TestProtobuf:
     async def test__async_post_wrong_password(self, mock_protobuf):
         mock_protobuf._session = httpx.AsyncClient()
         with pytest.raises(DevicePasswordProtected):
+            await mock_protobuf._async_post("LedSettingsGet", "")
+
+    @pytest.mark.asyncio
+    @pytest.mark.usefixtures("mock_device_unavailable")
+    async def test__async_post_device_unavailable(self, mock_protobuf):
+        mock_protobuf._session = httpx.AsyncClient()
+        with pytest.raises(DeviceUnavailable):
             await mock_protobuf._async_post("LedSettingsGet", "")

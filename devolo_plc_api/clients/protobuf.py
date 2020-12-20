@@ -4,9 +4,9 @@ from abc import ABC, abstractclassmethod
 from typing import Callable
 
 from google.protobuf.json_format import MessageToDict
-from httpx import AsyncClient, DigestAuth, Response
+from httpx import AsyncClient, ConnectTimeout, DigestAuth, Response
 
-from ..exceptions.device import DevicePasswordProtected
+from ..exceptions.device import DevicePasswordProtected, DeviceUnavailable
 
 TIMEOUT = 5.0
 
@@ -19,7 +19,7 @@ class Protobuf(ABC):
     @abstractclassmethod
     def __init__(self):
         self._loop = asyncio.get_running_loop()
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
         self.password: str
 
@@ -54,6 +54,8 @@ class Protobuf(ABC):
             return await self._session.get(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
         except TypeError:
             raise DevicePasswordProtected("The used password is wrong.") from None
+        except ConnectTimeout:
+            raise DeviceUnavailable("The device is currenctly not available. Maybe on standby?") from None
 
     async def _async_post(self, sub_url: str, content: bytes, timeout: float = TIMEOUT) -> Response:
         """ Post data asynchronously. """
@@ -63,6 +65,8 @@ class Protobuf(ABC):
             return await self._session.post(url, auth=DigestAuth(self._user, self.password), content=content, timeout=timeout)
         except TypeError:
             raise DevicePasswordProtected("The used password is wrong.") from None
+        except ConnectTimeout:
+            raise DeviceUnavailable("The device is currenctly not available. Maybe on standby?") from None
 
     @staticmethod
     def _message_to_dict(message) -> dict:
