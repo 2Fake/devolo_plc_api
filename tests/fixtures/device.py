@@ -19,12 +19,12 @@ def mock_device(mocker, request):
     device = Device(ip=request.cls.ip)
     device._info = deepcopy(request.cls.device_info)
     device._loop = Mock()
-    device._loop.is_running = lambda: False
     device._session = Mock()
     device._session.aclose = AsyncMock()
     device._zeroconf = Mock()
     device._zeroconf.close = lambda: None
-    return device
+    yield device
+    device.disconnect()
 
 
 @pytest.fixture()
