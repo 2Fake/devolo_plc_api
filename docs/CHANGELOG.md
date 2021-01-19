@@ -8,8 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- React correctly on a ConnectTimeout
-
+- React correctly on different connection errors
 ## [v0.5.0] - 2020/12/21
 
 ### Changed
