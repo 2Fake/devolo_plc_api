@@ -4,7 +4,7 @@ from abc import ABC, abstractclassmethod
 from typing import Callable
 
 from google.protobuf.json_format import MessageToDict
-from httpx import AsyncClient, ConnectTimeout, DigestAuth, Response
+from httpx import AsyncClient, ConnectError, ConnectTimeout, DigestAuth, ReadTimeout, Response
 
 from ..exceptions.device import DevicePasswordProtected, DeviceUnavailable
 
@@ -54,7 +54,7 @@ class Protobuf(ABC):
             return await self._session.get(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
         except TypeError:
             raise DevicePasswordProtected("The used password is wrong.") from None
-        except ConnectTimeout:
+        except (ConnectTimeout, ConnectError, ReadTimeout):
             raise DeviceUnavailable("The device is currenctly not available. Maybe on standby?") from None
 
     async def _async_post(self, sub_url: str, content: bytes, timeout: float = TIMEOUT) -> Response:
@@ -65,7 +65,7 @@ class Protobuf(ABC):
             return await self._session.post(url, auth=DigestAuth(self._user, self.password), content=content, timeout=timeout)
         except TypeError:
             raise DevicePasswordProtected("The used password is wrong.") from None
-        except ConnectTimeout:
+        except (ConnectTimeout, ConnectError, ReadTimeout):
             raise DeviceUnavailable("The device is currenctly not available. Maybe on standby?") from None
 
     @staticmethod
