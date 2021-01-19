@@ -70,7 +70,7 @@ class PlcNetApi(Protobuf):
         response.FromString(await query.aread())  # pylint: disable=no-member
         return bool(not response.result)  # pylint: disable=no-member
 
-    async def async_set_user_device_name(self, name):
+    async def async_set_user_device_name(self, name) -> bool:
         """
         Set device name.
 
