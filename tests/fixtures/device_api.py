@@ -10,6 +10,7 @@ from devolo_plc_api.device_api.deviceapi import DeviceApi
 @pytest.fixture()
 async def device_api(request, feature):
     with patch("asyncio.get_running_loop", asyncio.new_event_loop):
+        asyncio.new_event_loop()
         request.cls.device_info["_dvl-deviceapi._tcp.local."]["properties"]["Features"] = feature
         async with AsyncClient() as client:
             device_api = DeviceApi(request.cls.ip, client, request.cls.device_info["_dvl-deviceapi._tcp.local."])

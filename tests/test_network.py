@@ -3,11 +3,6 @@ from unittest.mock import patch
 import pytest
 from zeroconf import ServiceStateChange, Zeroconf
 
-try:
-    from unittest.mock import AsyncMock
-except ImportError:
-    from asynctest import CoroutineMock as AsyncMock
-
 import devolo_plc_api.network as network
 from devolo_plc_api.device import Device
 
@@ -20,7 +15,7 @@ class TestNetwork:
             "1234567890123456": Device(ip="123.123.123.123")
         }
         with patch("zeroconf.Zeroconf"), \
-             patch("asyncio.sleep", new=AsyncMock()), \
+             patch("asyncio.sleep"), \
              patch("devolo_plc_api.device.Device.async_connect"), \
              patch("zeroconf.ServiceBrowser.cancel"):
             network._devices = device

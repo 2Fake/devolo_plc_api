@@ -14,8 +14,8 @@ async def mock_protobuf():
 @pytest.fixture()
 def mock_device_unavailable(httpx_mock):
 
-    def raise_type_error(request, extensions):
-        raise ConnectTimeout(request=request, message=extensions)
+    def raise_type_error(request, ext):
+        raise ConnectTimeout(request=request, message=ext)
 
     httpx_mock.add_callback(raise_type_error)
 
@@ -23,7 +23,7 @@ def mock_device_unavailable(httpx_mock):
 @pytest.fixture()
 def mock_wrong_password(httpx_mock):
 
-    def raise_type_error(request, extensions):
+    def raise_type_error(request, ext):
         raise TypeError
 
     httpx_mock.add_callback(raise_type_error)
