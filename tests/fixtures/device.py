@@ -30,7 +30,7 @@ def mock_device(mocker, request):
 @pytest.fixture()
 def mock_service_browser(mocker):
     mocker.patch("zeroconf.ServiceBrowser.__init__", MockServiceBrowser.__init__)
-    mocker.patch("zeroconf.ServiceBrowser.cancel", return_value=None)
+    mocker.patch("zeroconf.ServiceBrowser.cancel")
 
 
 @pytest.fixture()
