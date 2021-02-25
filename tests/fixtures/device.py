@@ -24,7 +24,6 @@ def mock_device(request):
     device._zeroconf = Mock()
     device._zeroconf.close = lambda: None
     yield device
-    device.disconnect()
 
 
 @pytest.fixture()
