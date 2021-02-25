@@ -92,7 +92,7 @@ class TestDevice:
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_plcnet_api")
     async def test__get_plcnet_info(self, mock_device):
-        with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=AsyncMock()):
+        with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=Mock()):
             device_info = self.device_info["_dvl-plcnetapi._tcp.local."]
             await mock_device._get_plcnet_info()
             assert mock_device.mac == device_info["properties"]["PlcMacAddress"]
