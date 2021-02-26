@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 from zeroconf import ServiceStateChange, Zeroconf
@@ -19,9 +19,10 @@ class TestNetwork:
         device = {
             "1234567890123456": Device(ip="123.123.123.123")
         }
-        with patch("zeroconf.Zeroconf", new=Mock()), \
+        with patch("zeroconf.Zeroconf"), \
              patch("asyncio.sleep", new=AsyncMock()), \
-             patch("devolo_plc_api.device.Device.async_connect", new=AsyncMock()):
+             patch("devolo_plc_api.device.Device.async_connect"), \
+             patch("zeroconf.ServiceBrowser.cancel"):
             network._devices = device
             discovered = await network.async_discover_network()
             assert discovered == device
@@ -30,9 +31,10 @@ class TestNetwork:
         device = {
             "1234567890123456": Device(ip="123.123.123.123")
         }
-        with patch("zeroconf.ServiceBrowser", new=Mock()), \
-             patch("time.sleep", new=Mock()), \
-             patch("devolo_plc_api.device.Device.connect", new=Mock()):
+        with patch("zeroconf.Zeroconf"), \
+             patch("time.sleep"), \
+             patch("devolo_plc_api.device.Device.connect"), \
+             patch("zeroconf.ServiceBrowser.cancel"):
             network._devices = device
             discovered = network.discover_network()
             assert discovered == device
