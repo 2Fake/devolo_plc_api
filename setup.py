@@ -4,8 +4,6 @@ from subprocess import check_call
 from setuptools import find_packages, setup
 from setuptools.command.develop import develop
 
-from devolo_plc_api import __version__
-
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
@@ -24,7 +22,7 @@ class PostDevelopCommand(develop):
 
 setup(
     name="devolo_plc_api",
-    version=__version__,
+    use_scm_version=True,
     author="Markus Bong, Guido Schmitz",
     author_email="m.bong@famabo.de, guido.schmitz@fedaix.de",
     description="devolo PLC devices in Python",
@@ -40,6 +38,7 @@ setup(
     ],
     install_requires=[
         "httpx>=0.14,<0.18",
+        "importlib-metadata;python_version<'3.8'",
         "protobuf",
         "zeroconf>=0.27.0",
     ],
@@ -56,5 +55,6 @@ setup(
             "pytest-mock",
         ],
     },
+    setup_requires=["setuptools_scm"],
     python_requires='>=3.7',
 )

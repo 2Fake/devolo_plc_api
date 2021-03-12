@@ -11,5 +11,4 @@
   Put an 'x' in the boxes that apply.
 -->
 
-- [ ] Version number in \_\_init\_\_.py was properly set.
 - [ ] Changelog is updated.
