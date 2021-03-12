@@ -41,6 +41,7 @@ setup(
     ],
     install_requires=[
         "httpx>=0.14,<0.18",
+        "importlib-metadata;python_version<'3.8'",
         "protobuf",
         "zeroconf>=0.27.0",
     ],
@@ -58,5 +59,5 @@ setup(
         ],
     },
     setup_requires=["setuptools_scm"],
-    python_requires=">=3.7",
+    python_requires='>=3.7',
 )
