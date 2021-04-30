@@ -37,7 +37,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "httpx>=0.14,<0.18",
+        "httpx>=0.14,<0.19",
         "importlib-metadata;python_version<'3.8'",
         "protobuf",
         "zeroconf>=0.27.0",
@@ -51,7 +51,7 @@ setup(
             "pytest",
             "pytest-asyncio",
             "pytest-cov",
-            "pytest-httpx",
+            "pytest-httpx>=0.12",
             "pytest-mock",
         ],
     },
