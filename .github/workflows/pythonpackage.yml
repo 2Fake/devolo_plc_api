@@ -30,18 +30,18 @@ jobs:
     - name: Lint with flake8
       run: |
         python -m pip install --upgrade pip
-        pip install flake8
+        python -m pip install flake8
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 . --count --exit-zero --statistics
     - name: Lint with pylint
       run: |
-        pip install pylint
-        pip install -e .
+        python -m pip install pylint
+        python -m pip install -e .
         pylint --errors-only --score=n devolo_plc_api
         pylint --exit-zero --score=n --disable=C,E,R --enable=useless-suppression --ignore-patterns=.*_pb2.py devolo_plc_api devolo_plc_api
     - name: Lint with mypy
       run: |
-        pip install mypy
+        python -m pip install mypy types-protobuf
         mypy devolo_plc_api
 
   test:
@@ -60,7 +60,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -e .[test]
+        python -m pip install -e .[test]
     - name: Test with pytest
       run: |
         pytest --cov=devolo_plc_api
@@ -88,7 +88,7 @@ jobs:
     - name: Coveralls
       run: |
         python -m pip install --upgrade pip
-        pip install wheel coveralls
+        python -m pip install wheel coveralls
         export COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_TOKEN }}
         coveralls
     - name: Clean up coverage
