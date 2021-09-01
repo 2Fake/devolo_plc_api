@@ -1,14 +1,14 @@
 repos:
 -   repo: https://github.com/pre-commit/mirrors-yapf
-    rev: ''
+    rev: 'v0.31.0'
     hooks:
     -   id: yapf
 -   repo: https://github.com/pycqa/isort
-    rev: ''
+    rev: '5.9.3'
     hooks:
         - id: isort
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: ''
+    rev: 'v4.0.1'
     hooks:
         - id: end-of-file-fixer
         - id: trailing-whitespace
