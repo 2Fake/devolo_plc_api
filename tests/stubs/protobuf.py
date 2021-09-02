@@ -3,6 +3,8 @@ import json
 import logging
 import pathlib
 
+from httpx import AsyncClient
+
 from devolo_plc_api.clients.protobuf import Protobuf
 
 file = pathlib.Path(__file__).parent / "../test_data.json"
@@ -17,6 +19,7 @@ class StubProtobuf(Protobuf):
         self._loop = asyncio.new_event_loop()
         self._ip = test_data["ip"]
         self._port = 14791
+        self._session = AsyncClient()
         self._path = test_data["device_info"]["_dvl-plcnetapi._tcp.local."]["properties"]["Path"]
         self._version = test_data["device_info"]["_dvl-plcnetapi._tcp.local."]["properties"]["Version"]
         self._user = "user"

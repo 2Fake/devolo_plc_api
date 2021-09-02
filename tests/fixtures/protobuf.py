@@ -1,36 +1,29 @@
 import pytest
 from httpx import ConnectTimeout
 
-try:
-    from unittest.mock import AsyncMock
-except ImportError:
-    from asynctest import CoroutineMock as AsyncMock
-
 from ..stubs.protobuf import StubProtobuf
 
 
 @pytest.fixture()
-def mock_protobuf():
-    return StubProtobuf()
+async def mock_protobuf():
+    protobuf = StubProtobuf()
+    yield protobuf
+    await protobuf._session.aclose()
 
 
 @pytest.fixture()
-def mock_get(mocker):
-    mocker.patch("httpx.AsyncClient.get", new=AsyncMock())
+def mock_device_unavailable(httpx_mock):
+
+    def raise_type_error(request, extensions):
+        raise ConnectTimeout(request=request, message=extensions)
+
+    httpx_mock.add_callback(raise_type_error)
 
 
 @pytest.fixture()
-def mock_post(mocker):
-    mocker.patch("httpx.AsyncClient.post", new=AsyncMock())
+def mock_wrong_password(httpx_mock):
 
+    def raise_type_error(request, extensions):
+        raise TypeError
 
-@pytest.fixture()
-def mock_device_unavailable(mocker):
-    mocker.patch("httpx.AsyncClient.get", side_effect=ConnectTimeout(message="", request=""))
-    mocker.patch("httpx.AsyncClient.post", side_effect=ConnectTimeout(message="", request=""))
-
-
-@pytest.fixture()
-def mock_wrong_password(mocker):
-    mocker.patch("httpx.AsyncClient.get", side_effect=TypeError())
-    mocker.patch("httpx.AsyncClient.post", side_effect=TypeError())
+    httpx_mock.add_callback(raise_type_error)

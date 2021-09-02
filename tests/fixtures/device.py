@@ -15,7 +15,7 @@ from ..mocks.mock_zeroconf import MockServiceBrowser, MockZeroconf
 
 
 @pytest.fixture()
-def mock_device(mocker, request):
+def mock_device(request):
     device = Device(ip=request.cls.ip)
     device._info = deepcopy(request.cls.device_info)
     device._loop = Mock()
@@ -24,13 +24,12 @@ def mock_device(mocker, request):
     device._zeroconf = Mock()
     device._zeroconf.close = lambda: None
     yield device
-    device.disconnect()
 
 
 @pytest.fixture()
 def mock_service_browser(mocker):
     mocker.patch("zeroconf.ServiceBrowser.__init__", MockServiceBrowser.__init__)
-    mocker.patch("zeroconf.ServiceBrowser.cancel", return_value=None)
+    mocker.patch("zeroconf.ServiceBrowser.cancel")
 
 
 @pytest.fixture()
