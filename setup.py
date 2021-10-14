@@ -37,7 +37,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "httpx>=0.14,<0.20",
+        "httpx>=0.14,<0.21",
         "importlib-metadata;python_version<'3.8'",
         "protobuf",
         "zeroconf>=0.27.0",
