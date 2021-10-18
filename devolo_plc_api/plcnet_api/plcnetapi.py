@@ -1,4 +1,5 @@
-from typing import Dict
+from __future__ import annotations
+from typing import Any
 
 from httpx import AsyncClient
 
@@ -17,7 +18,7 @@ class PlcNetApi(Protobuf):
     :param info: Information collected from the mDNS query
     """
 
-    def __init__(self, ip: str, session: AsyncClient, info: Dict):
+    def __init__(self, ip: str, session: AsyncClient, info: dict[str, Any]):
         super().__init__()
 
         self._ip = ip
@@ -30,7 +31,7 @@ class PlcNetApi(Protobuf):
 
         self.password = ""  # PLC API is not password protected.
 
-    async def async_get_network_overview(self) -> dict:
+    async def async_get_network_overview(self) -> dict[str, Any]:
         """
         Get a PLC network overview.
 

@@ -1,4 +1,6 @@
-from typing import Callable, Dict
+from __future__ import annotations
+
+from typing import Any, Callable
 
 from httpx import AsyncClient
 
@@ -18,7 +20,7 @@ class DeviceApi(Protobuf):
     :param info: Information collected from the mDNS query
     """
 
-    def __init__(self, ip: str, session: AsyncClient, info: Dict):
+    def __init__(self, ip: str, session: AsyncClient, info: dict[str, Any]):
         super().__init__()
 
         self._ip = ip
@@ -30,7 +32,7 @@ class DeviceApi(Protobuf):
         self._version = info["properties"]["Version"]
 
         features = info["properties"].get("Features", "")
-        self.features = features.split(",") if features else ["reset", "update", "led", "intmtg"]
+        self.features: list[str] = features.split(",") if features else ["reset", "update", "led", "intmtg"]
         self.password = ""
 
     def _feature(feature: str):  # type: ignore  # pylint: disable=no-self-argument
@@ -49,7 +51,7 @@ class DeviceApi(Protobuf):
         return feature_decorator
 
     @_feature("led")
-    async def async_get_led_setting(self) -> dict:
+    async def async_get_led_setting(self) -> dict[str, Any]:
         """
         Get LED setting asynchronously. This feature only works on devices, that announce the led feature.
 
@@ -78,7 +80,7 @@ class DeviceApi(Protobuf):
         return bool(not response.result)  # pylint: disable=no-member
 
     @_feature("update")
-    async def async_check_firmware_available(self) -> dict:
+    async def async_check_firmware_available(self) -> dict[str, Any]:
         """
         Check asynchronously, if a firmware update is available for the device.
 
@@ -105,7 +107,7 @@ class DeviceApi(Protobuf):
         return bool(not update_firmware.result)  # pylint: disable=no-member
 
     @_feature("wifi1")
-    async def async_get_wifi_connected_station(self) -> dict:
+    async def async_get_wifi_connected_station(self) -> dict[str, Any]:
         """
         Get wifi stations connected to the device asynchronously. This feature only works on devices, that announce the wifi1
         feature.
@@ -119,7 +121,7 @@ class DeviceApi(Protobuf):
         return self._message_to_dict(wifi_connected_proto)
 
     @_feature("wifi1")
-    async def async_get_wifi_guest_access(self) -> dict:
+    async def async_get_wifi_guest_access(self) -> dict[str, Any]:
         """
         Get details about wifi guest access asynchronously. This feature only works on devices, that announce the wifi1
         feature.
@@ -149,7 +151,7 @@ class DeviceApi(Protobuf):
         return bool(not response.result)  # pylint: disable=no-member
 
     @_feature("wifi1")
-    async def async_get_wifi_neighbor_access_points(self) -> dict:
+    async def async_get_wifi_neighbor_access_points(self) -> dict[str, Any]:
         """
         Get wifi access point in the neighborhood asynchronously. This feature only works on devices, that announce the wifi1
         feature.
@@ -163,7 +165,7 @@ class DeviceApi(Protobuf):
         return self._message_to_dict(wifi_neighbor_aps)
 
     @_feature("wifi1")
-    async def async_get_wifi_repeated_access_points(self):
+    async def async_get_wifi_repeated_access_points(self) -> dict[str, Any]:
         """
         Get repeated wifi access point asynchronously. This feature only works on repeater devices, that announce the wifi1
         feature.
@@ -177,7 +179,7 @@ class DeviceApi(Protobuf):
         return self._message_to_dict(wifi_connected_proto)
 
     @_feature("wifi1")
-    async def async_start_wps(self):
+    async def async_start_wps(self) -> bool:
         """
         Start WPS push button configuration.
 

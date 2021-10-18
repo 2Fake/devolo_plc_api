@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import asyncio
 import logging
 from abc import ABC, abstractclassmethod
-from typing import Callable
+from typing import Any, Callable
 
 from google.protobuf.json_format import MessageToDict
 from httpx import AsyncClient, ConnectError, ConnectTimeout, DigestAuth, ReadTimeout, Response
@@ -69,6 +71,6 @@ class Protobuf(ABC):
             raise DeviceUnavailable("The device is currenctly not available. Maybe on standby?") from None
 
     @staticmethod
-    def _message_to_dict(message) -> dict:
+    def _message_to_dict(message) -> dict[str, Any]:
         """ Convert message to dict with certain settings. """
         return MessageToDict(message=message, including_default_value_fields=True, preserving_proto_field_name=True)

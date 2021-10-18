@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import asyncio
 import ipaddress
 import logging
 import struct
 from datetime import date
-from typing import Dict, Optional
+from typing import Any
 
 import httpx
 from zeroconf import ServiceBrowser, ServiceInfo, ServiceStateChange, Zeroconf
@@ -12,9 +14,10 @@ from .device_api.deviceapi import DeviceApi
 from .exceptions.device import DeviceNotFound
 from .plcnet_api.plcnetapi import PlcNetApi
 
-EMPTY_INFO: Dict = {
-    "properties": {}
-}
+EMPTY_INFO: dict[str,
+                 Any] = {
+                     "properties": {}
+                 }
 
 
 class Device:
@@ -29,9 +32,11 @@ class Device:
 
     def __init__(self,
                  ip: str,
-                 plcnetapi: Optional[Dict] = None,
-                 deviceapi: Optional[Dict] = None,
-                 zeroconf_instance: Optional[Zeroconf] = None):
+                 plcnetapi: dict[str,
+                                 Any] | None = None,
+                 deviceapi: dict[str,
+                                 Any] | None = None,
+                 zeroconf_instance: Zeroconf | None = None):
         self.firmware_date = date.fromtimestamp(0)
         self.firmware_version = ""
         self.hostname = ""
@@ -46,13 +51,15 @@ class Device:
         self.plcnet = None
 
         self._connected = False
-        self._info: Dict = {
-            "_dvl-plcnetapi._tcp.local.": plcnetapi or EMPTY_INFO,
-            "_dvl-deviceapi._tcp.local.": deviceapi or EMPTY_INFO,
-        }
+        self._info: dict[str,
+                         dict[str,
+                              Any]] = {
+                                  "_dvl-plcnetapi._tcp.local.": plcnetapi or EMPTY_INFO,
+                                  "_dvl-deviceapi._tcp.local.": deviceapi or EMPTY_INFO,
+                              }
         self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
         self._password = ""
-        self._session_instance: Optional[httpx.AsyncClient] = None
+        self._session_instance: httpx.AsyncClient | None = None
         self._zeroconf_instance = zeroconf_instance
         logging.captureWarnings(True)
 
@@ -90,7 +97,7 @@ class Device:
         if self.device:
             self.device.password = password
 
-    async def async_connect(self, session_instance: Optional[httpx.AsyncClient] = None):
+    async def async_connect(self, session_instance: httpx.AsyncClient | None = None):
         """
         Connect to a device asynchronous.
 
@@ -176,11 +183,11 @@ class Device:
             self._info[service_type] = self.info_from_service(service_info)
 
     @staticmethod
-    def info_from_service(service_info: ServiceInfo) -> Optional[Dict]:
+    def info_from_service(service_info: ServiceInfo) -> dict[str, Any]:
         """ Return prepared info from mDNS entries. """
         properties = {}
         if not service_info.addresses:
-            return None  # No need to continue, if there is no IP address to contact the device
+            return {}  # No need to continue, if there is no IP address to contact the device
 
         total_length = len(service_info.text)
         offset = 0
