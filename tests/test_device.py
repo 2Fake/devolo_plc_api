@@ -143,4 +143,4 @@ class TestDevice:
     def test_info_from_service_no_address(self, mock_device):
         service_info = Mock()
         service_info.addresses = None
-        assert mock_device.info_from_service(service_info) is None
+        assert mock_device.info_from_service(service_info) == {}
