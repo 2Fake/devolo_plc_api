@@ -1,16 +1,17 @@
+from __future__ import annotations
+
 import asyncio
 import time
-from typing import Dict
 
 from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
 
 from ..device import Device
 
-_devices: Dict[str,
+_devices: dict[str,
                Device] = {}
 
 
-async def async_discover_network() -> Dict[str, Device]:
+async def async_discover_network() -> dict[str, Device]:
     """
     Discover all devices that expose the devolo device API via mDNS asynchronous.
 
@@ -22,7 +23,7 @@ async def async_discover_network() -> Dict[str, Device]:
     return _devices
 
 
-def discover_network() -> Dict[str, Device]:
+def discover_network() -> dict[str, Device]:
     """
     Discover devices that expose the devolo device API via mDNS synchronous.
 
