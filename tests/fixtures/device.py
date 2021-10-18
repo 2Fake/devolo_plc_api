@@ -22,7 +22,7 @@ def mock_device(request):
     device._session = Mock()
     device._session.aclose = AsyncMock()
     device._zeroconf = Mock()
-    device._zeroconf.close = lambda: None
+    device._zeroconf.close = Mock()
     yield device
 
 
