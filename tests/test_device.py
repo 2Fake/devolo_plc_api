@@ -54,12 +54,10 @@ class TestDevice:
             assert spy_connect.call_count == 1
 
     @pytest.mark.asyncio
-    async def test_async_disconnect(self, mocker, mock_device):
-        spy_zeroconf = mocker.spy(mock_device._zeroconf, "close")
-        spy_session = mocker.spy(mock_device._session, "aclose")
+    async def test_async_disconnect(self, mock_device):
         await mock_device.async_disconnect()
-        assert spy_zeroconf.call_count == 1
-        assert spy_session.call_count == 1
+        assert mock_device._zeroconf.close.call_count == 1
+        assert mock_device._session.aclose.call_count == 1
         assert not mock_device._connected
 
     def test_disconnect(self, mocker, mock_device):
@@ -143,4 +141,4 @@ class TestDevice:
     def test_info_from_service_no_address(self, mock_device):
         service_info = Mock()
         service_info.addresses = None
-        assert mock_device.info_from_service(service_info) is None
+        assert mock_device.info_from_service(service_info) == {}
