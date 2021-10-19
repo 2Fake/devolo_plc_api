@@ -19,7 +19,7 @@ class Protobuf(ABC):
     """
 
     @abstractclassmethod
-    def __init__(self):
+    def __init__(self) -> None:
         self._loop = asyncio.get_running_loop()
         self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
