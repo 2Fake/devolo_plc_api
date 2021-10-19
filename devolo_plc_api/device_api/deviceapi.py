@@ -20,7 +20,7 @@ class DeviceApi(Protobuf):
     :param info: Information collected from the mDNS query
     """
 
-    def __init__(self, ip: str, session: AsyncClient, info: dict[str, Any]):
+    def __init__(self, ip: str, session: AsyncClient, info: dict[str, Any]) -> None:
         super().__init__()
 
         self._ip = ip
@@ -40,7 +40,7 @@ class DeviceApi(Protobuf):
 
         def feature_decorator(method: Callable):
 
-            def wrapper(self, *args, **kwargs):
+            def wrapper(self, *args: Any, **kwargs: Any):
                 if feature in self.features:
                     return method(self, *args, **kwargs)
                 else:

@@ -35,7 +35,7 @@ def discover_network() -> dict[str, Device]:
     return _devices
 
 
-def _add(zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange):
+def _add(zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange) -> None:
     """" Create a device object to each matching device. """
     if state_change is not ServiceStateChange.Added:
         return
