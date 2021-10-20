@@ -1,5 +1,4 @@
 import google.protobuf.json_format
-import httpx
 import pytest
 
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import LedSettingsSetResponse
