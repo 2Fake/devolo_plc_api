@@ -1,7 +1,7 @@
 import shlex
 from subprocess import check_call
 
-from setuptools import setup
+from setuptools import find_packages, setup
 from setuptools.command.develop import develop
 
 with open("README.md", "r") as fh:
@@ -29,7 +29,8 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/2Fake/devolo_plc_api",
-    packages=["devolo_plc_api"],
+    packages=find_packages(exclude=("tests*",
+                                    )),
     package_data={
         "devolo_plc_api": ["py.typed"],
     },
