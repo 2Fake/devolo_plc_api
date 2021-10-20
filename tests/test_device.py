@@ -1,14 +1,9 @@
 import asyncio
 from datetime import date
-from unittest.mock import Mock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 from zeroconf import ServiceStateChange, Zeroconf
-
-try:
-    from unittest.mock import AsyncMock
-except ImportError:
-    from asynctest import CoroutineMock as AsyncMock
 
 from devolo_plc_api.device import EMPTY_INFO
 from devolo_plc_api.device_api.deviceapi import DeviceApi

@@ -1,12 +1,7 @@
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from zeroconf import ServiceStateChange, Zeroconf
-
-try:
-    from unittest.mock import AsyncMock
-except ImportError:
-    from asynctest import CoroutineMock as AsyncMock
 
 import devolo_plc_api.network as network
 from devolo_plc_api.device import Device

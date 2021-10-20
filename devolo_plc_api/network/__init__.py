@@ -40,8 +40,7 @@ def _add(zeroconf: Zeroconf, service_type: str, name: str, state_change: Service
     if state_change is not ServiceStateChange.Added:
         return
 
-    service_info = zeroconf.get_service_info(service_type, name)
-    if service_info is None:
+    if (service_info := zeroconf.get_service_info(service_type, name)) is None:
         return
 
     info = Device.info_from_service(service_info)
