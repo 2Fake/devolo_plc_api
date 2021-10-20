@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
 from typing import Any, Callable
 
 from google.protobuf.json_format import MessageToDict
@@ -18,7 +18,7 @@ class Protobuf(ABC):
     Google Protobuf client.
     """
 
-    @abstractclassmethod
+    @abstractmethod
     def __init__(self) -> None:
         self._loop = asyncio.get_running_loop()
         self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")

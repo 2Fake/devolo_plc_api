@@ -17,5 +17,6 @@ async def plcnet_api(request):
 
 
 @pytest.fixture()
-def mock_plcnet_api(mocker):
-    mocker.patch("devolo_plc_api.plcnet_api.plcnetapi.PlcNetApi")
+def mock_plcnet_api():
+    with patch("devolo_plc_api.plcnet_api.plcnetapi.PlcNetApi"):
+        yield

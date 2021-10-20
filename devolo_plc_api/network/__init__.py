@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import time
 
-from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
+from zeroconf import DNSQuestionType, ServiceBrowser, ServiceStateChange, Zeroconf
 
 from ..device import Device
 
@@ -17,7 +17,7 @@ async def async_discover_network() -> dict[str, Device]:
 
     :return: Devices accessible via serial number.
     """
-    browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [_add])
+    browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [_add], question_type=DNSQuestionType.QM)
     await asyncio.sleep(3)
     browser.cancel()
     return _devices
@@ -29,7 +29,7 @@ def discover_network() -> dict[str, Device]:
 
     :return: Devices accessible via serial number.
     """
-    browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [_add])
+    browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [_add], question_type=DNSQuestionType.QM)
     time.sleep(3)
     browser.cancel()
     return _devices
@@ -48,4 +48,4 @@ def _add(zeroconf: Zeroconf, service_type: str, name: str, state_change: Service
     if info is None or info["properties"]["MT"] in ("2600", "2601"):
         return  # Don't react on devolo Home Control central units
 
-    _devices[info["properties"]["SN"]] = Device(ip=info["address"], deviceapi=info, zeroconf_instance=zeroconf)
+    _devices[info["properties"]["SN"]] = Device(ip=info["address"], deviceapi=info)
