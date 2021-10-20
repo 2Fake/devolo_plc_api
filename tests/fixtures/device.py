@@ -1,12 +1,7 @@
 from copy import deepcopy
-from unittest.mock import Mock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-
-try:
-    from unittest.mock import AsyncMock
-except ImportError:
-    from asynctest import CoroutineMock as AsyncMock
 
 from devolo_plc_api.device import Device
 
