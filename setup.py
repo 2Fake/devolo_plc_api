@@ -1,7 +1,7 @@
 import shlex
 from subprocess import check_call
 
-from setuptools import find_packages, setup
+from setuptools import setup
 from setuptools.command.develop import develop
 
 with open("README.md", "r") as fh:
@@ -29,8 +29,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/2Fake/devolo_plc_api",
-    packages=find_packages(exclude=("tests*",
-                                    )),
+    packages=["devolo_plc_api"],
     package_data={
         "devolo_plc_api": ["py.typed"],
     },
@@ -41,16 +40,14 @@ setup(
     ],
     install_requires=[
         "httpx>=0.14,<0.21",
-        "importlib-metadata;python_version<'3.8'",
         "protobuf",
-        "zeroconf>=0.27.0",
+        "zeroconf>=0.32.0",
     ],
     extras_require={
         "dev": [
             "pre-commit",
         ],
         "test": [
-            "asynctest;python_version<'3.8'",
             "pytest",
             "pytest-asyncio",
             "pytest-cov",
@@ -59,5 +56,5 @@ setup(
         ],
     },
     setup_requires=["setuptools_scm"],
-    python_requires=">=3.7",
+    python_requires=">=3.8",
 )

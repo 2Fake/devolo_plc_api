@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import Any
 
 from httpx import AsyncClient
@@ -18,7 +19,7 @@ class PlcNetApi(Protobuf):
     :param info: Information collected from the mDNS query
     """
 
-    def __init__(self, ip: str, session: AsyncClient, info: dict[str, Any]):
+    def __init__(self, ip: str, session: AsyncClient, info: dict[str, Any]) -> None:
         super().__init__()
 
         self._ip = ip

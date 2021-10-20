@@ -5,10 +5,12 @@ import ipaddress
 import logging
 import struct
 from datetime import date
+from types import TracebackType
 from typing import Any
 
 import httpx
-from zeroconf import ServiceBrowser, ServiceInfo, ServiceStateChange, Zeroconf
+from zeroconf import DNSQuestionType, ServiceInfo, ServiceStateChange, Zeroconf
+from zeroconf.asyncio import AsyncServiceBrowser, AsyncServiceInfo, AsyncZeroconf
 
 from .device_api.deviceapi import DeviceApi
 from .exceptions.device import DeviceNotFound
@@ -36,7 +38,7 @@ class Device:
                                  Any] | None = None,
                  deviceapi: dict[str,
                                  Any] | None = None,
-                 zeroconf_instance: Zeroconf | None = None):
+                 zeroconf_instance: AsyncZeroconf | None = None) -> None:
         self.firmware_date = date.fromtimestamp(0)
         self.firmware_version = ""
         self.hostname = ""
@@ -47,8 +49,8 @@ class Device:
         self.technology = ""
         self.serial_number = 0
 
-        self.device = None
-        self.plcnet = None
+        self.device: DeviceApi | None = None
+        self.plcnet: PlcNetApi | None = None
 
         self._connected = False
         self._info: dict[str,
@@ -65,24 +67,24 @@ class Device:
 
         self._loop: asyncio.AbstractEventLoop
         self._session: httpx.AsyncClient
-        self._zeroconf: Zeroconf
+        self._zeroconf: AsyncZeroconf
 
-    def __del__(self):
+    def __del__(self) -> None:
         if self._connected and self._session_instance is None:
             self._logger.warning("Please disconnect properly from the device.")
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> Device:
         await self.async_connect()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type: type | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
         await self.async_disconnect()
 
-    def __enter__(self):
+    def __enter__(self) -> Device:
         self.connect()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: type | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
         self.disconnect()
 
     @property
@@ -91,13 +93,13 @@ class Device:
         return self._password
 
     @password.setter
-    def password(self, password: str):
+    def password(self, password: str) -> None:
         """ Change the currently set device password. """
         self._password = password
         if self.device:
             self.device.password = password
 
-    async def async_connect(self, session_instance: httpx.AsyncClient | None = None):
+    async def async_connect(self, session_instance: httpx.AsyncClient | None = None) -> None:
         """
         Connect to a device asynchronous.
 
@@ -106,31 +108,31 @@ class Device:
         self._loop = asyncio.get_running_loop()
         self._session_instance = session_instance
         self._session = self._session_instance or httpx.AsyncClient()
-        self._zeroconf = self._zeroconf_instance or Zeroconf()
+        self._zeroconf = self._zeroconf_instance or AsyncZeroconf()
         await asyncio.gather(self._get_device_info(), self._get_plcnet_info())
         if not self.device and not self.plcnet:
             raise DeviceNotFound(f"The device {self.ip} did not answer.")
         self._connected = True
 
-    def connect(self):
+    def connect(self) -> None:
         """ Connect to a device synchronous. """
         self._loop = asyncio.new_event_loop()
         self._loop.run_until_complete(self.async_connect())
 
-    async def async_disconnect(self):
+    async def async_disconnect(self) -> None:
         """ Disconnect from a device asynchronous. """
         if not self._zeroconf_instance:
-            self._zeroconf.close()
+            await self._zeroconf.async_close()
         if not self._session_instance:
             await self._session.aclose()
         self._connected = False
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         """ Disconnect from a device asynchronous. """
         self._loop.run_until_complete(self.async_disconnect())
         self._loop.close()
 
-    async def _get_device_info(self):
+    async def _get_device_info(self) -> None:
         """ Get information from the devolo Device API. """
         service_type = "_dvl-deviceapi._tcp.local."
         try:
@@ -147,7 +149,7 @@ class Device:
 
         self.device = DeviceApi(ip=self.ip, session=self._session, info=self._info[service_type])
 
-    async def _get_plcnet_info(self):
+    async def _get_plcnet_info(self) -> None:
         """ Get information from the devolo PlcNet API. """
         service_type = "_dvl-plcnetapi._tcp.local."
         try:
@@ -160,27 +162,36 @@ class Device:
 
         self.plcnet = PlcNetApi(ip=self.ip, session=self._session, info=self._info[service_type])
 
-    async def _get_zeroconf_info(self, service_type: str):
+    async def _get_zeroconf_info(self, service_type: str) -> None:
         """ Browse for the desired mDNS service types and query them. """
         if self._info[service_type]["properties"]:
             return  # No need to continue, if device info already exist
 
         self._logger.debug("Browsing for %s", service_type)
-        browser = ServiceBrowser(self._zeroconf, service_type, [self._state_change], addr=self.ip)
+        browser = AsyncServiceBrowser(self._zeroconf.zeroconf,
+                                      service_type,
+                                      [self._state_change],
+                                      question_type=DNSQuestionType.QM)
         while not self._info[service_type]["properties"]:
             await asyncio.sleep(0.1)
-        browser.cancel()
+        await browser.async_cancel()
 
-    def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange):
+    def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange) -> None:
         """ Evaluate the query result. """
-        service_info = zeroconf.get_service_info(service_type, name)
+        if state_change is not ServiceStateChange.Added:
+            return
+        asyncio.ensure_future(self._get_service_info(zeroconf, service_type, name))
+
+    async def _get_service_info(self, zeroconf: Zeroconf, service_type: str, name: str) -> None:
+        """ Get service information, if IP matches. """
+        service_info = AsyncServiceInfo(service_type, name)
+        await service_info.async_request(zeroconf, timeout=3000)
 
         if service_info is None or str(ipaddress.ip_address(service_info.addresses[0])) != self.ip:
             return  # No need to continue, if there are no relevant service information
 
-        if state_change is ServiceStateChange.Added:
-            self._logger.debug("Adding service info of %s", service_type)
-            self._info[service_type] = self.info_from_service(service_info)
+        self._logger.debug("Adding service info of %s", service_type)
+        self._info[service_type] = self.info_from_service(service_info)
 
     @staticmethod
     def info_from_service(service_info: ServiceInfo) -> dict[str, Any]:
