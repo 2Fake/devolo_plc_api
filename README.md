@@ -12,19 +12,18 @@ This project implements parts of the devolo PLC devices API in Python. Communica
 Defining the system requirements with exact versions typically is difficult. But there is a tested environment:
 
 * Linux
-* Python 3.7.8
-* pip 20.0.2
-* httpx 0.14.2
-* protobuf 3.11.4
-* zeroconf 0.27.0
+* Python 3.8.12
+* pip 20.2.4
+* httpx 0.19.0
+* protobuf 3.17.3
+* zeroconf 0.36.8
 
 Other versions and even other operating systems might work. Feel free to tell us about your experience. If you want to run our unit tests, you also need:
 
-* pytest 5.4.3
-* pytest-asyncio 0.14.0
-* pytest-mock 3.2.0
-* pytest-httpx 0.12
-* asynctest 0.13.0
+* pytest 6.2.5
+* pytest-asyncio 0.15.1
+* pytest-mock 3.6.1
+* pytest-httpx 0.13
 
 ## Versioning
 
@@ -102,6 +101,5 @@ The following devolo devices were queried with at least one call to verify funct
 * dLAN 1200+ WiFi ac
 * dLAN 550+ Wifi
 * dLAN 550 WiFi
-* dLAN 500 WiFi
 
 However, other devices might work, some might have a limited functionality. Also firmware version will matter. If you discover something weird, [we want to know](https://github.com/2Fake/devolo_plc_api/issues).
