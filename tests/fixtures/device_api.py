@@ -17,5 +17,6 @@ async def device_api(request, feature):
 
 
 @pytest.fixture()
-def mock_device_api(mocker):
-    mocker.patch("devolo_plc_api.device_api.deviceapi.DeviceApi")
+def mock_device_api():
+    with patch("devolo_plc_api.device_api.deviceapi.DeviceApi"):
+        yield

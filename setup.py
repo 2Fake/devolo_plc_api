@@ -42,7 +42,7 @@ setup(
         "httpx>=0.14,<0.21",
         "importlib-metadata;python_version<'3.8'",
         "protobuf",
-        "zeroconf>=0.27.0",
+        "zeroconf>=0.32.0",
     ],
     extras_require={
         "dev": [

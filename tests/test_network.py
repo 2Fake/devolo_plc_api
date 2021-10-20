@@ -15,7 +15,7 @@ from devolo_plc_api.device import Device
 class TestNetwork:
 
     @pytest.mark.asyncio
-    async def test_async_discover_network(self, mocker):
+    async def test_async_discover_network(self):
         device = {
             "1234567890123456": Device(ip="123.123.123.123")
         }
@@ -27,7 +27,7 @@ class TestNetwork:
             discovered = await network.async_discover_network()
             assert discovered == device
 
-    def test_discover_network(self, mocker):
+    def test_discover_network(self):
         device = {
             "1234567890123456": Device(ip="123.123.123.123")
         }
@@ -39,7 +39,7 @@ class TestNetwork:
             discovered = network.discover_network()
             assert discovered == device
 
-    def test__add(self, mocker):
+    def test__add(self):
         service_info = {
             "properties": {
                 "MT": "2673",
