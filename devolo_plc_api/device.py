@@ -182,7 +182,8 @@ class Device:
             return
         asyncio.ensure_future(self._get_service_info(zeroconf, service_type, name))
 
-    async def _get_service_info(self, zeroconf: Zeroconf, service_type: str, name: str):
+    async def _get_service_info(self, zeroconf: Zeroconf, service_type: str, name: str) -> None:
+        """ Get service information, if IP matches. """
         service_info = AsyncServiceInfo(service_type, name)
         await service_info.async_request(zeroconf, timeout=3000)
 
