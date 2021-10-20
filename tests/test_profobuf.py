@@ -19,11 +19,10 @@ class TestProtobuf:
         assert mock_protobuf.url == f"http://{ip}:14791/{path}/{version}/"
 
     @pytest.mark.asyncio
-    async def test__async_get(self, httpx_mock, mocker, mock_protobuf):
+    async def test__async_get(self, httpx_mock, mock_protobuf):
         httpx_mock.add_response()
-        spy = mocker.spy(httpx.AsyncClient, "get")
         await mock_protobuf._async_get("LedSettingsGet")
-        spy.assert_called_once()
+        assert httpx_mock.get_request()
 
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_wrong_password")
@@ -43,11 +42,10 @@ class TestProtobuf:
         spy.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test__async_post(self, httpx_mock, mocker, mock_protobuf):
+    async def test__async_post(self, httpx_mock, mock_protobuf):
         httpx_mock.add_response()
-        spy = mocker.spy(httpx.AsyncClient, "post")
         await mock_protobuf._async_post("LedSettingsGet", "")
-        spy.assert_called_once()
+        assert httpx_mock.get_request()
 
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_wrong_password")
