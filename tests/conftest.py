@@ -25,6 +25,7 @@ def test_data_fixture(request):
 
 @pytest.fixture()
 def event_loop():
+    """ Handle the event loop in tests. """
     loop = asyncio.new_event_loop()
     yield loop
     if loop.is_running():
