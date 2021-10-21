@@ -1,6 +1,6 @@
 import asyncio
 from datetime import date
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 from zeroconf import ServiceStateChange, Zeroconf
@@ -53,8 +53,9 @@ class TestDevice:
         assert mock_device._session.aclose.call_count == 1
         assert not mock_device._connected
 
+    @pytest.mark.asyncio
     def test_disconnect(self, mock_device):
-        with patch("devolo_plc_api.device.Device.async_disconnect", new=Mock()) as ad:
+        with patch("devolo_plc_api.device.Device.async_disconnect") as ad:
             mock_device.disconnect()
             assert ad.call_count == 1
 
