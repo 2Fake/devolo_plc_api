@@ -26,7 +26,8 @@ def test_data_fixture(request: pytest.FixtureRequest) -> None:
 
 @pytest.fixture()
 def event_loop() -> Generator[asyncio.events.AbstractEventLoop, None, None]:
-    loop = asyncio.get_event_loop()
+    """ Handle the event loop in tests. """
+    loop = asyncio.new_event_loop()
     yield loop
     if loop.is_running():
         to_cancel = asyncio.tasks.all_tasks(loop)
