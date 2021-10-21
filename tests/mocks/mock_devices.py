@@ -6,5 +6,5 @@ with file.open("r") as fh:
     test_data = json.load(fh)
 
 
-def state_change(self):
+def state_change(self) -> None:
     self._info = test_data["device_info"]
