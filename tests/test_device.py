@@ -54,7 +54,7 @@ class TestDevice:
         assert not mock_device._connected
 
     def test_disconnect(self, mock_device):
-        with patch("devolo_plc_api.device.Device.async_disconnect") as ad:
+        with patch("devolo_plc_api.device.Device.async_disconnect", new=Mock()) as ad:
             mock_device.disconnect()
             assert ad.call_count == 1
 
@@ -74,7 +74,7 @@ class TestDevice:
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_device_api")
     async def test__get_device_info_timeout(self, mock_device):
-        with patch("devolo_plc_api.device.Device._get_zeroconf_info"), \
+        with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=Mock()), \
              patch("asyncio.wait_for", new=AsyncMock(side_effect=asyncio.TimeoutError())):
             await mock_device._get_device_info()
             assert mock_device.device is None
@@ -92,7 +92,7 @@ class TestDevice:
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_plcnet_api")
     async def test__get_plcnet_info_timeout(self, mock_device):
-        with patch("devolo_plc_api.device.Device._get_zeroconf_info"), \
+        with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=Mock()), \
              patch("asyncio.wait_for", new=AsyncMock(side_effect=asyncio.TimeoutError())):
             await mock_device._get_plcnet_info()
             assert mock_device.plcnet is None
