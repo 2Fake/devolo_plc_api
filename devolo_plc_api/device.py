@@ -38,7 +38,7 @@ class Device:
                                  Any] | None = None,
                  deviceapi: dict[str,
                                  Any] | None = None,
-                 zeroconf_instance: AsyncZeroconf | None = None) -> None:
+                 zeroconf_instance: AsyncZeroconf | Zeroconf | None = None) -> None:
         self.firmware_date = date.fromtimestamp(0)
         self.firmware_version = ""
         self.hostname = ""
@@ -108,7 +108,12 @@ class Device:
         self._loop = asyncio.get_running_loop()
         self._session_instance = session_instance
         self._session = self._session_instance or httpx.AsyncClient()
-        self._zeroconf = self._zeroconf_instance or AsyncZeroconf()
+        if not self._zeroconf_instance:
+            self._zeroconf = AsyncZeroconf()
+        elif isinstance(self._zeroconf_instance, Zeroconf):
+            self._zeroconf = AsyncZeroconf(zc=self._zeroconf_instance)
+        else:
+            self._zeroconf = self._zeroconf_instance
         await asyncio.gather(self._get_device_info(), self._get_plcnet_info())
         if not self.device and not self.plcnet:
             raise DeviceNotFound(f"The device {self.ip} did not answer.")

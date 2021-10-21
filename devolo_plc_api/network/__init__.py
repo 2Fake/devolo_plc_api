@@ -47,4 +47,4 @@ def _add(zeroconf: Zeroconf, service_type: str, name: str, state_change: Service
     if info is None or info["properties"]["MT"] in ("2600", "2601"):
         return  # Don't react on devolo Home Control central units
 
-    _devices[info["properties"]["SN"]] = Device(ip=info["address"], deviceapi=info)
+    _devices[info["properties"]["SN"]] = Device(ip=info["address"], deviceapi=info, zeroconf_instance=zeroconf)
