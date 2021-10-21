@@ -25,7 +25,7 @@ def test_data_fixture(request):
 
 @pytest.fixture()
 def event_loop():
-    loop = asyncio.get_event_loop_policy().get_event_loop()
+    loop = asyncio.new_event_loop()
     yield loop
     to_cancel = asyncio.tasks.all_tasks(loop)
     for task in to_cancel:

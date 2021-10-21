@@ -109,13 +109,15 @@ class TestDevice:
         await mock_device._get_zeroconf_info("_dvl-plcnetapi._tcp.local.")
         assert mock_service_browser.async_cancel.call_count == 0
 
+    @pytest.mark.asyncio
     def test__state_change_no_service_info(self, mocker, mock_device):
-        with patch("zeroconf.Zeroconf.get_service_info", return_value=None):
+        with patch("devolo_plc_api.device.Zeroconf.get_service_info", return_value=None):
             service_type = "_dvl-plcnetapi._tcp.local."
             spy_service_info = mocker.spy(mock_device, "info_from_service")
             mock_device._state_change(Zeroconf(), service_type, service_type, ServiceStateChange.Added)
             assert spy_service_info.call_count == 0
 
+    @pytest.mark.asyncio
     def test__state_change_added(self, mock_device):
         with patch("devolo_plc_api.device.Device._get_service_info") as gsi:
             service_type = "_dvl-plcnetapi._tcp.local."
