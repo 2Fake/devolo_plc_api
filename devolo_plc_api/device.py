@@ -180,7 +180,7 @@ class Device:
         """ Evaluate the query result. """
         if state_change is not ServiceStateChange.Added:
             return
-        asyncio.ensure_future(self._get_service_info(zeroconf, service_type, name))
+        asyncio.ensure_future(self._get_service_info(zeroconf, service_type, name), loop=self._loop)
 
     async def _get_service_info(self, zeroconf: Zeroconf, service_type: str, name: str) -> None:
         """ Get service information, if IP matches. """

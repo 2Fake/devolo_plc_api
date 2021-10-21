@@ -25,10 +25,12 @@ def test_data_fixture(request):
 
 @pytest.fixture()
 def event_loop():
-    loop = asyncio.get_event_loop()
+    """ Handle the event loop in tests. """
+    loop = asyncio.new_event_loop()
     yield loop
-    to_cancel = asyncio.tasks.all_tasks(loop)
-    for task in to_cancel:
-        task.cancel()
-    loop.run_until_complete(asyncio.tasks.gather(*to_cancel, return_exceptions=True))
-    loop.close()
+    if loop.is_running():
+        to_cancel = asyncio.tasks.all_tasks(loop)
+        for task in to_cancel:
+            task.cancel()
+        loop.run_until_complete(asyncio.tasks.gather(*to_cancel, return_exceptions=True))
+        loop.close()

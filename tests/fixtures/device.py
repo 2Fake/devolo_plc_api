@@ -1,5 +1,5 @@
 from copy import deepcopy
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -9,10 +9,10 @@ from ..mocks.mock_zeroconf import MockServiceBrowser
 
 
 @pytest.fixture()
-def mock_device(request):
+def mock_device(request, event_loop):
     device = Device(ip=request.cls.ip)
     device._info = deepcopy(request.cls.device_info)
-    device._loop = Mock()
+    device._loop = event_loop
     device._session = AsyncMock()
     device._zeroconf = AsyncMock()
     yield device
