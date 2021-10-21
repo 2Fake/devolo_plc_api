@@ -190,12 +190,13 @@ class Device:
     async def _get_service_info(self, zeroconf: Zeroconf, service_type: str, name: str) -> None:
         """ Get service information, if IP matches. """
         service_info = AsyncServiceInfo(service_type, name)
-        await service_info.async_request(zeroconf, timeout=3000)
+        await service_info.async_request(zeroconf, timeout=3000, question_type=DNSQuestionType.QM)
 
-        if service_info is None or str(ipaddress.ip_address(service_info.addresses[0])) != self.ip:
+        if service_info is None or not service_info.addresses or str(ipaddress.ip_address(
+                service_info.addresses[0])) != self.ip:
             return  # No need to continue, if there are no relevant service information
 
-        self._logger.debug("Adding service info of %s", service_type)
+        self._logger.debug("Adding service info of %s to %s", service_type, service_info.server_key)
         self._info[service_type] = self.info_from_service(service_info)
 
     @staticmethod
