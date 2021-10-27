@@ -83,7 +83,7 @@ class PlcNetApi(Protobuf):
         set_user_name = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceName()
         set_user_name.mac_address = self._mac
         set_user_name.user_device_name = name
-        query = await self._async_post("SetUserDeviceName", content=set_user_name.SerializeToString(), timeout=10.0)
+        query = await self._async_post("SetUserDeviceName", content=set_user_name.SerializeToString())
         response = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceNameResponse()
         response.FromString(await query.aread())  # pylint: disable=no-member
         return bool(not response.result)  # pylint: disable=no-member
