@@ -1,6 +1,7 @@
 import asyncio
 import json
 import pathlib
+from typing import Generator
 
 import pytest
 
@@ -17,14 +18,14 @@ with file.open("r") as fh:
 
 
 @pytest.fixture(autouse=True, scope="class")
-def test_data_fixture(request):
+def test_data_fixture(request: pytest.FixtureRequest) -> None:
     """ Load test data. """
     request.cls.device_info = test_data['device_info']
     request.cls.ip = test_data['ip']
 
 
 @pytest.fixture()
-def event_loop():
+def event_loop() -> Generator[asyncio.events.AbstractEventLoop, None, None]:
     """ Handle the event loop in tests. """
     loop = asyncio.new_event_loop()
     yield loop
