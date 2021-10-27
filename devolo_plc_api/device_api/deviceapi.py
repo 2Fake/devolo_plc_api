@@ -160,7 +160,7 @@ class DeviceApi(Protobuf):
         """
         self._logger.debug("Getting neighbored access points.")
         wifi_neighbor_aps = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiNeighborAPsGet()
-        response = await self._async_get("WifiNeighborAPsGet", timeout=15.0)
+        response = await self._async_get("WifiNeighborAPsGet", timeout=30.0)
         wifi_neighbor_aps.ParseFromString(await response.aread())
         return self._message_to_dict(wifi_neighbor_aps)
 
