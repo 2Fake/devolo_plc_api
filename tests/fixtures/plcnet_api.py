@@ -13,8 +13,7 @@ async def plcnet_api(request: pytest.FixtureRequest) -> AsyncGenerator[PlcNetApi
     with patch("asyncio.get_running_loop", asyncio.new_event_loop):
         asyncio.new_event_loop()
         async with AsyncClient() as client:
-            plcnet_api = PlcNetApi(request.cls.ip, client, request.cls.device_info["_dvl-plcnetapi._tcp.local."])
-            yield plcnet_api
+            yield PlcNetApi(request.cls.ip, client, request.cls.device_info["_dvl-plcnetapi._tcp.local."])
 
 
 @pytest.fixture()

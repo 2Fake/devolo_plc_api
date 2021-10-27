@@ -1,6 +1,6 @@
 import asyncio
 from datetime import date
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 from pytest_mock import MockerFixture
@@ -105,12 +105,12 @@ class TestDevice:
         with patch("devolo_plc_api.device.Device._state_change", state_change):
             mock_device._info["_dvl-plcnetapi._tcp.local."] = EMPTY_INFO
             await mock_device._get_zeroconf_info("_dvl-plcnetapi._tcp.local.")
-            assert mock_service_browser.async_cancel.call_count == 1  # type: ignore
+            assert mock_service_browser.async_cancel.call_count == 1
 
     @pytest.mark.asyncio
     async def test__get_zeroconf_info_device_info_exists(self, mock_device: Device, mock_service_browser: MockServiceBrowser):
         await mock_device._get_zeroconf_info("_dvl-plcnetapi._tcp.local.")
-        assert mock_service_browser.async_cancel.call_count == 0  # type: ignore
+        assert mock_service_browser.async_cancel.call_count == 0
 
     @pytest.mark.asyncio
     def test__state_change_no_service_info(self, mocker: MockerFixture, mock_device: Device):

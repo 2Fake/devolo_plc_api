@@ -23,5 +23,5 @@ def mock_device(request: pytest.FixtureRequest, event_loop: AbstractEventLoop) -
 @pytest.fixture()
 def mock_service_browser() -> Generator[Type[MockServiceBrowser], None, None]:
     with patch("devolo_plc_api.device.AsyncServiceBrowser", MockServiceBrowser) as asb:
-        asb.async_cancel = AsyncMock()  # type: ignore
+        asb.async_cancel.reset_mock()
         yield asb
