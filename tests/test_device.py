@@ -43,6 +43,7 @@ class TestDevice:
             await mock_device.async_connect()
         assert not mock_device._connected
 
+    @pytest.mark.asyncio
     def test_connect(self, mock_device: Device):
         with patch("devolo_plc_api.device.Device.async_connect") as ac:
             mock_device.connect()
