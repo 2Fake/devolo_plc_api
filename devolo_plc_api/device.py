@@ -133,7 +133,7 @@ class Device:
         self._connected = False
 
     def disconnect(self) -> None:
-        """ Disconnect from a device asynchronous. """
+        """ Disconnect from a device synchronous. """
         asyncio.gather(self.async_disconnect())
         self._loop.close()
 
