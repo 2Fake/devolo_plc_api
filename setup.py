@@ -40,7 +40,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "httpx>=0.14,<0.21",
+        "httpx>=0.18",
         "protobuf",
         "zeroconf>=0.32.0",
     ],
