@@ -122,7 +122,7 @@ class Device:
     def connect(self) -> None:
         """ Connect to a device synchronous. """
         self._loop = asyncio.new_event_loop()
-        self._loop.run_until_complete(self.async_connect())
+        asyncio.gather(self.async_connect())
 
     async def async_disconnect(self) -> None:
         """ Disconnect from a device asynchronous. """
