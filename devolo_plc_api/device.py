@@ -122,7 +122,8 @@ class Device:
     def connect(self) -> None:
         """ Connect to a device synchronous. """
         self._loop = asyncio.new_event_loop()
-        asyncio.gather(self.async_connect())
+        asyncio.set_event_loop(self._loop)
+        self._loop.run_until_complete(asyncio.ensure_future(self.async_connect()))
 
     async def async_disconnect(self) -> None:
         """ Disconnect from a device asynchronous. """
@@ -134,7 +135,11 @@ class Device:
 
     def disconnect(self) -> None:
         """ Disconnect from a device synchronous. """
-        asyncio.gather(self.async_disconnect())
+        self._loop.run_until_complete(asyncio.ensure_future(self.async_disconnect()))
+        to_cancel = asyncio.tasks.all_tasks(self._loop)
+        for task in to_cancel:
+            task.cancel()
+        self._loop.run_until_complete(asyncio.tasks.gather(*to_cancel, return_exceptions=True))
         self._loop.close()
 
     async def _get_device_info(self) -> None:

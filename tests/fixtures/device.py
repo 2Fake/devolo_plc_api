@@ -13,8 +13,8 @@ from ..mocks.mock_zeroconf import MockServiceBrowser
 
 @pytest.fixture()
 def mock_device(request: pytest.FixtureRequest, event_loop: AbstractEventLoop) -> Generator[Device, None, None]:
-    selector = "_WindowsSelectorEventLoop" if platform == "win32" else "_UnixSelectorEventLoop"
-    with patch(f"devolo_plc_api.device.asyncio.unix_events.{selector}.close"):
+    selector = "windows_events._WindowsSelectorEventLoop" if platform == "win32" else "unix_events._UnixSelectorEventLoop"
+    with patch(f"devolo_plc_api.device.asyncio.{selector}.close"):
         device = Device(ip=request.cls.ip)
         device._info = deepcopy(request.cls.device_info)
         device._loop = event_loop
