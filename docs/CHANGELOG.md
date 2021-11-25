@@ -4,19 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### [v0.6.4] - 2021/11/24
+### [Unreleased]
+
+### Fixed
+
+- Connecting to multiple devices at the same time works again
+- Zeroconf Browsers terminate correctly in case a device does not answer
+
+## [v0.6.4] - 2021/11/24
 
 ### Fixed
 
 - Running tasks get cleanly canceled on disconnect
 
-### [v0.6.3] - 2021/11/18
+## [v0.6.3] - 2021/11/18
 
 ### Fixed
 
-- Disconncting from a device synchroniously works again
+- Disconnecting from a device synchronously works again
 
-### [v0.6.2] - 2021/10/28
+## [v0.6.2] - 2021/10/28
 
 ### Fixed
 
@@ -26,7 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - The request timeouts were increased
 
-### [v0.6.1] - 2021/10/20
+## [v0.6.1] - 2021/10/20
 
 ### Fixed
 
@@ -122,9 +129,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - Port from mDNS query is now used
-- Get network overview now also works synchroniously
-- Sopping identify device now also works synchroniously
-- Set user device name now also works synchroniously
+- Get network overview now also works synchronously
+- Sopping identify device now also works synchronously
+- Set user device name now also works synchronously
 
 ## [v0.1.0] - 2020/08/28
 

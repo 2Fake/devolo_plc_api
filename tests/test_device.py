@@ -1,15 +1,16 @@
-import asyncio
 from datetime import date
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 from pytest_mock import MockerFixture
 from zeroconf import ServiceStateChange, Zeroconf
 
 from devolo_plc_api.device import EMPTY_INFO, Device
-from devolo_plc_api.device_api.deviceapi import DeviceApi
+from devolo_plc_api.device_api import SERVICE_TYPE as DEVICEAPI
+from devolo_plc_api.device_api import DeviceApi
 from devolo_plc_api.exceptions.device import DeviceNotFound
-from devolo_plc_api.plcnet_api.plcnetapi import PlcNetApi
+from devolo_plc_api.plcnet_api import SERVICE_TYPE as PLCNETAPI
+from devolo_plc_api.plcnet_api import PlcNetApi
 from tests.mocks.mock_zeroconf import MockServiceBrowser
 
 from .mocks.mock_devices import state_change
@@ -66,7 +67,7 @@ class TestDevice:
     @pytest.mark.usefixtures("mock_device_api")
     async def test__get_device_info(self, mock_device: Device):
         with patch("devolo_plc_api.device.Device._get_zeroconf_info"):
-            device_info = self.device_info['_dvl-deviceapi._tcp.local.']  # type: ignore
+            device_info = self.device_info[DEVICEAPI]  # type: ignore
             await mock_device._get_device_info()
             assert mock_device.firmware_date == date.fromisoformat(device_info["properties"]["FirmwareDate"])
             assert mock_device.firmware_version == device_info["properties"]["FirmwareVersion"]
@@ -76,47 +77,42 @@ class TestDevice:
             assert type(mock_device.device) == DeviceApi
 
     @pytest.mark.asyncio
-    @pytest.mark.usefixtures("mock_device_api")
-    async def test__get_device_info_timeout(self, mock_device: Device):
-        with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=Mock()), \
-             patch("asyncio.wait_for", new=AsyncMock(side_effect=asyncio.TimeoutError())):
-            await mock_device._get_device_info()
-            assert mock_device.device is None
-
-    @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_plcnet_api")
     async def test__get_plcnet_info(self, mock_device: Device):
         with patch("devolo_plc_api.device.Device._get_zeroconf_info"):
-            device_info = self.device_info["_dvl-plcnetapi._tcp.local."]  # type: ignore
+            device_info = self.device_info[PLCNETAPI]  # type: ignore
             await mock_device._get_plcnet_info()
             assert mock_device.mac == device_info["properties"]["PlcMacAddress"]
             assert mock_device.technology == device_info["properties"]["PlcTechnology"]
             assert type(mock_device.plcnet) == PlcNetApi
 
     @pytest.mark.asyncio
-    @pytest.mark.usefixtures("mock_plcnet_api")
-    async def test__get_plcnet_info_timeout(self, mock_device: Device):
-        with patch("devolo_plc_api.device.Device._get_zeroconf_info", new=Mock()), \
-             patch("asyncio.wait_for", new=AsyncMock(side_effect=asyncio.TimeoutError())):
-            await mock_device._get_plcnet_info()
-            assert mock_device.plcnet is None
+    async def test__get_zeroconf_info_timeout(self, mock_device: Device):
+        mock_device._info["_http._tcp.local."] = {
+            "properties": None
+        }
+        with patch("devolo_plc_api.device.AsyncServiceBrowser._async_start"), \
+             patch("devolo_plc_api.device.AsyncServiceBrowser._async_cancel"), \
+             patch("asyncio.sleep") as sleep:
+            await mock_device._get_zeroconf_info("_http._tcp.local.")
+            assert sleep.call_count == 300
 
     @pytest.mark.asyncio
     async def test__get_zeroconf_info(self, mock_device: Device, mock_service_browser: MockServiceBrowser):
         with patch("devolo_plc_api.device.Device._state_change", state_change):
-            mock_device._info["_dvl-plcnetapi._tcp.local."] = EMPTY_INFO
-            await mock_device._get_zeroconf_info("_dvl-plcnetapi._tcp.local.")
+            mock_device._info[PLCNETAPI] = EMPTY_INFO
+            await mock_device._get_zeroconf_info(PLCNETAPI)
             assert mock_service_browser.async_cancel.call_count == 1
 
     @pytest.mark.asyncio
     async def test__get_zeroconf_info_device_info_exists(self, mock_device: Device, mock_service_browser: MockServiceBrowser):
-        await mock_device._get_zeroconf_info("_dvl-plcnetapi._tcp.local.")
+        await mock_device._get_zeroconf_info(PLCNETAPI)
         assert mock_service_browser.async_cancel.call_count == 0
 
     @pytest.mark.asyncio
     def test__state_change_no_service_info(self, mocker: MockerFixture, mock_device: Device):
         with patch("devolo_plc_api.device.Zeroconf.get_service_info", return_value=None):
-            service_type = "_dvl-plcnetapi._tcp.local."
+            service_type = PLCNETAPI
             spy_service_info = mocker.spy(mock_device, "info_from_service")
             mock_device._state_change(Zeroconf(), service_type, service_type, ServiceStateChange.Added)
             assert spy_service_info.call_count == 0
@@ -124,19 +120,19 @@ class TestDevice:
     @pytest.mark.asyncio
     def test__state_change_added(self, mock_device: Device):
         with patch("devolo_plc_api.device.Device._get_service_info") as gsi:
-            service_type = "_dvl-plcnetapi._tcp.local."
+            service_type = PLCNETAPI
             mock_device._state_change(Zeroconf(), service_type, service_type, ServiceStateChange.Added)
             assert gsi.call_count == 1
 
     def test__state_change_removed(self, mock_device: Device):
         with patch("devolo_plc_api.device.Device._get_service_info") as gsi:
-            service_type = "_dvl-plcnetapi._tcp.local."
+            service_type = PLCNETAPI
             mock_device._state_change(Zeroconf(), service_type, service_type, ServiceStateChange.Removed)
             assert gsi.call_count == 0
 
     @pytest.mark.asyncio
     async def test__get_service_info(self, mock_device: Device):
-        service_type = "_dvl-plcnetapi._tcp.local."
+        service_type = PLCNETAPI
         with patch("devolo_plc_api.device.AsyncServiceInfo", StubAsyncServiceInfo), \
              patch("devolo_plc_api.device.AsyncServiceInfo.async_request") as ar:
             await mock_device._get_service_info(Zeroconf(), service_type, service_type)

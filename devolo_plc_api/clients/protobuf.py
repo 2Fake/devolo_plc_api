@@ -20,7 +20,6 @@ class Protobuf(ABC):
 
     @abstractmethod
     def __init__(self) -> None:
-        self._loop = asyncio.get_running_loop()
         self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
         self.password: str
@@ -36,7 +35,7 @@ class Protobuf(ABC):
         """ Catch attempts to call methods synchronously. """
 
         def method(*args, **kwargs):
-            return self._loop.run_until_complete(getattr(self, async_method)(*args, **kwargs))
+            return asyncio.run(getattr(self, async_method)(*args, **kwargs))
 
         async_method = f"async_{attr}"
         if hasattr(self.__class__, async_method):

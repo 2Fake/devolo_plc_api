@@ -6,6 +6,7 @@ import time
 from zeroconf import DNSQuestionType, ServiceBrowser, ServiceStateChange, Zeroconf
 
 from ..device import Device
+from ..device_api import SERVICE_TYPE
 
 _devices: dict[str,
                Device] = {}
@@ -17,7 +18,7 @@ async def async_discover_network() -> dict[str, Device]:
 
     :return: Devices accessible via serial number.
     """
-    browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [_add], question_type=DNSQuestionType.QM)
+    browser = ServiceBrowser(Zeroconf(), SERVICE_TYPE, [_add], question_type=DNSQuestionType.QM)
     await asyncio.sleep(3)
     browser.cancel()
     return _devices
@@ -29,7 +30,7 @@ def discover_network() -> dict[str, Device]:
 
     :return: Devices accessible via serial number.
     """
-    browser = ServiceBrowser(Zeroconf(), "_dvl-deviceapi._tcp.local.", [_add], question_type=DNSQuestionType.QM)
+    browser = ServiceBrowser(Zeroconf(), SERVICE_TYPE, [_add], question_type=DNSQuestionType.QM)
     time.sleep(3)
     browser.cancel()
     return _devices

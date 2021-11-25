@@ -5,6 +5,7 @@ from pytest_mock import MockerFixture
 from devolo_plc_api.clients import protobuf
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import LedSettingsSetResponse
 from devolo_plc_api.exceptions.device import DevicePasswordProtected, DeviceUnavailable
+from devolo_plc_api.plcnet_api import SERVICE_TYPE
 
 from .stubs.protobuf import StubProtobuf
 
@@ -17,8 +18,8 @@ class TestProtobuf:
 
     def test_url(self, request: pytest.FixtureRequest, mock_protobuf: StubProtobuf):
         ip = request.cls.ip
-        path = request.cls.device_info["_dvl-plcnetapi._tcp.local."]["properties"]["Path"]
-        version = request.cls.device_info["_dvl-plcnetapi._tcp.local."]["properties"]["Version"]
+        path = request.cls.device_info[SERVICE_TYPE]["properties"]["Path"]
+        version = request.cls.device_info[SERVICE_TYPE]["properties"]["Version"]
         assert mock_protobuf.url == f"http://{ip}:14791/{path}/{version}/"
 
     @pytest.mark.asyncio

@@ -6,6 +6,7 @@ from zeroconf import ServiceStateChange, Zeroconf
 
 import devolo_plc_api.network as network
 from devolo_plc_api.device import Device
+from devolo_plc_api.device_api import SERVICE_TYPE
 
 
 class TestNetwork:
@@ -45,36 +46,36 @@ class TestNetwork:
         }
         with patch("zeroconf.Zeroconf.get_service_info", return_value="service_info"), \
              patch("devolo_plc_api.device.Device.info_from_service", return_value=service_info):
-            network._add(Zeroconf(), "_dvl-deviceapi._tcp.local.", "_dvl-deviceapi._tcp.local.", ServiceStateChange.Added)
+            network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
             assert "1234567890123456" in network._devices
 
     def test__add_wrong_state(self, mocker: MockerFixture):
         with patch("zeroconf.Zeroconf.get_service_info", return_value="service_info"), \
              patch("devolo_plc_api.device.Device.info_from_service", return_value=None):
             spy_device = mocker.spy(Device, "__init__")
-            network._add(Zeroconf(), "_dvl-deviceapi._tcp.local.", "_dvl-deviceapi._tcp.local.", ServiceStateChange.Removed)
+            network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Removed)
             assert spy_device.call_count == 0
 
     def test__add_no_device(self, mocker: MockerFixture):
         with patch("zeroconf.Zeroconf.get_service_info", return_value=None):
             spy_info = mocker.spy(Device, "info_from_service")
-            network._add(Zeroconf(), "_dvl-deviceapi._tcp.local.", "_dvl-deviceapi._tcp.local.", ServiceStateChange.Added)
+            network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
             assert spy_info.call_count == 0
 
     def test__add_no_info(self, mocker: MockerFixture):
         with patch("zeroconf.Zeroconf.get_service_info", return_value="service_info"), \
              patch("devolo_plc_api.device.Device.info_from_service", return_value=None):
             spy_device = mocker.spy(Device, "__init__")
-            network._add(Zeroconf(), "_dvl-deviceapi._tcp.local.", "_dvl-deviceapi._tcp.local.", ServiceStateChange.Added)
+            network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
             assert spy_device.call_count == 0
 
     def test__add_hcu(self, mocker: MockerFixture):
         spy_device = mocker.spy(Device, "__init__")
         with patch("zeroconf.Zeroconf.get_service_info", return_value="service_info"), \
              patch("devolo_plc_api.device.Device.info_from_service", return_value={"properties": {"MT": "2600"}}):
-            network._add(Zeroconf(), "_dvl-deviceapi._tcp.local.", "_dvl-deviceapi._tcp.local.", ServiceStateChange.Added)
+            network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
             assert spy_device.call_count == 0
         with patch("zeroconf.Zeroconf.get_service_info", return_value="service_info"), \
              patch("devolo_plc_api.device.Device.info_from_service", return_value={"properties": {"MT": "2601"}}):
-            network._add(Zeroconf(), "_dvl-deviceapi._tcp.local.", "_dvl-deviceapi._tcp.local.", ServiceStateChange.Added)
+            network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
             assert spy_device.call_count == 0
