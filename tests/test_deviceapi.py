@@ -2,7 +2,7 @@ import pytest
 from google.protobuf.json_format import MessageToDict
 from pytest_httpx import HTTPXMock
 
-from devolo_plc_api.device_api.deviceapi import DeviceApi
+from devolo_plc_api.device_api import DeviceApi
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import LedSettingsGet, LedSettingsSetResponse
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_updatefirmware_pb2 import UpdateFirmwareCheck, UpdateFirmwareStart
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_wifinetwork_pb2 import (WifiConnectedStationsGet,
