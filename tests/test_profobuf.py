@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 import pytest
 from pytest_httpx import HTTPXMock
 from pytest_mock import MockerFixture
@@ -62,3 +64,19 @@ class TestProtobuf:
     async def test__async_post_device_unavailable(self, mock_protobuf: StubProtobuf):
         with pytest.raises(DeviceUnavailable):
             await mock_protobuf._async_post("LedSettingsGet", b"")
+
+    @pytest.mark.asyncio
+    async def test__async_wrong_password_type(self, httpx_mock: HTTPXMock, mock_protobuf: StubProtobuf):
+        httpx_mock.add_response(status_code=HTTPStatus.UNAUTHORIZED)
+        with pytest.raises(DevicePasswordProtected):
+            await mock_protobuf._async_get("LedSettingsGet", b"")
+
+        assert httpx_mock.get_requests()
+        assert mock_protobuf.password == "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+
+        httpx_mock.add_response(status_code=HTTPStatus.UNAUTHORIZED)
+        with pytest.raises(DevicePasswordProtected):
+            await mock_protobuf._async_post("LedSettingsSet", b"")
+
+        assert httpx_mock.get_requests()
+        assert mock_protobuf.password == "113459eb7bb31bddee85ade5230d6ad5d8b2fb52879e00a84ff6ae1067a210d3"

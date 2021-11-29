@@ -1,7 +1,8 @@
+from http import HTTPStatus
 from typing import AsyncGenerator
 
 import pytest
-from httpx import ConnectTimeout, Request
+from httpx import ConnectTimeout, HTTPStatusError, Request, Response
 from pytest_httpx import HTTPXMock
 
 from ..stubs.protobuf import StubProtobuf
@@ -27,6 +28,6 @@ def mock_device_unavailable(httpx_mock: HTTPXMock) -> None:
 def mock_wrong_password(httpx_mock: HTTPXMock) -> None:
 
     def raise_type_error(request: Request, extensions: str):
-        raise TypeError
+        raise HTTPStatusError(request=request, message=extensions, response=Response(status_code=HTTPStatus.UNAUTHORIZED))
 
     httpx_mock.add_callback(raise_type_error)
