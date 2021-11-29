@@ -1,12 +1,20 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import logging
 from abc import ABC, abstractmethod
 from typing import Any, Callable
 
 from google.protobuf.json_format import MessageToDict
-from httpx import AsyncClient, ConnectError, ConnectTimeout, DigestAuth, ReadTimeout, RemoteProtocolError, Response
+from httpx import (AsyncClient,
+                   ConnectError,
+                   ConnectTimeout,
+                   DigestAuth,
+                   HTTPStatusError,
+                   ReadTimeout,
+                   RemoteProtocolError,
+                   Response)
 
 from ..exceptions.device import DevicePasswordProtected, DeviceUnavailable
 
@@ -48,15 +56,24 @@ class Protobuf(ABC):
         """ The base URL to query. """
         return f"http://{self._ip}:{self._port}/{self._path}/{self._version}/"
 
+    async def _call(self, url, http_method, timeout):
+        method = getattr(self._session, http_method)
+        response = await method(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
+        response.raise_for_status()
+        return response
+
     async def _async_get(self, sub_url: str, timeout: float = TIMEOUT) -> Response:
         """ Query URL asynchronously. """
         url = f"{self.url}{sub_url}"
         self._logger.debug("Getting from %s", url)
         try:
-            return await self._session.get(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
+            return await self._call(url, "get", timeout)
+        except HTTPStatusError:
+            self.password = hashlib.sha256(self.password.encode('utf-8')).hexdigest()
+            return await self._call(url, "get", timeout)
         except TypeError:
             raise DevicePasswordProtected("The used password is wrong.") from None
-        except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
+        except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError) as e:
             raise DeviceUnavailable("The device is currenctly not available. Maybe on standby?") from None
 
     async def _async_post(self, sub_url: str, content: bytes, timeout: float = TIMEOUT) -> Response:
@@ -64,7 +81,10 @@ class Protobuf(ABC):
         url = f"{self.url}{sub_url}"
         self._logger.debug("Posting to %s", url)
         try:
-            return await self._session.post(url, auth=DigestAuth(self._user, self.password), content=content, timeout=timeout)
+            return await self._call(url, "post", timeout)
+        except HTTPStatusError:
+            self.password = hashlib.sha256(self.password.encode('utf-8')).hexdigest()
+            return await self._call(url, "post", timeout)
         except TypeError:
             raise DevicePasswordProtected("The used password is wrong.") from None
         except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
