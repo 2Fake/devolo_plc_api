@@ -104,7 +104,7 @@ class DeviceApi(Protobuf):
         uptime = devolo_idl_proto_deviceapi_restart_pb2.UptimeGetResponse()
         response = await self._async_get("UptimeGet")
         uptime.ParseFromString(await response.aread())
-        return self._message_to_dict(uptime)
+        return self._message_to_dict(uptime)["uptime"]
 
     @_feature("update")
     async def async_check_firmware_available(self) -> dict[str, Any]:
