@@ -23,6 +23,12 @@ async def run():
         # If the state was changed successfully, True is returned, otherwise False.
         print("success" if await dpa.device.async_set_led_setting(enable=True) else "failed")
 
+        # Restart the device. If the restart will happen shortly, True is returned, otherwise False.
+        print("success" if await dpa.device.async_restart() else "failed")
+
+        # Get uptime of the device. This value can only be used as a strict monotonically increasing number and therefore has no unit.
+        print(await dpa.device.async_uptime())
+
         # Check for new firmware versions
         # {'result': 'UPDATE_NOT_AVAILABLE', 'new_firmware_version': ''}
         print(await dpa.device.async_check_firmware_available())
@@ -55,7 +61,7 @@ async def run():
         print("success" if await dpa.device.async_set_wifi_guest_access(enable=False) else "failed")
 
         # Get details about other access points in your neighborhood: MAC address, SSID, wifi band, used channel, signal
-        # strength in DB and a value from 1 to 5, if you would want to map the signal strenght to a signal bars.
+        # strength in DB and a value from 1 to 5, if you would want to map the signal strength to a signal bars.
         # {'neighbor_aps':
         #   [
         #     {'mac_address': 'AA:BB:CC:DD:EE:FF',
@@ -111,8 +117,8 @@ async def run():
         # }
         print(await dpa.plcnet.async_get_network_overview())
 
-        # Identify the device by making the PLC LED blink. This call returns directly with True, if identifing was started
-        # succcessfully, otherwise False. However, the LED stays blinking for two minutes.
+        # Identify the device by making the PLC LED blink. This call returns directly with True, if identifying was started
+        # successfully, otherwise False. However, the LED stays blinking for two minutes.
         print("success" if await dpa.plcnet.async_identify_device_start() else "failed")
 
         # Stop identify the device if you don't want to wait for the timeout.

@@ -6,10 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### [Unreleased]
 
+### Added
+
+#### Device API
+
+- Restart device
+- Query uptime as strict monotonically increasing number
+
 ### Fixed
 
 - Connecting to multiple devices at the same time works again
 - Zeroconf Browsers terminate correctly in case a device does not answer
+- Accessing password protected LAN devices works again
 
 ## [v0.6.4] - 2021/11/24
 
