@@ -56,12 +56,6 @@ class Protobuf(ABC):
         """ The base URL to query. """
         return f"http://{self._ip}:{self._port}/{self._path}/{self._version}/"
 
-    async def _call(self, url, http_method, timeout):
-        method = getattr(self._session, http_method)
-        response = await method(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
-        response.raise_for_status()
-        return response
-
     async def _async_get(self, sub_url: str, timeout: float = TIMEOUT) -> Response:
         """ Query URL asynchronously. """
         url = f"{self.url}{sub_url}"
