@@ -65,27 +65,49 @@ class Protobuf(ABC):
         """ Query URL asynchronously. """
         url = f"{self.url}{sub_url}"
         self._logger.debug("Getting from %s", url)
+
+        async def get():
+            response = await self._session.get(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
+            response.raise_for_status()
+            return response
+
         try:
-            return await self._call(url, "get", timeout)
-        except HTTPStatusError:
-            self.password = hashlib.sha256(self.password.encode('utf-8')).hexdigest()
-            return await self._call(url, "get", timeout)
-        except TypeError:
-            raise DevicePasswordProtected("The used password is wrong.") from None
-        except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError) as e:
+            return await get()
+        except HTTPStatusError as e:
+            if e.response.status_code == 401:
+                try:
+                    self.password = hashlib.sha256(self.password.encode('utf-8')).hexdigest()
+                    return await get()
+                except HTTPStatusError:
+                    raise DevicePasswordProtected("The used password is wrong.") from None
+            raise e
+        except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
             raise DeviceUnavailable("The device is currenctly not available. Maybe on standby?") from None
 
     async def _async_post(self, sub_url: str, content: bytes, timeout: float = TIMEOUT) -> Response:
         """ Post data asynchronously. """
         url = f"{self.url}{sub_url}"
         self._logger.debug("Posting to %s", url)
+
+        async def post():
+            response = await self._session.post(url,
+                                                auth=DigestAuth(self._user,
+                                                                self.password),
+                                                content=content,
+                                                timeout=timeout)
+            response.raise_for_status()
+            return response
+
         try:
-            return await self._call(url, "post", timeout)
-        except HTTPStatusError:
-            self.password = hashlib.sha256(self.password.encode('utf-8')).hexdigest()
-            return await self._call(url, "post", timeout)
-        except TypeError:
-            raise DevicePasswordProtected("The used password is wrong.") from None
+            return await post()
+        except HTTPStatusError as e:
+            if e.response.status_code == 401:
+                try:
+                    self.password = hashlib.sha256(self.password.encode('utf-8')).hexdigest()
+                    return await post()
+                except HTTPStatusError:
+                    raise DevicePasswordProtected("The used password is wrong.") from None
+            raise e
         except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
             raise DeviceUnavailable("The device is currenctly not available. Maybe on standby?") from None
 
