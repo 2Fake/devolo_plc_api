@@ -89,7 +89,7 @@ class DeviceApi(Protobuf):
         """
         self._logger.debug("Restarting the device.")
         restart = devolo_idl_proto_deviceapi_restart_pb2.RestartResponse()
-        response = await self._async_post("Restart", content="")
+        response = await self._async_post("Restart", content=b"")
         restart.ParseFromString(await response.aread())
         return self._message_to_dict(restart)["result"] == "SUCCESS"
 
