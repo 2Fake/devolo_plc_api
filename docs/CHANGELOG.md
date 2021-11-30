@@ -4,12 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### [Unreleased]
+### [v0.7.0] - 2021/11/30
+
+### Added
+
+#### Device API
+
+- Restart device
+- Query uptime as strict monotonically increasing number
 
 ### Fixed
 
 - Connecting to multiple devices at the same time works again
 - Zeroconf Browsers terminate correctly in case a device does not answer
+- Accessing password protected LAN devices works again
 
 ## [v0.6.4] - 2021/11/24
 

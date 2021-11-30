@@ -1,12 +1,21 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import logging
 from abc import ABC, abstractmethod
+from http import HTTPStatus
 from typing import Any, Callable
 
 from google.protobuf.json_format import MessageToDict
-from httpx import AsyncClient, ConnectError, ConnectTimeout, DigestAuth, ReadTimeout, RemoteProtocolError, Response
+from httpx import (AsyncClient,
+                   ConnectError,
+                   ConnectTimeout,
+                   DigestAuth,
+                   HTTPStatusError,
+                   ReadTimeout,
+                   RemoteProtocolError,
+                   Response)
 
 from ..exceptions.device import DevicePasswordProtected, DeviceUnavailable
 
@@ -51,23 +60,43 @@ class Protobuf(ABC):
         """ Query URL asynchronously. """
         url = f"{self.url}{sub_url}"
         self._logger.debug("Getting from %s", url)
+
         try:
-            return await self._session.get(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
-        except TypeError:
+            response = await self._session.get(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
+            if response.status_code == HTTPStatus.UNAUTHORIZED:
+                self.password = hashlib.sha256(self.password.encode("utf-8")).hexdigest()
+                response = await self._session.get(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
+            response.raise_for_status()
+            return response
+        except HTTPStatusError:
             raise DevicePasswordProtected("The used password is wrong.") from None
         except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
-            raise DeviceUnavailable("The device is currenctly not available. Maybe on standby?") from None
+            raise DeviceUnavailable("The device is currently not available. Maybe on standby?") from None
 
     async def _async_post(self, sub_url: str, content: bytes, timeout: float = TIMEOUT) -> Response:
         """ Post data asynchronously. """
         url = f"{self.url}{sub_url}"
         self._logger.debug("Posting to %s", url)
+
         try:
-            return await self._session.post(url, auth=DigestAuth(self._user, self.password), content=content, timeout=timeout)
-        except TypeError:
+            response = await self._session.post(url,
+                                                auth=DigestAuth(self._user,
+                                                                self.password),
+                                                content=content,
+                                                timeout=timeout)
+            if response.status_code == HTTPStatus.UNAUTHORIZED:
+                self.password = hashlib.sha256(self.password.encode("utf-8")).hexdigest()
+                response = await self._session.post(url,
+                                                    auth=DigestAuth(self._user,
+                                                                    self.password),
+                                                    content=content,
+                                                    timeout=timeout)
+            response.raise_for_status()
+            return response
+        except HTTPStatusError:
             raise DevicePasswordProtected("The used password is wrong.") from None
         except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
-            raise DeviceUnavailable("The device is currenctly not available. Maybe on standby?") from None
+            raise DeviceUnavailable("The device is currently not available. Maybe on standby?") from None
 
     @staticmethod
     def _message_to_dict(message) -> dict[str, Any]:

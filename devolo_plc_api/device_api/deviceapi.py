@@ -7,6 +7,7 @@ from httpx import AsyncClient
 from ..clients.protobuf import Protobuf
 from ..exceptions.feature import FeatureNotSupported
 from . import (devolo_idl_proto_deviceapi_ledsettings_pb2,
+               devolo_idl_proto_deviceapi_restart_pb2,
                devolo_idl_proto_deviceapi_updatefirmware_pb2,
                devolo_idl_proto_deviceapi_wifinetwork_pb2)
 
@@ -78,6 +79,33 @@ class DeviceApi(Protobuf):
         response = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsSetResponse()
         response.FromString(await query.aread())  # pylint: disable=no-member
         return bool(not response.result)  # pylint: disable=no-member
+
+    @_feature("restart")
+    async def async_restart(self) -> bool:
+        """
+        Restart the device. This feature only works on devices, that announce the restart feature.
+
+        :return: True if restart is started, otherwise False
+        """
+        self._logger.debug("Restarting the device.")
+        restart = devolo_idl_proto_deviceapi_restart_pb2.RestartResponse()
+        response = await self._async_post("Restart", content=b"")
+        restart.ParseFromString(await response.aread())
+        return self._message_to_dict(restart)["result"] == "SUCCESS"
+
+    @_feature("restart")
+    async def async_uptime(self) -> int:
+        """
+        Get the uptime of the device. This feature only works on devices, that announce the restart feature. It can only be used
+        as a strict monotonically increasing number and therefore has no unit.
+
+        :return: The uptime without unit
+        """
+        self._logger.debug("Get uptime.")
+        uptime = devolo_idl_proto_deviceapi_restart_pb2.UptimeGetResponse()
+        response = await self._async_get("UptimeGet")
+        uptime.ParseFromString(await response.aread())
+        return int(self._message_to_dict(uptime)["uptime"])
 
     @_feature("update")
     async def async_check_firmware_available(self) -> dict[str, Any]:
