@@ -94,11 +94,12 @@ class DeviceApi(Protobuf):
         return self._message_to_dict(restart)["result"] == "SUCCESS"
 
     @_feature("restart")
-    async def async_uptime_get(self) -> int:
+    async def async_uptime(self) -> int:
         """
-        Get the uptime of the device. This feature only works on devices, that announce the restart feature.
+        Get the uptime of the device. This feature only works on devices, that announce the restart feature. It can only be used
+        as a strict monotonically increasing number and therefore has no unit.
 
-        :return: The uptime as integer
+        :return: The uptime without unit
         """
         self._logger.debug("Get uptime.")
         uptime = devolo_idl_proto_deviceapi_restart_pb2.UptimeGetResponse()

@@ -2,8 +2,9 @@ import pytest
 from google.protobuf.json_format import MessageToDict
 from pytest_httpx import HTTPXMock
 
-from devolo_plc_api.device_api.deviceapi import DeviceApi
+from devolo_plc_api.device_api import DeviceApi
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import LedSettingsGet, LedSettingsSetResponse
+from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_restart_pb2 import RestartResponse, UptimeGetResponse
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_updatefirmware_pb2 import UpdateFirmwareCheck, UpdateFirmwareStart
 from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_wifinetwork_pb2 import (WifiConnectedStationsGet,
                                                                                   WifiGuestAccessGet,
@@ -56,6 +57,32 @@ class TestDeviceApi:
         led_setting_set = LedSettingsSetResponse()
         httpx_mock.add_response(data=led_setting_set.SerializeToString())
         assert device_api.set_led_setting(True)
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("feature", ["restart"])
+    async def test_async_restart(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        restart = RestartResponse()
+        httpx_mock.add_response(data=restart.SerializeToString())
+        assert await device_api.async_restart()
+
+    @pytest.mark.parametrize("feature", ["restart"])
+    def test_restart(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        restart = RestartResponse()
+        httpx_mock.add_response(data=restart.SerializeToString())
+        assert device_api.restart()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("feature", ["restart"])
+    async def test_async_uptime(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        uptime = UptimeGetResponse()
+        httpx_mock.add_response(data=uptime.SerializeToString())
+        assert await device_api.async_uptime() == 0
+
+    @pytest.mark.parametrize("feature", ["restart"])
+    def test_uptime(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        uptime = UptimeGetResponse()
+        httpx_mock.add_response(data=uptime.SerializeToString())
+        assert device_api.uptime() == 0
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["update"])
