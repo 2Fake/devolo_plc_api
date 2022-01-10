@@ -52,7 +52,7 @@ setup(
             "pytest",
             "pytest-asyncio",
             "pytest-cov",
-            "pytest-httpx>=0.12",
+            "pytest-httpx>=0.16",
             "pytest-mock",
         ],
     },
