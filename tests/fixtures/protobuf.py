@@ -28,6 +28,8 @@ def mock_device_unavailable(httpx_mock: HTTPXMock) -> None:
 def mock_wrong_password(httpx_mock: HTTPXMock) -> None:
 
     def raise_type_error(request: Request):
-        raise HTTPStatusError(request=request, message=request.extensions, response=Response(status_code=HTTPStatus.UNAUTHORIZED))
+        raise HTTPStatusError(request=request,
+                              message=request.extensions,
+                              response=Response(status_code=HTTPStatus.UNAUTHORIZED))
 
     httpx_mock.add_callback(raise_type_error)
