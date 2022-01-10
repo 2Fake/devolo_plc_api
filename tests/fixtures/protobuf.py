@@ -18,8 +18,8 @@ async def mock_protobuf() -> AsyncGenerator[StubProtobuf, None]:
 @pytest.fixture()
 def mock_device_unavailable(httpx_mock: HTTPXMock) -> None:
 
-    def raise_type_error(request: Request, extensions: str):
-        raise ConnectTimeout(request=request, message=extensions)
+    def raise_type_error(request: Request):
+        raise ConnectTimeout(request=request, message=request.extensions)
 
     httpx_mock.add_callback(raise_type_error)
 
@@ -27,7 +27,7 @@ def mock_device_unavailable(httpx_mock: HTTPXMock) -> None:
 @pytest.fixture()
 def mock_wrong_password(httpx_mock: HTTPXMock) -> None:
 
-    def raise_type_error(request: Request, extensions: str):
-        raise HTTPStatusError(request=request, message=extensions, response=Response(status_code=HTTPStatus.UNAUTHORIZED))
+    def raise_type_error(request: Request):
+        raise HTTPStatusError(request=request, message=request.extensions, response=Response(status_code=HTTPStatus.UNAUTHORIZED))
 
     httpx_mock.add_callback(raise_type_error)
