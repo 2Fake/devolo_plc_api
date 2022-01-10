@@ -32,7 +32,7 @@ class PlcNetApi(Protobuf):
 
         self.password = ""  # PLC API is not password protected.
 
-    async def async_get_network_overview(self) -> dict[str, Any]:
+    async def async_get_network_overview(self) -> dict[str, dict]:
         """
         Get a PLC network overview.
 
@@ -46,7 +46,7 @@ class PlcNetApi(Protobuf):
 
     async def async_identify_device_start(self) -> bool:
         """
-        Make PLC LED of a device blick to identify it.
+        Make PLC LED of a device blink to identify it.
 
         :return: True, if identifying was successfully started, otherwise False
         """
@@ -60,7 +60,7 @@ class PlcNetApi(Protobuf):
 
     async def async_identify_device_stop(self) -> bool:
         """
-        Stop the PLC LED blicking.
+        Stop the PLC LED blinking.
 
         :return: True, if identifying was successfully stopped, otherwise False
         """
@@ -72,7 +72,7 @@ class PlcNetApi(Protobuf):
         response.FromString(await query.aread())  # pylint: disable=no-member
         return bool(not response.result)  # pylint: disable=no-member
 
-    async def async_set_user_device_name(self, name) -> bool:
+    async def async_set_user_device_name(self, name: str) -> bool:
         """
         Set device name.
 
