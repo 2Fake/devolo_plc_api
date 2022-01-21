@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Callable
+import functools
+from typing import Any, Callable, TypeVar
 
 from httpx import AsyncClient
 
@@ -10,6 +11,25 @@ from . import (devolo_idl_proto_deviceapi_ledsettings_pb2,
                devolo_idl_proto_deviceapi_restart_pb2,
                devolo_idl_proto_deviceapi_updatefirmware_pb2,
                devolo_idl_proto_deviceapi_wifinetwork_pb2)
+
+ReturnType = TypeVar('ReturnType')
+
+
+def _feature(feature: str) -> Callable[[Callable[..., ReturnType]], Callable[..., ReturnType]]:
+    """ Decorator to filter unsupported features before querying the device. """
+
+    def feature_decorator(method: Callable[..., ReturnType]) -> Callable[..., ReturnType]:
+
+        @functools.wraps(method)
+        def wrapper(self, *args: Any, **kwargs: Any) -> ReturnType:
+            if feature in self.features:
+                return method(self, *args, **kwargs)
+            else:
+                raise FeatureNotSupported(f"The device does not support {method}.")
+
+        return wrapper
+
+    return feature_decorator
 
 
 class DeviceApi(Protobuf):
@@ -35,21 +55,6 @@ class DeviceApi(Protobuf):
         features = info["properties"].get("Features", "")
         self.features: list[str] = features.split(",") if features else ["reset", "update", "led", "intmtg"]
         self.password = ""
-
-    def _feature(feature: str):  # type: ignore  # pylint: disable=no-self-argument
-        """ Decorator to filter unsupported features before querying the device. """
-
-        def feature_decorator(method: Callable):
-
-            def wrapper(self, *args: Any, **kwargs: Any):
-                if feature in self.features:
-                    return method(self, *args, **kwargs)
-                else:
-                    raise FeatureNotSupported(f"The device does not support {method}.")
-
-            return wrapper
-
-        return feature_decorator
 
     @_feature("led")
     async def async_get_led_setting(self) -> dict[str, str]:
