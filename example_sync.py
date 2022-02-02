@@ -24,7 +24,8 @@ def run():
         # Restart the device. If the restart will happen shortly, True is returned, otherwise False.
         print("success" if dpa.device.restart() else "failed")
 
-        # Get uptime of the device. This value can only be used as a strict monotonically increasing number and therefore has no unit.
+        # Get uptime of the device. This value can only be used as a strict monotonically increasing number and therefore has
+        # no unit.
         print(dpa.device.uptime())
 
         # Check for new firmware versions

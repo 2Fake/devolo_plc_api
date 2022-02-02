@@ -101,8 +101,8 @@ class DeviceApi(Protobuf):
     @_feature("restart")
     async def async_uptime(self) -> int:
         """
-        Get the uptime of the device. This feature only works on devices, that announce the restart feature. It can only be used
-        as a strict monotonically increasing number and therefore has no unit.
+        Get the uptime of the device. This feature only works on devices, that announce the restart feature. It can only be
+        used as a strict monotonically increasing number and therefore has no unit.
 
         :return: The uptime without unit
         """

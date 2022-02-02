@@ -19,10 +19,7 @@ from .exceptions.device import DeviceNotFound
 from .plcnet_api import SERVICE_TYPE as PLCNETAPI
 from .plcnet_api import PlcNetApi
 
-EMPTY_INFO: dict[str,
-                 Any] = {
-                     "properties": {}
-                 }
+EMPTY_INFO: dict[str, Any] = {"properties": {}}
 
 
 class Device:
@@ -37,10 +34,8 @@ class Device:
 
     def __init__(self,
                  ip: str,
-                 plcnetapi: dict[str,
-                                 Any] | None = None,
-                 deviceapi: dict[str,
-                                 Any] | None = None,
+                 plcnetapi: dict[str, Any] | None = None,  # yapf: disable
+                 deviceapi: dict[str, Any] | None = None,  # yapf: disable
                  zeroconf_instance: AsyncZeroconf | Zeroconf | None = None) -> None:
         self.firmware_date = date.fromtimestamp(0)
         self.firmware_version = ""
@@ -56,12 +51,10 @@ class Device:
         self.plcnet: PlcNetApi | None = None
 
         self._connected = False
-        self._info: dict[str,
-                         dict[str,
-                              Any]] = {
-                                  PLCNETAPI: plcnetapi or EMPTY_INFO,
-                                  DEVICEAPI: deviceapi or EMPTY_INFO,
-                              }
+        self._info: dict[str, dict[str, Any]] = {
+            PLCNETAPI: plcnetapi or EMPTY_INFO,
+            DEVICEAPI: deviceapi or EMPTY_INFO,
+        }   # yapf: disable
         self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
         self._password = ""
         self._session_instance: httpx.AsyncClient | None = None

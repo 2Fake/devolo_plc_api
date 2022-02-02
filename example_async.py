@@ -26,7 +26,8 @@ async def run():
         # Restart the device. If the restart will happen shortly, True is returned, otherwise False.
         print("success" if await dpa.device.async_restart() else "failed")
 
-        # Get uptime of the device. This value can only be used as a strict monotonically increasing number and therefore has no unit.
+        # Get uptime of the device. This value can only be used as a strict monotonically increasing number and therefore has
+        # no unit.
         print(await dpa.device.async_uptime())
 
         # Check for new firmware versions
