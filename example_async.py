@@ -124,6 +124,10 @@ async def run():
         # Stop identify the device if you don't want to wait for the timeout.
         print("success" if await dpa.plcnet.async_identify_device_start() else "failed")
 
+        # Start pairing the device. This call returns directly with True, if pairing was started successfully, otherwise False.
+        # However, the device stays in pairing mode for up to three minutes.
+        print("success" if await dpa.plcnet.async_pair_device() else "failed")
+
         # Set the user device name. If the name was changed successfully, True is returned, otherwise False.
         print("success" if await dpa.plcnet.async_set_user_device_name(name="New name") else "failed")
 
