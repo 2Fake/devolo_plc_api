@@ -19,7 +19,7 @@ from .exceptions.device import DeviceNotFound
 from .plcnet_api import SERVICE_TYPE as PLCNETAPI
 from .plcnet_api import PlcNetApi
 
-EMPTY_INFO: dict[str, Any] = {"properties": {}}
+EMPTY_INFO: dict[str, Any] = {"properties": {}}  # yapf: disable
 
 
 class Device:
