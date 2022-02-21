@@ -1,9 +1,9 @@
 from datetime import date
-from unittest.mock import Mock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 from pytest_mock import MockerFixture
-from zeroconf import ServiceStateChange, Zeroconf
+from zeroconf import ServiceStateChange
 
 from devolo_plc_api.device import EMPTY_INFO, Device
 from devolo_plc_api.device_api import SERVICE_TYPE as DEVICEAPI
@@ -29,9 +29,10 @@ class TestDevice:
     async def test_async_connect(self, mock_device: Device):
         with patch("devolo_plc_api.device.Device._get_device_info") as gdi, \
              patch("devolo_plc_api.device.Device._get_plcnet_info") as gpi:
+            mock_device._zeroconf_instance = AsyncMock()
             mock_device.device = object  # type: ignore
             mock_device.plcnet = object  # type: ignore
-            await mock_device.async_connect()
+            await mock_device.async_connect(session_instance=AsyncMock())
             assert gdi.call_count == 1
             assert gpi.call_count == 1
             assert mock_device._connected
@@ -41,6 +42,7 @@ class TestDevice:
         with patch("devolo_plc_api.device.Device._get_device_info"), \
              patch("devolo_plc_api.device.Device._get_plcnet_info"), \
              pytest.raises(DeviceNotFound):
+            mock_device._zeroconf_instance = AsyncMock()
             await mock_device.async_connect()
         assert not mock_device._connected
 
@@ -110,24 +112,24 @@ class TestDevice:
         assert mock_service_browser.async_cancel.call_count == 0
 
     @pytest.mark.asyncio
-    def test__state_change_no_service_info(self, mocker: MockerFixture, mock_device: Device):
-        with patch("devolo_plc_api.device.Zeroconf.get_service_info", return_value=None):
-            service_type = PLCNETAPI
-            spy_service_info = mocker.spy(mock_device, "info_from_service")
-            mock_device._state_change(Zeroconf(), service_type, service_type, ServiceStateChange.Added)
-            assert spy_service_info.call_count == 0
+    async def test__state_change_no_service_info(self, mocker: MockerFixture, mock_device: Device):
+        service_type = PLCNETAPI
+        spy_service_info = mocker.spy(mock_device, "info_from_service")
+        mock_device._state_change(Mock(), service_type, service_type, ServiceStateChange.Added)
+        assert spy_service_info.call_count == 0
 
     @pytest.mark.asyncio
-    def test__state_change_added(self, mock_device: Device):
+    async def test__state_change_added(self, mock_device: Device):
         with patch("devolo_plc_api.device.Device._get_service_info") as gsi:
             service_type = PLCNETAPI
-            mock_device._state_change(Zeroconf(), service_type, service_type, ServiceStateChange.Added)
+            mock_device._state_change(Mock(), service_type, service_type, ServiceStateChange.Added)
             assert gsi.call_count == 1
 
-    def test__state_change_removed(self, mock_device: Device):
+    @pytest.mark.asyncio
+    async def test__state_change_removed(self, mock_device: Device):
         with patch("devolo_plc_api.device.Device._get_service_info") as gsi:
             service_type = PLCNETAPI
-            mock_device._state_change(Zeroconf(), service_type, service_type, ServiceStateChange.Removed)
+            mock_device._state_change(Mock(), service_type, service_type, ServiceStateChange.Removed)
             assert gsi.call_count == 0
 
     @pytest.mark.asyncio
@@ -135,7 +137,7 @@ class TestDevice:
         service_type = PLCNETAPI
         with patch("devolo_plc_api.device.AsyncServiceInfo", StubAsyncServiceInfo), \
              patch("devolo_plc_api.device.AsyncServiceInfo.async_request") as ar:
-            await mock_device._get_service_info(Zeroconf(), service_type, service_type)
+            await mock_device._get_service_info(Mock(), service_type, service_type)
             assert ar.call_count == 1
             assert mock_device._info[service_type]["properties"]["new"] == "value"
 

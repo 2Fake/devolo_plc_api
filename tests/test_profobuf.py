@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 import pytest
+from httpx import ConnectTimeout
 from pytest_httpx import HTTPXMock
 from pytest_mock import MockerFixture
 
@@ -31,14 +32,14 @@ class TestProtobuf:
         assert httpx_mock.get_request()
 
     @pytest.mark.asyncio
-    @pytest.mark.usefixtures("mock_wrong_password")
-    async def test__async_get_wrong_password(self, mock_protobuf: StubProtobuf):
+    async def test__async_get_wrong_password(self, httpx_mock: HTTPXMock, mock_protobuf: StubProtobuf):
+        httpx_mock.add_response(status_code=401)
         with pytest.raises(DevicePasswordProtected):
             await mock_protobuf._async_get("LedSettingsGet")
 
     @pytest.mark.asyncio
-    @pytest.mark.usefixtures("mock_device_unavailable")
-    async def test__async_get_device_unavailable(self, mock_protobuf: StubProtobuf):
+    async def test__async_get_device_unavailable(self, httpx_mock: HTTPXMock, mock_protobuf: StubProtobuf):
+        httpx_mock.add_exception(ConnectTimeout("ConnectTimeout"))
         with pytest.raises(DeviceUnavailable):
             await mock_protobuf._async_get("LedSettingsGet")
 
@@ -54,14 +55,14 @@ class TestProtobuf:
         assert httpx_mock.get_request()
 
     @pytest.mark.asyncio
-    @pytest.mark.usefixtures("mock_wrong_password")
-    async def test__async_post_wrong_password(self, mock_protobuf: StubProtobuf):
+    async def test__async_post_wrong_password(self, httpx_mock: HTTPXMock, mock_protobuf: StubProtobuf):
+        httpx_mock.add_response(status_code=401)
         with pytest.raises(DevicePasswordProtected):
             await mock_protobuf._async_post("LedSettingsGet", b"")
 
     @pytest.mark.asyncio
-    @pytest.mark.usefixtures("mock_device_unavailable")
-    async def test__async_post_device_unavailable(self, mock_protobuf: StubProtobuf):
+    async def test__async_post_device_unavailable(self, httpx_mock: HTTPXMock, mock_protobuf: StubProtobuf):
+        httpx_mock.add_exception(ConnectTimeout("ConnectTimeout"))
         with pytest.raises(DeviceUnavailable):
             await mock_protobuf._async_post("LedSettingsGet", b"")
 
