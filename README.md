@@ -14,7 +14,7 @@ Defining the system requirements with exact versions typically is difficult. But
 * Linux
 * Python 3.8.12
 * pip 20.2.4
-* httpx 0.19.0
+* httpx 0.21.0
 * protobuf 3.17.3
 * zeroconf 0.36.8
 
@@ -23,7 +23,7 @@ Other versions and even other operating systems might work. Feel free to tell us
 * pytest 6.2.5
 * pytest-asyncio 0.15.1
 * pytest-mock 3.6.1
-* pytest-httpx 0.13
+* pytest-httpx 0.18
 
 ## Versioning
 
