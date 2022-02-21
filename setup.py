@@ -40,7 +40,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "httpx>=0.18",
+        "httpx>=0.21.0",
         "protobuf",
         "zeroconf>=0.32.0",
     ],
@@ -52,7 +52,7 @@ setup(
             "pytest",
             "pytest-asyncio",
             "pytest-cov",
-            "pytest-httpx>=0.16",
+            "pytest-httpx>=0.18.0",
             "pytest-mock",
         ],
     },
