@@ -1,3 +1,4 @@
+"""The devolo plcnet API."""
 from .plcnetapi import PlcNetApi
 
 SERVICE_TYPE = "_dvl-plcnetapi._tcp.local."

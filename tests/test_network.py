@@ -10,46 +10,36 @@ from devolo_plc_api.device_api import SERVICE_TYPE
 
 
 class TestNetwork:
-
     @pytest.mark.asyncio
     async def test_async_discover_network(self):
-        device = {
-            "1234567890123456": Device(ip="123.123.123.123")
-        }
-        with patch("devolo_plc_api.network.Zeroconf"), \
-             patch("devolo_plc_api.network.ServiceBrowser"), \
-             patch("asyncio.sleep"):
+        device = {"1234567890123456": Device(ip="123.123.123.123")}
+        with patch("devolo_plc_api.network.Zeroconf"), patch("devolo_plc_api.network.ServiceBrowser"), patch("asyncio.sleep"):
             network._devices = device
             discovered = await network.async_discover_network()
             assert discovered == device
 
     def test_discover_network(self):
-        device = {
-            "1234567890123456": Device(ip="123.123.123.123")
-        }
-        with patch("devolo_plc_api.network.Zeroconf"), \
-             patch("devolo_plc_api.network.ServiceBrowser"), \
-             patch("time.sleep"):
+        device = {"1234567890123456": Device(ip="123.123.123.123")}
+        with patch("devolo_plc_api.network.Zeroconf"), patch("devolo_plc_api.network.ServiceBrowser"), patch("time.sleep"):
             network._devices = device
             discovered = network.discover_network()
             assert discovered == device
 
     def test__add(self):
         service_info = {
-            "properties": {
-                "MT": "2673",
-                "SN": "1234567890123456"
-            },
+            "properties": {"MT": "2673", "SN": "1234567890123456"},
             "address": "123.123.123.123",
         }
-        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), \
-             patch("devolo_plc_api.device.Device.info_from_service", return_value=service_info):
+        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), patch(
+            "devolo_plc_api.device.Device.info_from_service", return_value=service_info
+        ):
             network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
             assert "1234567890123456" in network._devices
 
     def test__add_wrong_state(self, mocker: MockerFixture):
-        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), \
-             patch("devolo_plc_api.device.Device.info_from_service", return_value=None):
+        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), patch(
+            "devolo_plc_api.device.Device.info_from_service", return_value=None
+        ):
             spy_device = mocker.spy(Device, "__init__")
             network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Removed)
             assert spy_device.call_count == 0
@@ -61,19 +51,22 @@ class TestNetwork:
             assert spy_info.call_count == 0
 
     def test__add_no_info(self, mocker: MockerFixture):
-        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), \
-             patch("devolo_plc_api.device.Device.info_from_service", return_value=None):
+        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), patch(
+            "devolo_plc_api.device.Device.info_from_service", return_value=None
+        ):
             spy_device = mocker.spy(Device, "__init__")
             network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
             assert spy_device.call_count == 0
 
     def test__add_hcu(self, mocker: MockerFixture):
         spy_device = mocker.spy(Device, "__init__")
-        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), \
-             patch("devolo_plc_api.device.Device.info_from_service", return_value={"properties": {"MT": "2600"}}):
+        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), patch(
+            "devolo_plc_api.device.Device.info_from_service", return_value={"properties": {"MT": "2600"}}
+        ):
             network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
             assert spy_device.call_count == 0
-        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), \
-             patch("devolo_plc_api.device.Device.info_from_service", return_value={"properties": {"MT": "2601"}}):
+        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), patch(
+            "devolo_plc_api.device.Device.info_from_service", return_value={"properties": {"MT": "2601"}}
+        ):
             network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
             assert spy_device.call_count == 0

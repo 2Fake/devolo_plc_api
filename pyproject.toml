@@ -1,0 +1,36 @@
+[tool.black]
+line-length = 127
+exclude = '.*_pb2\.py'
+
+[tool.isort]
+filter_files = true
+ignore_whitespace = true
+line_length = 127
+multi_line_output = 1
+order_by_type = true
+profile = "black"
+skip_glob = "*_pb2.py"
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "devolo_plc_api.plcnet_api.devolo_idl_proto_plcnetapi_getnetworkoverview_pb2",
+    "devolo_plc_api.device_api.devolo_idl_proto_deviceapi_wifinetwork_pb2"
+]
+ignore_errors = true
+
+[tool.pylint.design]
+max-attributes = 8
+
+[tool.pylint.format]
+ignore-patterns = ".*_pb2.py"
+max-line-length = 127
+
+[tool.pylint.messages_control]
+disable = "C0330, C0326"
+good-names = "ip"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

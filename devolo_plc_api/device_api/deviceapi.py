@@ -1,3 +1,4 @@
+"""Implementation of the devolo device API."""
 from __future__ import annotations
 
 import functools
@@ -7,25 +8,25 @@ from httpx import AsyncClient
 
 from ..clients.protobuf import Protobuf
 from ..exceptions.feature import FeatureNotSupported
-from . import (devolo_idl_proto_deviceapi_ledsettings_pb2,
-               devolo_idl_proto_deviceapi_restart_pb2,
-               devolo_idl_proto_deviceapi_updatefirmware_pb2,
-               devolo_idl_proto_deviceapi_wifinetwork_pb2)
+from . import (
+    devolo_idl_proto_deviceapi_ledsettings_pb2,
+    devolo_idl_proto_deviceapi_restart_pb2,
+    devolo_idl_proto_deviceapi_updatefirmware_pb2,
+    devolo_idl_proto_deviceapi_wifinetwork_pb2,
+)
 
-ReturnType = TypeVar('ReturnType')
+ReturnType = TypeVar("ReturnType")
 
 
 def _feature(feature: str) -> Callable[[Callable[..., ReturnType]], Callable[..., ReturnType]]:
-    """ Decorator to filter unsupported features before querying the device. """
+    """Decorator to filter unsupported features before querying the device."""
 
     def feature_decorator(method: Callable[..., ReturnType]) -> Callable[..., ReturnType]:
-
         @functools.wraps(method)
         def wrapper(self, *args: Any, **kwargs: Any) -> ReturnType:
             if feature in self.features:
                 return method(self, *args, **kwargs)
-            else:
-                raise FeatureNotSupported(f"The device does not support {method}.")
+            raise FeatureNotSupported(f"The device does not support {method}.")
 
         return wrapper
 
@@ -66,7 +67,7 @@ class DeviceApi(Protobuf):
         self._logger.debug("Getting LED settings.")
         led_setting = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsGet()
         response = await self._async_get("LedSettingsGet")
-        led_setting.ParseFromString(await response.aread())  # pylint: disable=no-member
+        led_setting.ParseFromString(await response.aread())
         return self._message_to_dict(led_setting)
 
     @_feature("led")
@@ -82,7 +83,7 @@ class DeviceApi(Protobuf):
         led_setting.state = int(not enable)
         query = await self._async_post("LedSettingsSet", content=led_setting.SerializeToString())
         response = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsSetResponse()
-        response.FromString(await query.aread())  # pylint: disable=no-member
+        response.FromString(await query.aread())
         return bool(not response.result)  # pylint: disable=no-member
 
     @_feature("restart")
@@ -136,7 +137,7 @@ class DeviceApi(Protobuf):
         self._logger.debug("Updating firmware.")
         update_firmware = devolo_idl_proto_deviceapi_updatefirmware_pb2.UpdateFirmwareStart()
         response = await self._async_get("UpdateFirmwareStart")
-        update_firmware.FromString(await response.aread())  # pylint: disable=no-member
+        update_firmware.FromString(await response.aread())
         return bool(not update_firmware.result)  # pylint: disable=no-member
 
     @_feature("wifi1")
@@ -180,7 +181,7 @@ class DeviceApi(Protobuf):
         wifi_guest_proto.enable = enable
         query = await self._async_post("WifiGuestAccessSet", content=wifi_guest_proto.SerializeToString())
         response = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSetResponse()
-        response.FromString(await query.aread())  # pylint: disable=no-member
+        response.FromString(await query.aread())
         return bool(not response.result)  # pylint: disable=no-member
 
     @_feature("wifi1")
@@ -221,5 +222,5 @@ class DeviceApi(Protobuf):
         self._logger.debug("Starting WPS.")
         wps_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiWpsPbcStart()
         response = await self._async_get("WifiWpsPbcStart")
-        wps_proto.FromString(await response.aread())  # pylint: disable=no-member
+        wps_proto.FromString(await response.aread())
         return bool(not wps_proto.result)  # pylint: disable=no-member

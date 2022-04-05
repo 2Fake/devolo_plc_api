@@ -1,3 +1,4 @@
+"""Implementation of the devolo plcnet API."""
 from __future__ import annotations
 
 from typing import Any
@@ -5,9 +6,11 @@ from typing import Any
 from httpx import AsyncClient
 
 from ..clients.protobuf import Protobuf
-from . import (devolo_idl_proto_plcnetapi_getnetworkoverview_pb2,
-               devolo_idl_proto_plcnetapi_identifydevice_pb2,
-               devolo_idl_proto_plcnetapi_setuserdevicename_pb2)
+from . import (
+    devolo_idl_proto_plcnetapi_getnetworkoverview_pb2,
+    devolo_idl_proto_plcnetapi_identifydevice_pb2,
+    devolo_idl_proto_plcnetapi_setuserdevicename_pb2,
+)
 
 
 class PlcNetApi(Protobuf):
@@ -55,7 +58,7 @@ class PlcNetApi(Protobuf):
         identify_device.mac_address = self._mac
         query = await self._async_post("IdentifyDeviceStart", content=identify_device.SerializeToString())
         response = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceResponse()
-        response.FromString(await query.aread())  # pylint: disable=no-member
+        response.FromString(await query.aread())
         return bool(not response.result)  # pylint: disable=no-member
 
     async def async_identify_device_stop(self) -> bool:
@@ -69,7 +72,7 @@ class PlcNetApi(Protobuf):
         identify_device.mac_address = self._mac
         query = await self._async_post("IdentifyDeviceStop", content=identify_device.SerializeToString())
         response = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceResponse()
-        response.FromString(await query.aread())  # pylint: disable=no-member
+        response.FromString(await query.aread())
         return bool(not response.result)  # pylint: disable=no-member
 
     async def async_set_user_device_name(self, name: str) -> bool:
@@ -85,5 +88,5 @@ class PlcNetApi(Protobuf):
         set_user_name.user_device_name = name
         query = await self._async_post("SetUserDeviceName", content=set_user_name.SerializeToString())
         response = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceNameResponse()
-        response.FromString(await query.aread())  # pylint: disable=no-member
+        response.FromString(await query.aread())
         return bool(not response.result)  # pylint: disable=no-member

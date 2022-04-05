@@ -1,3 +1,4 @@
+"""devolo PLC API"""
 from importlib.metadata import PackageNotFoundError, version
 
 try:
