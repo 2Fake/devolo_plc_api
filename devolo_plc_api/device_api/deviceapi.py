@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import functools
-from typing import Any, Callable, TypeVar, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 
 from httpx import AsyncClient
 
