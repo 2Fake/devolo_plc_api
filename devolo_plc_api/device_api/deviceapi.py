@@ -16,19 +16,23 @@ from . import (
 )
 
 if TYPE_CHECKING:
-    from typing_extensions import ParamSpec
+    from typing_extensions import Concatenate, ParamSpec
+
     _ReturnT = TypeVar("_ReturnT")
-    Params = ParamSpec("Params")
+    _P = ParamSpec("_P")
 
 
-def _feature(feature: str) -> Callable[[Callable[Params, _ReturnT]], Callable[Params, _ReturnT]]:
-    """ Decorator to filter unsupported features before querying the device. """
+# Issue: https://github.com/python/mypy/issues/11833
+def _feature(
+    feature: str,
+) -> Callable[[Callable[Concatenate[DeviceApi, _P], _ReturnT]], Callable[Concatenate[DeviceApi, _P], _ReturnT]]:  # type:ignore
+    """Decorator to filter unsupported features before querying the device."""
 
-    def feature_decorator(method: Callable[Params, _ReturnT]) -> Callable[..., _ReturnT]:
+    def feature_decorator(method: Callable[Concatenate[DeviceApi, _P], _ReturnT]) -> Callable[..., _ReturnT]:  # type:ignore
         @functools.wraps(method)
-        def wrapper(self, *args: Params.args, **kwargs: Params.kwargs) -> _ReturnT:
-            if feature in self.features:
-                return method(self, *args, **kwargs)
+        def wrapper(deviceapi: DeviceApi, *args: _P.args, **kwargs: _P.kwargs) -> _ReturnT:
+            if feature in deviceapi.features:
+                return method(deviceapi, *args, **kwargs)
             raise FeatureNotSupported(f"The device does not support {method}.")
 
         return wrapper
