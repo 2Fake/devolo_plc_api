@@ -15,15 +15,15 @@ from . import (
     devolo_idl_proto_deviceapi_wifinetwork_pb2,
 )
 
-ReturnType = TypeVar("ReturnType")
+_ReturnT = TypeVar("_ReturnT")
 
 
-def _feature(feature: str) -> Callable[[Callable[..., ReturnType]], Callable[..., ReturnType]]:
+def _feature(feature: str) -> Callable[[Callable[..., _ReturnT]], Callable[..., _ReturnT]]:
     """Decorator to filter unsupported features before querying the device."""
 
-    def feature_decorator(method: Callable[..., ReturnType]) -> Callable[..., ReturnType]:
+    def feature_decorator(method: Callable[..., _ReturnT]) -> Callable[..., _ReturnT]:
         @functools.wraps(method)
-        def wrapper(self, *args: Any, **kwargs: Any) -> ReturnType:
+        def wrapper(self, *args: Any, **kwargs: Any) -> _ReturnT:
             if feature in self.features:
                 return method(self, *args, **kwargs)
             raise FeatureNotSupported(f"The device does not support {method}.")
@@ -102,8 +102,8 @@ class DeviceApi(Protobuf):
     @_feature("restart")
     async def async_uptime(self) -> int:
         """
-        Get the uptime of the device. This feature only works on devices, that announce the restart feature. It can only be used
-        as a strict monotonically increasing number and therefore has no unit.
+        Get the uptime of the device. This feature only works on devices, that announce the restart feature. It can only be
+        used as a strict monotonically increasing number and therefore has no unit.
 
         :return: The uptime without unit
         """

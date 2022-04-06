@@ -11,7 +11,6 @@ with open("README.md", "r") as fh:
 # Create post develop command class for hooking into the python setup process
 # This command will run after dependencies are installed
 class PostDevelopCommand(develop):
-
     def run(self):
         try:
             check_call(shlex.split("pre-commit install"))
@@ -29,8 +28,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/2Fake/devolo_plc_api",
-    packages=find_packages(exclude=("tests*",
-                                    )),
+    packages=find_packages(exclude=("tests*",)),
     package_data={
         "devolo_plc_api": ["py.typed"],
     },

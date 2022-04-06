@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 127
-exclude = '.*_pb2\.py'
+force-exclude = '.*_pb2\.py'
 
 [tool.isort]
 filter_files = true
