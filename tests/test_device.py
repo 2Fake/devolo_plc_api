@@ -46,9 +46,8 @@ class TestDevice:
             await mock_device.async_connect()
         assert not mock_device._connected
 
-    @pytest.mark.asyncio
     def test_connect(self, mock_device: Device):
-        with patch("devolo_plc_api.device.Device.async_connect") as ac:
+        with patch("devolo_plc_api.device.Device.async_connect", new=AsyncMock()) as ac:
             mock_device.connect()
             assert ac.call_count == 1
 
@@ -59,9 +58,8 @@ class TestDevice:
         assert mock_device._session.aclose.call_count == 1  # type: ignore
         assert not mock_device._connected
 
-    @pytest.mark.asyncio
     def test_disconnect(self, mock_device: Device):
-        with patch("devolo_plc_api.device.Device.async_disconnect") as ad:
+        with patch("devolo_plc_api.device.Device.async_disconnect", new=AsyncMock()) as ad:
             mock_device.disconnect()
             assert ad.call_count == 1
 

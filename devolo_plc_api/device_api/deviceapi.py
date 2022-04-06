@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import functools
-from typing import Any, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 
 from httpx import AsyncClient
 
@@ -15,17 +15,24 @@ from . import (
     devolo_idl_proto_deviceapi_wifinetwork_pb2,
 )
 
-_ReturnT = TypeVar("_ReturnT")
+if TYPE_CHECKING:
+    from typing_extensions import Concatenate, ParamSpec
+
+    _ReturnT = TypeVar("_ReturnT")
+    _P = ParamSpec("_P")
 
 
-def _feature(feature: str) -> Callable[[Callable[..., _ReturnT]], Callable[..., _ReturnT]]:
+# Issue: https://github.com/python/mypy/issues/11833
+def _feature(
+    feature: str,
+) -> Callable[[Callable[Concatenate[DeviceApi, _P], _ReturnT]], Callable[Concatenate[DeviceApi, _P], _ReturnT]]:  # type:ignore
     """Decorator to filter unsupported features before querying the device."""
 
-    def feature_decorator(method: Callable[..., _ReturnT]) -> Callable[..., _ReturnT]:
+    def feature_decorator(method: Callable[Concatenate[DeviceApi, _P], _ReturnT]) -> Callable[..., _ReturnT]:  # type:ignore
         @functools.wraps(method)
-        def wrapper(self, *args: Any, **kwargs: Any) -> _ReturnT:
-            if feature in self.features:
-                return method(self, *args, **kwargs)
+        def wrapper(deviceapi: DeviceApi, *args: _P.args, **kwargs: _P.kwargs) -> _ReturnT:
+            if feature in deviceapi.features:
+                return method(deviceapi, *args, **kwargs)
             raise FeatureNotSupported(f"The device does not support {method}.")
 
         return wrapper
