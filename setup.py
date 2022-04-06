@@ -11,7 +11,6 @@ with open("README.md", "r") as fh:
 # Create post develop command class for hooking into the python setup process
 # This command will run after dependencies are installed
 class PostDevelopCommand(develop):
-
     def run(self):
         try:
             check_call(shlex.split("pre-commit install"))
@@ -22,15 +21,13 @@ class PostDevelopCommand(develop):
 
 setup(
     name="devolo_plc_api",
-    use_scm_version=True,
     author="Markus Bong, Guido Schmitz",
     author_email="m.bong@famabo.de, guido.schmitz@fedaix.de",
     description="devolo PLC devices in Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/2Fake/devolo_plc_api",
-    packages=find_packages(exclude=("tests*",
-                                    )),
+    packages=find_packages(exclude=("tests*",)),
     package_data={
         "devolo_plc_api": ["py.typed"],
     },
@@ -56,6 +53,5 @@ setup(
             "pytest-mock",
         ],
     },
-    setup_requires=["setuptools_scm"],
     python_requires=">=3.8",
 )

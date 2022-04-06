@@ -1,3 +1,4 @@
+"""Representation of your devolo device."""
 from __future__ import annotations
 
 import asyncio
@@ -19,13 +20,10 @@ from .exceptions.device import DeviceNotFound
 from .plcnet_api import SERVICE_TYPE as PLCNETAPI
 from .plcnet_api import PlcNetApi
 
-EMPTY_INFO: dict[str,
-                 Any] = {
-                     "properties": {}
-                 }
+EMPTY_INFO: dict[str, Any] = {"properties": {}}
 
 
-class Device:
+class Device:  # pylint: disable=too-many-instance-attributes
     """
     Representing object for your devolo PLC device. It stores all properties and functionalities discovered during setup.
 
@@ -35,13 +33,13 @@ class Device:
     :param zeroconf_instance: Zeroconf instance to be potentially reused.
     """
 
-    def __init__(self,
-                 ip: str,
-                 plcnetapi: dict[str,
-                                 Any] | None = None,
-                 deviceapi: dict[str,
-                                 Any] | None = None,
-                 zeroconf_instance: AsyncZeroconf | Zeroconf | None = None) -> None:
+    def __init__(
+        self,
+        ip: str,
+        plcnetapi: dict[str, Any] | None = None,
+        deviceapi: dict[str, Any] | None = None,
+        zeroconf_instance: AsyncZeroconf | Zeroconf | None = None,
+    ) -> None:
         self.firmware_date = date.fromtimestamp(0)
         self.firmware_version = ""
         self.hostname = ""
@@ -56,12 +54,10 @@ class Device:
         self.plcnet: PlcNetApi | None = None
 
         self._connected = False
-        self._info: dict[str,
-                         dict[str,
-                              Any]] = {
-                                  PLCNETAPI: plcnetapi or EMPTY_INFO,
-                                  DEVICEAPI: deviceapi or EMPTY_INFO,
-                              }
+        self._info: dict[str, dict[str, Any]] = {
+            PLCNETAPI: plcnetapi or EMPTY_INFO,
+            DEVICEAPI: deviceapi or EMPTY_INFO,
+        }
         self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
         self._password = ""
         self._session_instance: httpx.AsyncClient | None = None
@@ -91,12 +87,12 @@ class Device:
 
     @property
     def password(self) -> str:
-        """ The currently set device password. """
+        """The currently set device password."""
         return self._password
 
     @password.setter
     def password(self, password: str) -> None:
-        """ Change the currently set device password. """
+        """Change the currently set device password."""
         self._password = password
         if self.device:
             self.device.password = password
@@ -121,11 +117,11 @@ class Device:
         self._connected = True
 
     def connect(self) -> None:
-        """ Connect to a device synchronous. """
+        """Connect to a device synchronous."""
         asyncio.run(self.async_connect())
 
     async def async_disconnect(self) -> None:
-        """ Disconnect from a device asynchronous. """
+        """Disconnect from a device asynchronous."""
         if not self._zeroconf_instance:
             await self._zeroconf.async_close()
         if not self._session_instance:
@@ -133,11 +129,11 @@ class Device:
         self._connected = False
 
     def disconnect(self) -> None:
-        """ Disconnect from a device synchronous. """
+        """Disconnect from a device synchronous."""
         asyncio.run(self.async_disconnect())
 
     async def _get_device_info(self) -> None:
-        """ Get information from the devolo Device API. """
+        """Get information from the devolo Device API."""
         service_type = DEVICEAPI
         await self._get_zeroconf_info(service_type=service_type)
         if self._info[service_type]["properties"]:
@@ -150,7 +146,7 @@ class Device:
             self.device = DeviceApi(ip=self.ip, session=self._session, info=self._info[service_type])
 
     async def _get_plcnet_info(self) -> None:
-        """ Get information from the devolo PlcNet API. """
+        """Get information from the devolo PlcNet API."""
         service_type = PLCNETAPI
         await self._get_zeroconf_info(service_type=service_type)
         if self._info[service_type]["properties"]:
@@ -159,35 +155,37 @@ class Device:
             self.plcnet = PlcNetApi(ip=self.ip, session=self._session, info=self._info[service_type])
 
     async def _get_zeroconf_info(self, service_type: str) -> None:
-        """ Browse for the desired mDNS service types and query them. """
+        """Browse for the desired mDNS service types and query them."""
         if self._info[service_type]["properties"]:
             return  # No need to continue, if device info already exist
 
         self._logger.debug("Browsing for %s", service_type)
         counter = 0
-        browser = AsyncServiceBrowser(self._zeroconf.zeroconf,
-                                      service_type,
-                                      [self._state_change],
-                                      question_type=DNSQuestionType.QM)
+        browser = AsyncServiceBrowser(
+            self._zeroconf.zeroconf, service_type, [self._state_change], question_type=DNSQuestionType.QM
+        )
         while not self._info[service_type]["properties"] and counter < 300:
             counter += 1
             await asyncio.sleep(0.01)
         await browser.async_cancel()
 
     def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange) -> None:
-        """ Evaluate the query result. """
+        """Evaluate the query result."""
         if state_change is not ServiceStateChange.Added:
             return
         asyncio.ensure_future(self._get_service_info(zeroconf, service_type, name))
 
     async def _get_service_info(self, zeroconf: Zeroconf, service_type: str, name: str) -> None:
-        """ Get service information, if IP matches. """
+        """Get service information, if IP matches."""
         service_info = AsyncServiceInfo(service_type, name)
         with suppress(RuntimeError):
             await service_info.async_request(zeroconf, timeout=1000, question_type=DNSQuestionType.QM)
 
-        if service_info is None or not service_info.addresses or str(ipaddress.ip_address(
-                service_info.addresses[0])) != self.ip:
+        if (
+            service_info is None
+            or not service_info.addresses
+            or str(ipaddress.ip_address(service_info.addresses[0])) != self.ip
+        ):
             return  # No need to continue, if there are no relevant service information
 
         self._logger.debug("Adding service info of %s to %s", service_type, service_info.server_key)
@@ -195,7 +193,7 @@ class Device:
 
     @staticmethod
     def info_from_service(service_info: ServiceInfo) -> dict[str, Any]:
-        """ Return prepared info from mDNS entries. """
+        """Return prepared info from mDNS entries."""
         properties = {}
         if not service_info.addresses:
             return {}  # No need to continue, if there is no IP address to contact the device
@@ -203,8 +201,8 @@ class Device:
         total_length = len(service_info.text)
         offset = 0
         while offset < total_length:
-            parsed_length, = struct.unpack_from("!B", service_info.text, offset)
-            key_value = service_info.text[offset + 1:offset + 1 + parsed_length].decode("UTF-8").split("=")
+            (parsed_length,) = struct.unpack_from("!B", service_info.text, offset)
+            key_value = service_info.text[offset + 1 : offset + 1 + parsed_length].decode("UTF-8").split("=")
             properties[key_value[0]] = key_value[1]
             offset += parsed_length + 1
 

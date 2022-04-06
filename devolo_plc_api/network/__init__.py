@@ -1,3 +1,4 @@
+"""Discover devices in your network."""
 from __future__ import annotations
 
 import asyncio
@@ -8,8 +9,7 @@ from zeroconf import DNSQuestionType, ServiceBrowser, ServiceStateChange, Zeroco
 from ..device import Device
 from ..device_api import SERVICE_TYPE
 
-_devices: dict[str,
-               Device] = {}
+_devices: dict[str, Device] = {}
 
 
 async def async_discover_network() -> dict[str, Device]:
@@ -37,7 +37,7 @@ def discover_network() -> dict[str, Device]:
 
 
 def _add(zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange) -> None:
-    """" Create a device object to each matching device. """
+    """Create a device object to each matching device."""
     if state_change is not ServiceStateChange.Added:
         return
 

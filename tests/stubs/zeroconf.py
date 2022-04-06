@@ -10,7 +10,6 @@ with file.open("r") as fh:
 
 
 class StubAsyncServiceInfo(AsyncServiceInfo):
-
     def __init__(self, service_type, name) -> None:
-        super().__init__(service_type, name, addresses=[socket.inet_aton(test_data['ip'])])
+        super().__init__(service_type, name, addresses=[socket.inet_aton(test_data["ip"])])
         self.text = b"\x09new=value"

@@ -1,4 +1,3 @@
-import asyncio
 import json
 import logging
 import pathlib
@@ -14,7 +13,6 @@ with file.open("r") as fh:
 
 
 class StubProtobuf(Protobuf):
-
     def __init__(self) -> None:
         self._logger = logging.getLogger("ProtobufMock")
         self._ip = test_data["ip"]

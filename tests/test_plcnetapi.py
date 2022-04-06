@@ -9,23 +9,22 @@ from devolo_plc_api.plcnet_api.plcnetapi import PlcNetApi
 
 
 class TestDeviceApi:
-
     @pytest.mark.asyncio
     async def test_async_get_network_overview(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
         network_overview = GetNetworkOverview()
         httpx_mock.add_response(content=network_overview.SerializeToString())
         overview = await plcnet_api.async_get_network_overview()
-        assert overview == MessageToDict(network_overview,
-                                         including_default_value_fields=True,
-                                         preserving_proto_field_name=True)
+        assert overview == MessageToDict(
+            network_overview, including_default_value_fields=True, preserving_proto_field_name=True
+        )
 
     def test_get_network_overview(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
         network_overview = GetNetworkOverview()
         httpx_mock.add_response(content=network_overview.SerializeToString())
         overview = plcnet_api.get_network_overview()
-        assert overview == MessageToDict(network_overview,
-                                         including_default_value_fields=True,
-                                         preserving_proto_field_name=True)
+        assert overview == MessageToDict(
+            network_overview, including_default_value_fields=True, preserving_proto_field_name=True
+        )
 
     @pytest.mark.asyncio
     async def test_async_identify_device_start(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):

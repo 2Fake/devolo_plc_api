@@ -14,7 +14,6 @@ from .stubs.protobuf import StubProtobuf
 
 
 class TestProtobuf:
-
     def test_attribute_error(self, mock_protobuf: StubProtobuf):
         with pytest.raises(AttributeError):
             mock_protobuf.test()

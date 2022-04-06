@@ -1,10 +1,13 @@
+"""Exceptions that can occur when communicating with a devolo device."""
+
+
 class DeviceNotFound(Exception):
-    """ The device was not found. """
+    """The device was not found."""
 
 
 class DeviceUnavailable(Exception):
-    """ The device is not available, e.g. in standby. """
+    """The device is not available, e.g. in standby."""
 
 
 class DevicePasswordProtected(Exception):
-    """ The device is passwort protected. """
+    """The device is passwort protected."""

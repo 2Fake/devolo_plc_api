@@ -18,7 +18,6 @@ from .stubs.zeroconf import StubAsyncServiceInfo
 
 
 class TestDevice:
-
     @pytest.mark.parametrize("feature", [""])
     def test_set_password(self, mock_device: Device, device_api: DeviceApi):
         mock_device.device = device_api
@@ -27,8 +26,9 @@ class TestDevice:
 
     @pytest.mark.asyncio
     async def test_async_connect(self, mock_device: Device):
-        with patch("devolo_plc_api.device.Device._get_device_info") as gdi, \
-             patch("devolo_plc_api.device.Device._get_plcnet_info") as gpi:
+        with patch("devolo_plc_api.device.Device._get_device_info") as gdi, patch(
+            "devolo_plc_api.device.Device._get_plcnet_info"
+        ) as gpi:
             mock_device._zeroconf_instance = AsyncMock()
             mock_device.device = object  # type: ignore
             mock_device.plcnet = object  # type: ignore
@@ -39,9 +39,9 @@ class TestDevice:
 
     @pytest.mark.asyncio
     async def test_async_connect_not_found(self, mock_device: Device):
-        with patch("devolo_plc_api.device.Device._get_device_info"), \
-             patch("devolo_plc_api.device.Device._get_plcnet_info"), \
-             pytest.raises(DeviceNotFound):
+        with patch("devolo_plc_api.device.Device._get_device_info"), patch(
+            "devolo_plc_api.device.Device._get_plcnet_info"
+        ), pytest.raises(DeviceNotFound):
             mock_device._zeroconf_instance = AsyncMock()
             await mock_device.async_connect()
         assert not mock_device._connected
@@ -90,12 +90,10 @@ class TestDevice:
 
     @pytest.mark.asyncio
     async def test__get_zeroconf_info_timeout(self, mock_device: Device):
-        mock_device._info["_http._tcp.local."] = {
-            "properties": None
-        }
-        with patch("devolo_plc_api.device.AsyncServiceBrowser._async_start"), \
-             patch("devolo_plc_api.device.AsyncServiceBrowser._async_cancel"), \
-             patch("asyncio.sleep") as sleep:
+        mock_device._info["_http._tcp.local."] = {"properties": None}
+        with patch("devolo_plc_api.device.AsyncServiceBrowser._async_start"), patch(
+            "devolo_plc_api.device.AsyncServiceBrowser._async_cancel"
+        ), patch("asyncio.sleep") as sleep:
             await mock_device._get_zeroconf_info("_http._tcp.local.")
             assert sleep.call_count == 300
 
@@ -135,8 +133,9 @@ class TestDevice:
     @pytest.mark.asyncio
     async def test__get_service_info(self, mock_device: Device):
         service_type = PLCNETAPI
-        with patch("devolo_plc_api.device.AsyncServiceInfo", StubAsyncServiceInfo), \
-             patch("devolo_plc_api.device.AsyncServiceInfo.async_request") as ar:
+        with patch("devolo_plc_api.device.AsyncServiceInfo", StubAsyncServiceInfo), patch(
+            "devolo_plc_api.device.AsyncServiceInfo.async_request"
+        ) as ar:
             await mock_device._get_service_info(Mock(), service_type, service_type)
             assert ar.call_count == 1
             assert mock_device._info[service_type]["properties"]["new"] == "value"
