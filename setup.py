@@ -21,7 +21,6 @@ class PostDevelopCommand(develop):
 
 setup(
     name="devolo_plc_api",
-    use_scm_version=True,
     author="Markus Bong, Guido Schmitz",
     author_email="m.bong@famabo.de, guido.schmitz@fedaix.de",
     description="devolo PLC devices in Python",
@@ -54,6 +53,5 @@ setup(
             "pytest-mock",
         ],
     },
-    setup_requires=["setuptools_scm"],
     python_requires=">=3.8",
 )
