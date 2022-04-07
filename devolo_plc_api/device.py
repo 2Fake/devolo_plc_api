@@ -155,9 +155,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
         if self.mt_number in DEVICES_WITHOUT_PLCNET:
             return
         await self._get_zeroconf_info(service_type=service_type)
-        if not self._info[service_type]["properties"]:
-            if self.mt_number in DEVICES_WITHOUT_PLCNET:
-                return
+        if not self._info[service_type]["properties"] and self.mt_number not in DEVICES_WITHOUT_PLCNET:
             await self._retry_zeroconf_info(service_type=service_type)
         if self._info[service_type]["properties"]:
             self.mac = self._info[service_type]["properties"]["PlcMacAddress"]
