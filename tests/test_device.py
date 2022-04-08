@@ -9,6 +9,7 @@ from devolo_plc_api.device import EMPTY_INFO, Device
 from devolo_plc_api.device_api import SERVICE_TYPE as DEVICEAPI
 from devolo_plc_api.device_api import DeviceApi
 from devolo_plc_api.exceptions.device import DeviceNotFound
+from devolo_plc_api.plcnet_api import DEVICES_WITHOUT_PLCNET
 from devolo_plc_api.plcnet_api import SERVICE_TYPE as PLCNETAPI
 from devolo_plc_api.plcnet_api import PlcNetApi
 from tests.mocks.mock_zeroconf import MockServiceBrowser
@@ -77,6 +78,14 @@ class TestDevice:
             assert type(mock_device.device) == DeviceApi
 
     @pytest.mark.asyncio
+    async def test__get_device_info_multicast(self):
+        with patch("devolo_plc_api.device.Device._get_zeroconf_info") as gzi:
+            device = Device(self.ip)
+            await device._get_device_info()
+            assert device._multicast is True
+            assert gzi.call_count == 2
+
+    @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_plcnet_api")
     async def test__get_plcnet_info(self, mock_device: Device):
         with patch("devolo_plc_api.device.Device._get_zeroconf_info"):
@@ -85,6 +94,22 @@ class TestDevice:
             assert mock_device.mac == device_info["properties"]["PlcMacAddress"]
             assert mock_device.technology == device_info["properties"]["PlcTechnology"]
             assert type(mock_device.plcnet) == PlcNetApi
+
+    @pytest.mark.asyncio
+    @pytest.mark.usefixtures("mock_plcnet_api")
+    async def test__not_get_plcnet_info(self, mock_device: Device):
+        mock_device.mt_number = DEVICES_WITHOUT_PLCNET[0]
+        with patch("devolo_plc_api.device.Device._get_zeroconf_info"):
+            await mock_device._get_plcnet_info()
+            assert not mock_device.plcnet
+
+    @pytest.mark.asyncio
+    async def test__get_plcnet_info_multicast(self):
+        with patch("devolo_plc_api.device.Device._get_zeroconf_info") as gzi:
+            device = Device(self.ip)
+            await device._get_plcnet_info()
+            assert device._multicast is True
+            assert gzi.call_count == 2
 
     @pytest.mark.asyncio
     async def test__get_zeroconf_info_timeout(self, mock_device: Device):

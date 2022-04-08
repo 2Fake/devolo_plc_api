@@ -17,6 +17,7 @@ from zeroconf.asyncio import AsyncServiceBrowser, AsyncServiceInfo, AsyncZerocon
 from .device_api import SERVICE_TYPE as DEVICEAPI
 from .device_api import DeviceApi
 from .exceptions.device import DeviceNotFound
+from .plcnet_api import DEVICES_WITHOUT_PLCNET
 from .plcnet_api import SERVICE_TYPE as PLCNETAPI
 from .plcnet_api import PlcNetApi
 
@@ -59,6 +60,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
             DEVICEAPI: deviceapi or EMPTY_INFO,
         }
         self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
+        self._multicast = False
         self._password = ""
         self._session_instance: httpx.AsyncClient | None = None
         self._zeroconf_instance = zeroconf_instance
@@ -136,6 +138,8 @@ class Device:  # pylint: disable=too-many-instance-attributes
         """Get information from the devolo Device API."""
         service_type = DEVICEAPI
         await self._get_zeroconf_info(service_type=service_type)
+        if not self._info[service_type]["properties"]:
+            await self._retry_zeroconf_info(service_type=service_type)
         if self._info[service_type]["properties"]:
             self.firmware_date = date.fromisoformat(self._info[service_type]["properties"].get("FirmwareDate", "1970-01-01"))
             self.firmware_version = self._info[service_type]["properties"].get("FirmwareVersion", "")
@@ -148,7 +152,11 @@ class Device:  # pylint: disable=too-many-instance-attributes
     async def _get_plcnet_info(self) -> None:
         """Get information from the devolo PlcNet API."""
         service_type = PLCNETAPI
+        if self.mt_number in DEVICES_WITHOUT_PLCNET:
+            return
         await self._get_zeroconf_info(service_type=service_type)
+        if not self._info[service_type]["properties"] and self.mt_number not in DEVICES_WITHOUT_PLCNET:
+            await self._retry_zeroconf_info(service_type=service_type)
         if self._info[service_type]["properties"]:
             self.mac = self._info[service_type]["properties"]["PlcMacAddress"]
             self.technology = self._info[service_type]["properties"].get("PlcTechnology", "")
@@ -161,13 +169,27 @@ class Device:  # pylint: disable=too-many-instance-attributes
 
         self._logger.debug("Browsing for %s", service_type)
         counter = 0
+        addr = None if self._multicast else self.ip
+        question_type = DNSQuestionType.QM if self._multicast else DNSQuestionType.QU
         browser = AsyncServiceBrowser(
-            self._zeroconf.zeroconf, service_type, [self._state_change], question_type=DNSQuestionType.QM
+            zeroconf=self._zeroconf.zeroconf,
+            type_=service_type,
+            handlers=[self._state_change],
+            addr=addr,
+            question_type=question_type,
         )
         while not self._info[service_type]["properties"] and counter < 300:
             counter += 1
             await asyncio.sleep(0.01)
         await browser.async_cancel()
+
+    async def _retry_zeroconf_info(self, service_type: str) -> None:
+        """Retry getting the zeroconf info using multicast."""
+        self._logger.debug(
+            "Having trouble getting %s via unicast messages. Switching to multicast for this device.", service_type
+        )
+        self._multicast = True
+        await self._get_zeroconf_info(service_type=service_type)
 
     def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange) -> None:
         """Evaluate the query result."""
@@ -178,8 +200,9 @@ class Device:  # pylint: disable=too-many-instance-attributes
     async def _get_service_info(self, zeroconf: Zeroconf, service_type: str, name: str) -> None:
         """Get service information, if IP matches."""
         service_info = AsyncServiceInfo(service_type, name)
+        question_type = DNSQuestionType.QM if self._multicast else DNSQuestionType.QU
         with suppress(RuntimeError):
-            await service_info.async_request(zeroconf, timeout=1000, question_type=DNSQuestionType.QM)
+            await service_info.async_request(zeroconf, timeout=1000, question_type=question_type)
 
         if (
             service_info is None
