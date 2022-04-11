@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
-        python-version: 3.8
+        python-version: "3.8"
     - name: Check formatting
       uses: pre-commit/action@v2.0.3
 
@@ -22,11 +22,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
-        python-version: 3.8
+        python-version: "3.8"
     - name: Lint with flake8
       run: |
         python -m pip install --upgrade pip
@@ -52,9 +52,9 @@ jobs:
         python-version: ["3.8", "3.9", "3.10"]
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -76,11 +76,11 @@ jobs:
     needs: test
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
-        python-version: 3.8
+        python-version: "3.8"
     - name: Download coverage
       uses: actions/download-artifact@v2
       with:
