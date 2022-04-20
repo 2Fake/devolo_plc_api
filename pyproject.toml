@@ -1,6 +1,6 @@
 [build-system]
-build-backend = "setuptools.build_meta"
-requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+requires = ["flit_core >=3.2,<4", "flit_scm"]
+build-backend = "flit_core.buildapi"
 
 [project]
 authors = [
