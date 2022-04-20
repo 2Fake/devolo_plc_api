@@ -12,6 +12,7 @@ from devolo_plc_api.device_api.wifinetwork_pb2 import (
     WifiGuestAccessSetResponse,
     WifiNeighborAPsGet,
     WifiRepeatedAPsGet,
+    WifiRepeaterWpsClonePbcStart,
     WifiWpsPbcStart,
 )
 from devolo_plc_api.exceptions.feature import FeatureNotSupported
@@ -218,3 +219,16 @@ class TestDeviceApi:
         wps = WifiWpsPbcStart()
         httpx_mock.add_response(content=wps.SerializeToString())
         assert device_api.start_wps()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("feature", ["wifi1"])
+    async def test_async_start_wps_clone(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        wps = WifiRepeaterWpsClonePbcStart()
+        httpx_mock.add_response(content=wps.SerializeToString())
+        assert await device_api.async_start_wps_clone()
+
+    @pytest.mark.parametrize("feature", ["wifi1"])
+    def test_start_wps_clone(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        wps = WifiRepeaterWpsClonePbcStart()
+        httpx_mock.add_response(content=wps.SerializeToString())
+        assert device_api.start_wps_clone()

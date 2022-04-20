@@ -53,10 +53,10 @@ def run():
         # {'ssid': 'devolo-guest-930', 'key': 'HMANPGBA', 'enabled': False, 'remaining_duration': 0}
         print(dpa.device.get_wifi_guest_access())
 
-        # Enable or disable the wifi guest access. Set enable to True to it turn on, to False to turn it off. Chaning SSID,
-        # wifi key or duration is currently not supported. If the state was changed successfully, True is returned, otherwise
-        # False.
-        print("success" if dpa.device.set_wifi_guest_access(enable=False) else "failed")
+        # Enable or disable the wifi guest access. Set enable to True to it turn on, to False to turn it off. Optionally
+        # specify a duration in minutes. Changing SSID or the wifi key is currently not supported. If the state was changed
+        # successfully, True is returned, otherwise False.
+        print("success" if dpa.device.set_wifi_guest_access(enable=True, duration=5) else "failed")
 
         # Get details about other access points in your neighborhood: MAC address, SSID, wifi band, used channel, signal
         # strength in DB and a value from 1 to 5, if you would want to map the signal strength to a signal bars.
@@ -74,6 +74,9 @@ def run():
 
         # Start WPS push button configuration. If WPS was started successfully, True is returned, otherwise False.
         print("WPS started" if dpa.device.start_wps() else "WPS start failed")
+
+        # Start WPS clone mode. If clone mode was started successfully, True is returned, otherwise False.
+        print("WPS clone mode started" if dpa.device.start_wps_clone() else "WPS clone mode start failed")
 
         # Get PLC network overview with enriched information like firmware version,
         # {'network':

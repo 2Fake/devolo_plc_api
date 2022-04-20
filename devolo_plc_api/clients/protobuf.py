@@ -6,9 +6,10 @@ import hashlib
 import logging
 from abc import ABC, abstractmethod
 from http import HTTPStatus
-from typing import Any, Callable
+from typing import Any, Callable, NoReturn
 
 from google.protobuf.json_format import MessageToDict
+from google.protobuf.message import Message
 from httpx import (
     AsyncClient,
     ConnectError,
@@ -21,6 +22,7 @@ from httpx import (
 )
 
 from ..exceptions.device import DevicePasswordProtected, DeviceUnavailable
+from ..exceptions.feature import FeatureNotSupported
 
 TIMEOUT = 10.0
 
@@ -69,8 +71,8 @@ class Protobuf(ABC):
                 response = await self._session.get(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
             response.raise_for_status()
             return response
-        except HTTPStatusError:
-            raise DevicePasswordProtected("The used password is wrong.") from None
+        except HTTPStatusError as e:
+            self._raise_http_error(e)
         except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
             raise DeviceUnavailable("The device is currently not available. Maybe on standby?") from None
 
@@ -90,12 +92,21 @@ class Protobuf(ABC):
                 )
             response.raise_for_status()
             return response
-        except HTTPStatusError:
-            raise DevicePasswordProtected("The used password is wrong.") from None
+        except HTTPStatusError as e:
+            self._raise_http_error(e)
         except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
             raise DeviceUnavailable("The device is currently not available. Maybe on standby?") from None
 
+    def _raise_http_error(self, exception: HTTPStatusError) -> NoReturn:
+        """Handle HTTP Errors."""
+        sub_url = str(exception.request.url).replace(self.url, "")
+        if exception.response.status_code == HTTPStatus.NOT_FOUND:
+            raise FeatureNotSupported(f"The device does not support {sub_url}.") from None
+        if exception.response.status_code == HTTPStatus.UNAUTHORIZED:
+            raise DevicePasswordProtected("The used password is wrong.") from None
+        raise exception
+
     @staticmethod
-    def _message_to_dict(message) -> dict[str, Any]:
+    def _message_to_dict(message: Message) -> dict[str, Any]:
         """Convert message to dict with certain settings."""
         return MessageToDict(message=message, including_default_value_fields=True, preserving_proto_field_name=True)
