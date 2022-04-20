@@ -6,7 +6,7 @@ from pytest_httpx import HTTPXMock
 from pytest_mock import MockerFixture
 
 from devolo_plc_api.clients import protobuf
-from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import LedSettingsSetResponse
+from devolo_plc_api.device_api.ledsettings_pb2 import LedSettingsSetResponse
 from devolo_plc_api.exceptions.device import DevicePasswordProtected, DeviceUnavailable
 from devolo_plc_api.plcnet_api import SERVICE_TYPE
 
