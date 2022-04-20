@@ -9,6 +9,7 @@ from ..clients.protobuf import Protobuf
 from . import getnetworkoverview_pb2, identifydevice_pb2, setuserdevicename_pb2
 
 
+# Issue: https://github.com/PyCQA/pylint/issues/4987
 class PlcNetApi(Protobuf):
     """
     Implementation of the devolo plcnet API.
@@ -55,7 +56,7 @@ class PlcNetApi(Protobuf):
         query = await self._async_post("IdentifyDeviceStart", content=identify_device.SerializeToString())
         response = identifydevice_pb2.IdentifyDeviceResponse()
         response.FromString(await query.aread())
-        return not response.result
+        return not response.result  # pylint: disable=no-member
 
     async def async_identify_device_stop(self) -> bool:
         """
@@ -69,7 +70,7 @@ class PlcNetApi(Protobuf):
         query = await self._async_post("IdentifyDeviceStop", content=identify_device.SerializeToString())
         response = identifydevice_pb2.IdentifyDeviceResponse()
         response.FromString(await query.aread())
-        return not response.result
+        return not response.result  # pylint: disable=no-member
 
     async def async_set_user_device_name(self, name: str) -> bool:
         """
@@ -85,4 +86,4 @@ class PlcNetApi(Protobuf):
         query = await self._async_post("SetUserDeviceName", content=set_user_name.SerializeToString())
         response = setuserdevicename_pb2.SetUserDeviceNameResponse()
         response.FromString(await query.aread())
-        return not response.result
+        return not response.result  # pylint: disable=no-member

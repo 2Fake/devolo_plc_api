@@ -35,6 +35,7 @@ def _feature(
     return feature_decorator
 
 
+# Issue: https://github.com/PyCQA/pylint/issues/4987
 class DeviceApi(Protobuf):
     """
     Implementation of the devolo device API.
@@ -82,11 +83,11 @@ class DeviceApi(Protobuf):
         """
         self._logger.debug("Setting LED settings.")
         led_setting = ledsettings_pb2.LedSettingsSet()
-        led_setting.state = led_setting.LED_ON if enable else led_setting.LED_OFF
+        led_setting.state = led_setting.LED_ON if enable else led_setting.LED_OFF  # pylint: disable=no-member
         query = await self._async_post("LedSettingsSet", content=led_setting.SerializeToString())
         response = ledsettings_pb2.LedSettingsSetResponse()
         response.FromString(await query.aread())
-        return not response.result
+        return response.result == response.SUCCESS  # pylint: disable=no-member
 
     @_feature("restart")
     async def async_restart(self) -> bool:
@@ -96,10 +97,10 @@ class DeviceApi(Protobuf):
         :return: True if restart is started, otherwise False
         """
         self._logger.debug("Restarting the device.")
-        restart = restart_pb2.RestartResponse()
-        response = await self._async_post("Restart", content=b"")
-        restart.ParseFromString(await response.aread())
-        return self._message_to_dict(restart)["result"] == "SUCCESS"
+        query = await self._async_post("Restart", content=b"")
+        response = restart_pb2.RestartResponse()
+        response.FromString(await query.aread())
+        return response.result == response.SUCCESS  # pylint: disable=no-member
 
     @_feature("restart")
     async def async_uptime(self) -> int:
@@ -138,9 +139,9 @@ class DeviceApi(Protobuf):
         """
         self._logger.debug("Updating firmware.")
         update_firmware = updatefirmware_pb2.UpdateFirmwareStart()
-        response = await self._async_get("UpdateFirmwareStart")
-        update_firmware.FromString(await response.aread())
-        return not update_firmware.result
+        query = await self._async_get("UpdateFirmwareStart")
+        update_firmware.FromString(await query.aread())
+        return update_firmware.result == update_firmware.UPDATE_STARTED  # pylint: disable=no-member
 
     @_feature("wifi1")
     async def async_get_wifi_connected_station(self) -> dict[str, list]:
@@ -184,7 +185,7 @@ class DeviceApi(Protobuf):
         query = await self._async_post("WifiGuestAccessSet", content=wifi_guest_proto.SerializeToString())
         response = wifinetwork_pb2.WifiGuestAccessSetResponse()
         response.FromString(await query.aread())
-        return not response.result
+        return response.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS  # pylint: disable=no-member
 
     @_feature("wifi1")
     async def async_get_wifi_neighbor_access_points(self) -> dict[str, list]:
@@ -225,4 +226,4 @@ class DeviceApi(Protobuf):
         wps_proto = wifinetwork_pb2.WifiWpsPbcStart()
         response = await self._async_get("WifiWpsPbcStart")
         wps_proto.FromString(await response.aread())
-        return not wps_proto.result
+        return wps_proto.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS  # pylint: disable=no-member
