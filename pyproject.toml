@@ -2,6 +2,46 @@
 build-backend = "setuptools.build_meta"
 requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
 
+[project]
+authors = [
+    { name = "Markus Bong", email = "m.bong@famabo.de" },
+    { name = "Guido Schmitz", email = "guido.schmitz@fedaix.de"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+description = "devolo PLC devices in Python"
+dependencies = [
+    "httpx>=0.21.0",
+    "protobuf",
+    "zeroconf>=0.32.0",
+]
+dynamic = [
+    "version",
+]
+urls = {source = "https://github.com/2Fake/devolo_plc_api"}
+name = "devolo_plc_api"
+readme = "README.md"
+requires-python = ">= 3.8"
+
+[tool.setuptools.packages.find]
+exclude = ["tests*"]
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+]
+test = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pytest-httpx>=0.18.0",
+    "pytest-mock",
+    "typing-extensions",
+]
+
 [tool.black]
 line-length = 127
 force-exclude = '.*_pb2\.py'
