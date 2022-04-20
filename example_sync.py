@@ -122,6 +122,10 @@ def run():
         # Stop identify the device if you don't want to wait for the timeout.
         print("success" if dpa.plcnet.identify_device_start() else "failed")
 
+        # Start pairing the device. This call returns directly with True, if pairing was started successfully, otherwise
+        # False. However, the device stays in pairing mode for up to three minutes.
+        print("success" if dpa.plcnet.pair_device() else "failed")
+
         # Set the user device name. If the name was changed successfully, True is returned, otherwise False.
         print("success" if dpa.plcnet.set_user_device_name(name="New name") else "failed")
 

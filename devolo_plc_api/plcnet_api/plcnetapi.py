@@ -6,7 +6,7 @@ from typing import Any
 from httpx import AsyncClient
 
 from ..clients.protobuf import Protobuf
-from . import getnetworkoverview_pb2, identifydevice_pb2, setuserdevicename_pb2
+from . import getnetworkoverview_pb2, identifydevice_pb2, pairdevice_pb2, setuserdevicename_pb2
 
 
 # Issue: https://github.com/PyCQA/pylint/issues/4987
@@ -69,6 +69,19 @@ class PlcNetApi(Protobuf):
         identify_device.mac_address = self._mac
         query = await self._async_post("IdentifyDeviceStop", content=identify_device.SerializeToString())
         response = identifydevice_pb2.IdentifyDeviceResponse()
+        response.FromString(await query.aread())
+        return response.result == response.SUCCESS  # pylint: disable=no-member
+
+    async def async_pair_device(self) -> bool:
+        """
+        Start pairing mode.
+        :return: True, if pairing was started successfully, otherwise False
+        """
+        self._logger.debug("Pairing.")
+        pair_device = pairdevice_pb2.PairDeviceStart()
+        pair_device.mac_address = self._mac
+        query = await self._async_post("PairDeviceStart", content=pair_device.SerializeToString())
+        response = pairdevice_pb2.PairDeviceResponse()
         response.FromString(await query.aread())
         return response.result == response.SUCCESS  # pylint: disable=no-member
 
