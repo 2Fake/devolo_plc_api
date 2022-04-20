@@ -6,13 +6,10 @@ from typing import Any
 from httpx import AsyncClient
 
 from ..clients.protobuf import Protobuf
-from . import (
-    devolo_idl_proto_plcnetapi_getnetworkoverview_pb2,
-    devolo_idl_proto_plcnetapi_identifydevice_pb2,
-    devolo_idl_proto_plcnetapi_setuserdevicename_pb2,
-)
+from . import getnetworkoverview_pb2, identifydevice_pb2, setuserdevicename_pb2
 
 
+# Issue: https://github.com/PyCQA/pylint/issues/4987
 class PlcNetApi(Protobuf):
     """
     Implementation of the devolo plcnet API.
@@ -42,7 +39,7 @@ class PlcNetApi(Protobuf):
         :return: Network overview
         """
         self._logger.debug("Getting network overview.")
-        network_overview = devolo_idl_proto_plcnetapi_getnetworkoverview_pb2.GetNetworkOverview()
+        network_overview = getnetworkoverview_pb2.GetNetworkOverview()
         response = await self._async_get("GetNetworkOverview")
         network_overview.ParseFromString(await response.aread())
         return self._message_to_dict(network_overview)
@@ -54,12 +51,12 @@ class PlcNetApi(Protobuf):
         :return: True, if identifying was successfully started, otherwise False
         """
         self._logger.debug("Starting LED blinking.")
-        identify_device = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceStart()
+        identify_device = identifydevice_pb2.IdentifyDeviceStart()
         identify_device.mac_address = self._mac
         query = await self._async_post("IdentifyDeviceStart", content=identify_device.SerializeToString())
-        response = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceResponse()
+        response = identifydevice_pb2.IdentifyDeviceResponse()
         response.FromString(await query.aread())
-        return bool(not response.result)  # pylint: disable=no-member
+        return response.result == response.SUCCESS  # pylint: disable=no-member
 
     async def async_identify_device_stop(self) -> bool:
         """
@@ -68,12 +65,12 @@ class PlcNetApi(Protobuf):
         :return: True, if identifying was successfully stopped, otherwise False
         """
         self._logger.debug("Stopping LED blinking.")
-        identify_device = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceStop()
+        identify_device = identifydevice_pb2.IdentifyDeviceStop()
         identify_device.mac_address = self._mac
         query = await self._async_post("IdentifyDeviceStop", content=identify_device.SerializeToString())
-        response = devolo_idl_proto_plcnetapi_identifydevice_pb2.IdentifyDeviceResponse()
+        response = identifydevice_pb2.IdentifyDeviceResponse()
         response.FromString(await query.aread())
-        return bool(not response.result)  # pylint: disable=no-member
+        return response.result == response.SUCCESS  # pylint: disable=no-member
 
     async def async_set_user_device_name(self, name: str) -> bool:
         """
@@ -83,10 +80,10 @@ class PlcNetApi(Protobuf):
         :return: True, if the device was successfully renamed, otherwise False
         """
         self._logger.debug("Setting device name.")
-        set_user_name = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceName()
+        set_user_name = setuserdevicename_pb2.SetUserDeviceName()
         set_user_name.mac_address = self._mac
         set_user_name.user_device_name = name
         query = await self._async_post("SetUserDeviceName", content=set_user_name.SerializeToString())
-        response = devolo_idl_proto_plcnetapi_setuserdevicename_pb2.SetUserDeviceNameResponse()
+        response = setuserdevicename_pb2.SetUserDeviceNameResponse()
         response.FromString(await query.aread())
-        return bool(not response.result)  # pylint: disable=no-member
+        return response.result == response.SUCCESS  # pylint: disable=no-member

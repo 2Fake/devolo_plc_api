@@ -18,13 +18,6 @@ skip_glob = "*_pb2.py"
 [tool.mypy]
 ignore_missing_imports = true
 
-[[tool.mypy.overrides]]
-module = [
-    "devolo_plc_api.plcnet_api.devolo_idl_proto_plcnetapi_getnetworkoverview_pb2",
-    "devolo_plc_api.device_api.devolo_idl_proto_deviceapi_wifinetwork_pb2"
-]
-ignore_errors = true
-
 [tool.pylint.design]
 max-attributes = 8
 

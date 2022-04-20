@@ -8,12 +8,7 @@ from httpx import AsyncClient
 
 from ..clients.protobuf import Protobuf
 from ..exceptions.feature import FeatureNotSupported
-from . import (
-    devolo_idl_proto_deviceapi_ledsettings_pb2,
-    devolo_idl_proto_deviceapi_restart_pb2,
-    devolo_idl_proto_deviceapi_updatefirmware_pb2,
-    devolo_idl_proto_deviceapi_wifinetwork_pb2,
-)
+from . import ledsettings_pb2, restart_pb2, updatefirmware_pb2, wifinetwork_pb2
 
 if TYPE_CHECKING:
     from typing_extensions import Concatenate, ParamSpec
@@ -40,6 +35,7 @@ def _feature(
     return feature_decorator
 
 
+# Issue: https://github.com/PyCQA/pylint/issues/4987
 class DeviceApi(Protobuf):
     """
     Implementation of the devolo device API.
@@ -60,7 +56,7 @@ class DeviceApi(Protobuf):
         self._user = "devolo"
         self._version = info["properties"]["Version"]
 
-        features = info["properties"].get("Features", "")
+        features: str = info["properties"].get("Features", "")
         self.features: list[str] = features.split(",") if features else ["reset", "update", "led", "intmtg"]
         self.password = ""
 
@@ -72,7 +68,7 @@ class DeviceApi(Protobuf):
         return: LED settings
         """
         self._logger.debug("Getting LED settings.")
-        led_setting = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsGet()
+        led_setting = ledsettings_pb2.LedSettingsGet()
         response = await self._async_get("LedSettingsGet")
         led_setting.ParseFromString(await response.aread())
         return self._message_to_dict(led_setting)
@@ -86,12 +82,12 @@ class DeviceApi(Protobuf):
         :return: True, if LED state was successfully changed, otherwise False
         """
         self._logger.debug("Setting LED settings.")
-        led_setting = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsSet()
-        led_setting.state = int(not enable)
+        led_setting = ledsettings_pb2.LedSettingsSet()
+        led_setting.state = led_setting.LED_ON if enable else led_setting.LED_OFF  # pylint: disable=no-member
         query = await self._async_post("LedSettingsSet", content=led_setting.SerializeToString())
-        response = devolo_idl_proto_deviceapi_ledsettings_pb2.LedSettingsSetResponse()
+        response = ledsettings_pb2.LedSettingsSetResponse()
         response.FromString(await query.aread())
-        return bool(not response.result)  # pylint: disable=no-member
+        return response.result == response.SUCCESS  # pylint: disable=no-member
 
     @_feature("restart")
     async def async_restart(self) -> bool:
@@ -101,10 +97,10 @@ class DeviceApi(Protobuf):
         :return: True if restart is started, otherwise False
         """
         self._logger.debug("Restarting the device.")
-        restart = devolo_idl_proto_deviceapi_restart_pb2.RestartResponse()
-        response = await self._async_post("Restart", content=b"")
-        restart.ParseFromString(await response.aread())
-        return self._message_to_dict(restart)["result"] == "SUCCESS"
+        query = await self._async_post("Restart", content=b"")
+        response = restart_pb2.RestartResponse()
+        response.FromString(await query.aread())
+        return response.result == response.SUCCESS  # pylint: disable=no-member
 
     @_feature("restart")
     async def async_uptime(self) -> int:
@@ -115,7 +111,7 @@ class DeviceApi(Protobuf):
         :return: The uptime without unit
         """
         self._logger.debug("Get uptime.")
-        uptime = devolo_idl_proto_deviceapi_restart_pb2.UptimeGetResponse()
+        uptime = restart_pb2.UptimeGetResponse()
         response = await self._async_get("UptimeGet")
         uptime.ParseFromString(await response.aread())
         return int(self._message_to_dict(uptime)["uptime"])
@@ -128,7 +124,7 @@ class DeviceApi(Protobuf):
         :return: Result and new firmware version, if newer one is available
         """
         self._logger.debug("Checking for new firmware.")
-        update_firmware_check = devolo_idl_proto_deviceapi_updatefirmware_pb2.UpdateFirmwareCheck()
+        update_firmware_check = updatefirmware_pb2.UpdateFirmwareCheck()
         response = await self._async_get("UpdateFirmwareCheck")
         update_firmware_check.ParseFromString(await response.aread())
         return self._message_to_dict(update_firmware_check)
@@ -142,10 +138,10 @@ class DeviceApi(Protobuf):
         :return: True, if the firmware update was started, False if there is no update
         """
         self._logger.debug("Updating firmware.")
-        update_firmware = devolo_idl_proto_deviceapi_updatefirmware_pb2.UpdateFirmwareStart()
-        response = await self._async_get("UpdateFirmwareStart")
-        update_firmware.FromString(await response.aread())
-        return bool(not update_firmware.result)  # pylint: disable=no-member
+        update_firmware = updatefirmware_pb2.UpdateFirmwareStart()
+        query = await self._async_get("UpdateFirmwareStart")
+        update_firmware.FromString(await query.aread())
+        return update_firmware.result == update_firmware.UPDATE_STARTED  # pylint: disable=no-member
 
     @_feature("wifi1")
     async def async_get_wifi_connected_station(self) -> dict[str, list]:
@@ -156,7 +152,7 @@ class DeviceApi(Protobuf):
         :return: All connected wifi stations including connection rate data
         """
         self._logger.debug("Getting connected wifi stations.")
-        wifi_connected_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiConnectedStationsGet()
+        wifi_connected_proto = wifinetwork_pb2.WifiConnectedStationsGet()
         response = await self._async_get("WifiConnectedStationsGet")
         wifi_connected_proto.ParseFromString(await response.aread())
         return self._message_to_dict(wifi_connected_proto)
@@ -170,7 +166,7 @@ class DeviceApi(Protobuf):
         :return: Details about the wifi guest access
         """
         self._logger.debug("Getting wifi guest access status.")
-        wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessGet()
+        wifi_guest_proto = wifinetwork_pb2.WifiGuestAccessGet()
         response = await self._async_get("WifiGuestAccessGet")
         wifi_guest_proto.ParseFromString(await response.aread())
         return self._message_to_dict(wifi_guest_proto)
@@ -184,12 +180,12 @@ class DeviceApi(Protobuf):
         :return: True, if the state of the wifi guest access was successfully changed, otherwise False
         """
         self._logger.debug("Setting wifi guest access status.")
-        wifi_guest_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSet()
+        wifi_guest_proto = wifinetwork_pb2.WifiGuestAccessSet()
         wifi_guest_proto.enable = enable
         query = await self._async_post("WifiGuestAccessSet", content=wifi_guest_proto.SerializeToString())
-        response = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiGuestAccessSetResponse()
+        response = wifinetwork_pb2.WifiGuestAccessSetResponse()
         response.FromString(await query.aread())
-        return bool(not response.result)  # pylint: disable=no-member
+        return response.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS  # pylint: disable=no-member
 
     @_feature("wifi1")
     async def async_get_wifi_neighbor_access_points(self) -> dict[str, list]:
@@ -200,7 +196,7 @@ class DeviceApi(Protobuf):
         :return: Visible access points in the neighborhood including connection rate data
         """
         self._logger.debug("Getting neighbored access points.")
-        wifi_neighbor_aps = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiNeighborAPsGet()
+        wifi_neighbor_aps = wifinetwork_pb2.WifiNeighborAPsGet()
         response = await self._async_get("WifiNeighborAPsGet", timeout=30.0)
         wifi_neighbor_aps.ParseFromString(await response.aread())
         return self._message_to_dict(wifi_neighbor_aps)
@@ -214,7 +210,7 @@ class DeviceApi(Protobuf):
         :return: Repeated access points in the neighborhood including connection rate data
         """
         self._logger.debug("Getting repeated access points.")
-        wifi_connected_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiRepeatedAPsGet()
+        wifi_connected_proto = wifinetwork_pb2.WifiRepeatedAPsGet()
         response = await self._async_get("WifiRepeatedAPsGet")
         wifi_connected_proto.ParseFromString(await response.aread())
         return self._message_to_dict(wifi_connected_proto)
@@ -227,7 +223,7 @@ class DeviceApi(Protobuf):
         :return: True, if the WPS was successfully started, otherwise False
         """
         self._logger.debug("Starting WPS.")
-        wps_proto = devolo_idl_proto_deviceapi_wifinetwork_pb2.WifiWpsPbcStart()
+        wps_proto = wifinetwork_pb2.WifiWpsPbcStart()
         response = await self._async_get("WifiWpsPbcStart")
         wps_proto.FromString(await response.aread())
-        return bool(not wps_proto.result)  # pylint: disable=no-member
+        return wps_proto.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS  # pylint: disable=no-member

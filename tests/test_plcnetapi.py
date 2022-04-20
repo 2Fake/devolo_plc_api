@@ -2,10 +2,10 @@ import pytest
 from google.protobuf.json_format import MessageToDict
 from pytest_httpx import HTTPXMock
 
-from devolo_plc_api.plcnet_api.devolo_idl_proto_plcnetapi_getnetworkoverview_pb2 import GetNetworkOverview
-from devolo_plc_api.plcnet_api.devolo_idl_proto_plcnetapi_identifydevice_pb2 import IdentifyDeviceResponse
-from devolo_plc_api.plcnet_api.devolo_idl_proto_plcnetapi_setuserdevicename_pb2 import SetUserDeviceNameResponse
+from devolo_plc_api.plcnet_api.getnetworkoverview_pb2 import GetNetworkOverview
+from devolo_plc_api.plcnet_api.identifydevice_pb2 import IdentifyDeviceResponse
 from devolo_plc_api.plcnet_api.plcnetapi import PlcNetApi
+from devolo_plc_api.plcnet_api.setuserdevicename_pb2 import SetUserDeviceNameResponse
 
 
 class TestDeviceApi:
