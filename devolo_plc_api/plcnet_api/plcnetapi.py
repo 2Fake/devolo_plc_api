@@ -75,6 +75,7 @@ class PlcNetApi(Protobuf):
     async def async_pair_device(self) -> bool:
         """
         Start pairing mode.
+
         :return: True, if pairing was started successfully, otherwise False
         """
         self._logger.debug("Pairing.")
