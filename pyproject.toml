@@ -26,9 +26,6 @@ name = "devolo_plc_api"
 readme = "README.md"
 requires-python = ">= 3.8"
 
-[tool.setuptools.packages.find]
-exclude = ["tests*"]
-
 [project.optional-dependencies]
 dev = [
     "pre-commit",
