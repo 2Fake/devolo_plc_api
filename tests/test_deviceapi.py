@@ -3,6 +3,7 @@ from google.protobuf.json_format import MessageToDict
 from pytest_httpx import HTTPXMock
 
 from devolo_plc_api.device_api import DeviceApi
+from devolo_plc_api.device_api.factoryreset_pb2 import FactoryResetStart
 from devolo_plc_api.device_api.ledsettings_pb2 import LedSettingsGet, LedSettingsSetResponse
 from devolo_plc_api.device_api.restart_pb2 import RestartResponse, UptimeGetResponse
 from devolo_plc_api.device_api.updatefirmware_pb2 import UpdateFirmwareCheck, UpdateFirmwareStart
@@ -91,6 +92,18 @@ class TestDeviceApi:
         wps = WifiRepeaterWpsClonePbcStart()
         httpx_mock.add_response(content=wps.SerializeToString())
         assert device_api.start_wps_clone()
+
+    @pytest.mark.parametrize("feature", ["reset"])
+    async def test_async_factory_reset(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        reset = FactoryResetStart()
+        httpx_mock.add_response(content=reset.SerializeToString())
+        assert await device_api.async_factory_reset()
+
+    @pytest.mark.parametrize("feature", ["reset"])
+    def test_factory_reset(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        reset = FactoryResetStart()
+        httpx_mock.add_response(content=reset.SerializeToString())
+        assert device_api.factory_reset()
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["restart"])

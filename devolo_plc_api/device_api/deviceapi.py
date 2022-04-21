@@ -8,7 +8,7 @@ from httpx import AsyncClient
 
 from ..clients.protobuf import Protobuf
 from ..exceptions.feature import FeatureNotSupported
-from . import ledsettings_pb2, restart_pb2, updatefirmware_pb2, wifinetwork_pb2
+from . import factoryreset_pb2, ledsettings_pb2, restart_pb2, updatefirmware_pb2, wifinetwork_pb2
 
 if TYPE_CHECKING:
     from typing_extensions import Concatenate, ParamSpec
@@ -115,6 +115,19 @@ class DeviceApi(Protobuf):
         response = await self._async_get("WifiRepeaterWpsClonePbcStart")
         wps_clone.FromString(await response.aread())
         return wps_clone.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS  # pylint: disable=no-member
+
+    @_feature("reset")
+    async def async_factory_reset(self) -> bool:
+        """
+        Factory reset the device. This feature only works on devices, that announce the reset feature.
+
+        :return: True if reset is started, otherwise False
+        """
+        self._logger.debug("Resetting the device.")
+        reset = factoryreset_pb2.FactoryResetStart()
+        response = await self._async_get("FactoryResetStart")
+        reset.FromString(await response.aread())
+        return reset.result == reset.SUCCESS  # pylint: disable=no-member
 
     @_feature("restart")
     async def async_restart(self) -> bool:
