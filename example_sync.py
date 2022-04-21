@@ -21,6 +21,9 @@ def run():
         # If the state was changed successfully, True is returned, otherwise False.
         print("success" if dpa.device.set_led_setting(enable=True) else "failed")
 
+        # Factory reset the device. If the reset will happen shortly, True is returned, otherwise False.
+        # print("success" if dpa.device.factory_reset() else "failed")
+
         # Restart the device. If the restart will happen shortly, True is returned, otherwise False.
         print("success" if dpa.device.restart() else "failed")
 
