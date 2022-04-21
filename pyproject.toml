@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core >=3.2,<4", "flit_scm"]
+requires = ["flit_scm"]
 build-backend = "flit_scm:buildapi"
 
 [project]
@@ -21,13 +21,11 @@ dependencies = [
 dynamic = [
     "version",
 ]
-urls = {source = "https://github.com/2Fake/devolo_plc_api"}
+license = { file = "LICENSE" }
 name = "devolo_plc_api"
 readme = "README.md"
 requires-python = ">= 3.8"
-
-[tool.setuptools.packages.find]
-exclude = ["tests*"]
+urls = {source = "https://github.com/2Fake/devolo_plc_api"}
 
 [project.optional-dependencies]
 dev = [
