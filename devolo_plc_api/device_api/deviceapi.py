@@ -89,6 +89,33 @@ class DeviceApi(Protobuf):
         response.FromString(await query.aread())
         return response.result == response.SUCCESS  # pylint: disable=no-member
 
+    @_feature("repeater0")
+    async def async_get_wifi_repeated_access_points(self) -> dict[str, list]:
+        """
+        Get repeated wifi access point asynchronously. This feature only works on repeater devices, that announce the wifi1
+        feature.
+
+        :return: Repeated access points in the neighborhood including connection rate data
+        """
+        self._logger.debug("Getting repeated access points.")
+        wifi_connected = wifinetwork_pb2.WifiRepeatedAPsGet()
+        response = await self._async_get("WifiRepeatedAPsGet")
+        wifi_connected.ParseFromString(await response.aread())
+        return self._message_to_dict(wifi_connected)
+
+    @_feature("repeater0")
+    async def async_start_wps_clone(self) -> bool:
+        """
+        Start WPS clone mode. This feature only works on repeater devices, that announce the wifi1 feature.
+
+        :return: True, if the wifi settings were successfully cloned, otherwise False
+        """
+        self._logger.debug("Starting WPS clone.")
+        wps_clone = wifinetwork_pb2.WifiRepeaterWpsClonePbcStart()
+        response = await self._async_get("WifiRepeaterWpsClonePbcStart")
+        wps_clone.FromString(await response.aread())
+        return wps_clone.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS  # pylint: disable=no-member
+
     @_feature("restart")
     async def async_restart(self) -> bool:
         """
@@ -204,20 +231,6 @@ class DeviceApi(Protobuf):
         return self._message_to_dict(wifi_neighbor_aps)
 
     @_feature("wifi1")
-    async def async_get_wifi_repeated_access_points(self) -> dict[str, list]:
-        """
-        Get repeated wifi access point asynchronously. This feature only works on repeater devices, that announce the wifi1
-        feature.
-
-        :return: Repeated access points in the neighborhood including connection rate data
-        """
-        self._logger.debug("Getting repeated access points.")
-        wifi_connected = wifinetwork_pb2.WifiRepeatedAPsGet()
-        response = await self._async_get("WifiRepeatedAPsGet")
-        wifi_connected.ParseFromString(await response.aread())
-        return self._message_to_dict(wifi_connected)
-
-    @_feature("wifi1")
     async def async_start_wps(self) -> bool:
         """
         Start WPS push button configuration.
@@ -229,16 +242,3 @@ class DeviceApi(Protobuf):
         response = await self._async_get("WifiWpsPbcStart")
         wps.FromString(await response.aread())
         return wps.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS  # pylint: disable=no-member
-
-    @_feature("wifi1")
-    async def async_start_wps_clone(self) -> bool:
-        """
-        Start WPS clone mode. This feature only works on repeater devices, that announce the wifi1 feature.
-
-        :return: True, if the wifi settings were successfully cloned, otherwise False
-        """
-        self._logger.debug("Starting WPS clone.")
-        wps_clone = wifinetwork_pb2.WifiRepeaterWpsClonePbcStart()
-        response = await self._async_get("WifiRepeaterWpsClonePbcStart")
-        wps_clone.FromString(await response.aread())
-        return wps_clone.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS  # pylint: disable=no-member
