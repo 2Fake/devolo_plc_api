@@ -74,4 +74,3 @@ asyncio_mode = "auto"
 packages = { find = {exclude=["docs*", "tests*"]} }
 
 [tool.setuptools_scm]
-write_to = "devolo_plc_api/_version.py"
