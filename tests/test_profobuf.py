@@ -1,12 +1,12 @@
 from http import HTTPStatus
 
 import pytest
-from httpx import ConnectTimeout, HTTPStatusError
+from httpx import ConnectTimeout
 from pytest_httpx import HTTPXMock
 from pytest_mock import MockerFixture
 
 from devolo_plc_api.clients import protobuf
-from devolo_plc_api.device_api.ledsettings_pb2 import LedSettingsSetResponse
+from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import LedSettingsSetResponse
 from devolo_plc_api.exceptions.device import DevicePasswordProtected, DeviceUnavailable
 from devolo_plc_api.plcnet_api import SERVICE_TYPE
 
@@ -32,7 +32,7 @@ class TestProtobuf:
 
     @pytest.mark.asyncio
     async def test__async_get_wrong_password(self, httpx_mock: HTTPXMock, mock_protobuf: StubProtobuf):
-        httpx_mock.add_response(status_code=HTTPStatus.UNAUTHORIZED)
+        httpx_mock.add_response(status_code=401)
         with pytest.raises(DevicePasswordProtected):
             await mock_protobuf._async_get("LedSettingsGet")
 
@@ -40,12 +40,6 @@ class TestProtobuf:
     async def test__async_get_device_unavailable(self, httpx_mock: HTTPXMock, mock_protobuf: StubProtobuf):
         httpx_mock.add_exception(ConnectTimeout("ConnectTimeout"))
         with pytest.raises(DeviceUnavailable):
-            await mock_protobuf._async_get("LedSettingsGet")
-
-    @pytest.mark.asyncio
-    async def test__async_get_unknown_error(self, httpx_mock: HTTPXMock, mock_protobuf: StubProtobuf):
-        httpx_mock.add_response(status_code=HTTPStatus.SERVICE_UNAVAILABLE)
-        with pytest.raises(HTTPStatusError):
             await mock_protobuf._async_get("LedSettingsGet")
 
     def test__message_to_dict(self, mocker: MockerFixture, mock_protobuf: StubProtobuf):
@@ -61,7 +55,7 @@ class TestProtobuf:
 
     @pytest.mark.asyncio
     async def test__async_post_wrong_password(self, httpx_mock: HTTPXMock, mock_protobuf: StubProtobuf):
-        httpx_mock.add_response(status_code=HTTPStatus.UNAUTHORIZED)
+        httpx_mock.add_response(status_code=401)
         with pytest.raises(DevicePasswordProtected):
             await mock_protobuf._async_post("LedSettingsGet", b"")
 
@@ -69,12 +63,6 @@ class TestProtobuf:
     async def test__async_post_device_unavailable(self, httpx_mock: HTTPXMock, mock_protobuf: StubProtobuf):
         httpx_mock.add_exception(ConnectTimeout("ConnectTimeout"))
         with pytest.raises(DeviceUnavailable):
-            await mock_protobuf._async_post("LedSettingsGet", b"")
-
-    @pytest.mark.asyncio
-    async def test__async_post_unknown_error(self, httpx_mock: HTTPXMock, mock_protobuf: StubProtobuf):
-        httpx_mock.add_response(status_code=HTTPStatus.SERVICE_UNAVAILABLE)
-        with pytest.raises(HTTPStatusError):
             await mock_protobuf._async_post("LedSettingsGet", b"")
 
     @pytest.mark.asyncio
