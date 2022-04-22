@@ -92,8 +92,8 @@ class DeviceApi(Protobuf):
     @_feature("repeater0")
     async def async_get_wifi_repeated_access_points(self) -> dict[str, list]:
         """
-        Get repeated wifi access point asynchronously. This feature only works on repeater devices, that announce the wifi1
-        feature.
+        Get repeated wifi access point asynchronously. This feature only works on repeater devices, that announce the
+        repeater0 feature.
 
         :return: Repeated access points in the neighborhood including connection rate data
         """
@@ -106,7 +106,7 @@ class DeviceApi(Protobuf):
     @_feature("repeater0")
     async def async_start_wps_clone(self) -> bool:
         """
-        Start WPS clone mode. This feature only works on repeater devices, that announce the wifi1 feature.
+        Start WPS clone mode. This feature only works on repeater devices, that announce the repeater0 feature.
 
         :return: True, if the wifi settings were successfully cloned, otherwise False
         """
