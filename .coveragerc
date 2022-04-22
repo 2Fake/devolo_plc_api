@@ -1,0 +1,5 @@
+[run]
+source = devolo_plc_api
+omit =
+    devolo_plc_api/device_api/*_pb2.py
+    devolo_plc_api/plcnet_api/*_pb2.py

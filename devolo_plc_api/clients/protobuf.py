@@ -9,6 +9,7 @@ from http import HTTPStatus
 from typing import Any, Callable
 
 from google.protobuf.json_format import MessageToDict
+from google.protobuf.message import Message
 from httpx import (
     AsyncClient,
     ConnectError,
@@ -69,8 +70,10 @@ class Protobuf(ABC):
                 response = await self._session.get(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
             response.raise_for_status()
             return response
-        except HTTPStatusError:
-            raise DevicePasswordProtected("The used password is wrong.") from None
+        except HTTPStatusError as e:
+            if e.response.status_code == HTTPStatus.UNAUTHORIZED:
+                raise DevicePasswordProtected("The used password is wrong.") from None
+            raise e
         except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
             raise DeviceUnavailable("The device is currently not available. Maybe on standby?") from None
 
@@ -90,12 +93,14 @@ class Protobuf(ABC):
                 )
             response.raise_for_status()
             return response
-        except HTTPStatusError:
-            raise DevicePasswordProtected("The used password is wrong.") from None
+        except HTTPStatusError as e:
+            if e.response.status_code == HTTPStatus.UNAUTHORIZED:
+                raise DevicePasswordProtected("The used password is wrong.") from None
+            raise e
         except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
             raise DeviceUnavailable("The device is currently not available. Maybe on standby?") from None
 
     @staticmethod
-    def _message_to_dict(message) -> dict[str, Any]:
+    def _message_to_dict(message: Message) -> dict[str, Any]:
         """Convert message to dict with certain settings."""
         return MessageToDict(message=message, including_default_value_fields=True, preserving_proto_field_name=True)

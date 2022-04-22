@@ -89,6 +89,33 @@ class DeviceApi(Protobuf):
         response.FromString(await query.aread())
         return response.result == response.SUCCESS  # pylint: disable=no-member
 
+    @_feature("repeater0")
+    async def async_get_wifi_repeated_access_points(self) -> dict[str, list]:
+        """
+        Get repeated wifi access point asynchronously. This feature only works on repeater devices, that announce the
+        repeater0 feature.
+
+        :return: Repeated access points in the neighborhood including connection rate data
+        """
+        self._logger.debug("Getting repeated access points.")
+        wifi_connected = wifinetwork_pb2.WifiRepeatedAPsGet()
+        response = await self._async_get("WifiRepeatedAPsGet")
+        wifi_connected.ParseFromString(await response.aread())
+        return self._message_to_dict(wifi_connected)
+
+    @_feature("repeater0")
+    async def async_start_wps_clone(self) -> bool:
+        """
+        Start WPS clone mode. This feature only works on repeater devices, that announce the repeater0 feature.
+
+        :return: True, if the wifi settings were successfully cloned, otherwise False
+        """
+        self._logger.debug("Starting WPS clone.")
+        wps_clone = wifinetwork_pb2.WifiRepeaterWpsClonePbcStart()
+        response = await self._async_get("WifiRepeaterWpsClonePbcStart")
+        wps_clone.FromString(await response.aread())
+        return wps_clone.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS  # pylint: disable=no-member
+
     @_feature("restart")
     async def async_restart(self) -> bool:
         """
@@ -152,10 +179,10 @@ class DeviceApi(Protobuf):
         :return: All connected wifi stations including connection rate data
         """
         self._logger.debug("Getting connected wifi stations.")
-        wifi_connected_proto = wifinetwork_pb2.WifiConnectedStationsGet()
+        wifi_connected = wifinetwork_pb2.WifiConnectedStationsGet()
         response = await self._async_get("WifiConnectedStationsGet")
-        wifi_connected_proto.ParseFromString(await response.aread())
-        return self._message_to_dict(wifi_connected_proto)
+        wifi_connected.ParseFromString(await response.aread())
+        return self._message_to_dict(wifi_connected)
 
     @_feature("wifi1")
     async def async_get_wifi_guest_access(self) -> dict[str, bool | int | str]:
@@ -166,23 +193,25 @@ class DeviceApi(Protobuf):
         :return: Details about the wifi guest access
         """
         self._logger.debug("Getting wifi guest access status.")
-        wifi_guest_proto = wifinetwork_pb2.WifiGuestAccessGet()
+        wifi_guest = wifinetwork_pb2.WifiGuestAccessGet()
         response = await self._async_get("WifiGuestAccessGet")
-        wifi_guest_proto.ParseFromString(await response.aread())
-        return self._message_to_dict(wifi_guest_proto)
+        wifi_guest.ParseFromString(await response.aread())
+        return self._message_to_dict(wifi_guest)
 
     @_feature("wifi1")
-    async def async_set_wifi_guest_access(self, enable: bool) -> bool:
+    async def async_set_wifi_guest_access(self, enable: bool, duration: int = 0) -> bool:
         """
         Enable wifi guest access asynchronously. This feature only works on devices, that announce the wifi1 feature.
 
         :param enable: True to enable, False to disable wifi guest access
+        :param duration: Duration in minutes to enable the guest wifi. 0 is infinite.
         :return: True, if the state of the wifi guest access was successfully changed, otherwise False
         """
         self._logger.debug("Setting wifi guest access status.")
-        wifi_guest_proto = wifinetwork_pb2.WifiGuestAccessSet()
-        wifi_guest_proto.enable = enable
-        query = await self._async_post("WifiGuestAccessSet", content=wifi_guest_proto.SerializeToString())
+        wifi_guest = wifinetwork_pb2.WifiGuestAccessSet()
+        wifi_guest.enable = enable
+        wifi_guest.duration = duration
+        query = await self._async_post("WifiGuestAccessSet", content=wifi_guest.SerializeToString())
         response = wifinetwork_pb2.WifiGuestAccessSetResponse()
         response.FromString(await query.aread())
         return response.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS  # pylint: disable=no-member
@@ -202,20 +231,6 @@ class DeviceApi(Protobuf):
         return self._message_to_dict(wifi_neighbor_aps)
 
     @_feature("wifi1")
-    async def async_get_wifi_repeated_access_points(self) -> dict[str, list]:
-        """
-        Get repeated wifi access point asynchronously. This feature only works on repeater devices, that announce the wifi1
-        feature.
-
-        :return: Repeated access points in the neighborhood including connection rate data
-        """
-        self._logger.debug("Getting repeated access points.")
-        wifi_connected_proto = wifinetwork_pb2.WifiRepeatedAPsGet()
-        response = await self._async_get("WifiRepeatedAPsGet")
-        wifi_connected_proto.ParseFromString(await response.aread())
-        return self._message_to_dict(wifi_connected_proto)
-
-    @_feature("wifi1")
     async def async_start_wps(self) -> bool:
         """
         Start WPS push button configuration.
@@ -223,7 +238,7 @@ class DeviceApi(Protobuf):
         :return: True, if the WPS was successfully started, otherwise False
         """
         self._logger.debug("Starting WPS.")
-        wps_proto = wifinetwork_pb2.WifiWpsPbcStart()
+        wps = wifinetwork_pb2.WifiWpsPbcStart()
         response = await self._async_get("WifiWpsPbcStart")
-        wps_proto.FromString(await response.aread())
-        return wps_proto.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS  # pylint: disable=no-member
+        wps.FromString(await response.aread())
+        return wps.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS  # pylint: disable=no-member
