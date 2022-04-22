@@ -4,4 +4,4 @@ max-complexity = 10
 max-cognitive-complexity = 5
 max-line-length = 127
 ignore = E203,E303,W503
-exclude = .*,devolo_plc_api/*/devolo_idl_*.py
+exclude = example_*.py,*_pb2.py

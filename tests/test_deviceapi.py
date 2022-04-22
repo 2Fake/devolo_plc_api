@@ -3,15 +3,16 @@ from google.protobuf.json_format import MessageToDict
 from pytest_httpx import HTTPXMock
 
 from devolo_plc_api.device_api import DeviceApi
-from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_ledsettings_pb2 import LedSettingsGet, LedSettingsSetResponse
-from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_restart_pb2 import RestartResponse, UptimeGetResponse
-from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_updatefirmware_pb2 import UpdateFirmwareCheck, UpdateFirmwareStart
-from devolo_plc_api.device_api.devolo_idl_proto_deviceapi_wifinetwork_pb2 import (
+from devolo_plc_api.device_api.ledsettings_pb2 import LedSettingsGet, LedSettingsSetResponse
+from devolo_plc_api.device_api.restart_pb2 import RestartResponse, UptimeGetResponse
+from devolo_plc_api.device_api.updatefirmware_pb2 import UpdateFirmwareCheck, UpdateFirmwareStart
+from devolo_plc_api.device_api.wifinetwork_pb2 import (
     WifiConnectedStationsGet,
     WifiGuestAccessGet,
     WifiGuestAccessSetResponse,
     WifiNeighborAPsGet,
     WifiRepeatedAPsGet,
+    WifiRepeaterWpsClonePbcStart,
     WifiWpsPbcStart,
 )
 from devolo_plc_api.exceptions.feature import FeatureNotSupported
@@ -58,6 +59,38 @@ class TestDeviceApi:
         led_setting_set = LedSettingsSetResponse()
         httpx_mock.add_response(content=led_setting_set.SerializeToString())
         assert device_api.set_led_setting(True)
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("feature", ["repeater0"])
+    async def test_async_get_wifi_repeated_access_points(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        wifi_repeated_accesspoints_get = WifiRepeatedAPsGet()
+        httpx_mock.add_response(content=wifi_repeated_accesspoints_get.SerializeToString())
+        wifi_repeated_access_points = await device_api.async_get_wifi_repeated_access_points()
+        assert wifi_repeated_access_points == MessageToDict(
+            wifi_repeated_accesspoints_get, including_default_value_fields=True, preserving_proto_field_name=True
+        )
+
+    @pytest.mark.parametrize("feature", ["repeater0"])
+    def test_get_wifi_repeated_access_points(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        wifi_repeated_accesspoints_get = WifiRepeatedAPsGet()
+        httpx_mock.add_response(content=wifi_repeated_accesspoints_get.SerializeToString())
+        wifi_repeated_access_points = device_api.get_wifi_repeated_access_points()
+        assert wifi_repeated_access_points == MessageToDict(
+            wifi_repeated_accesspoints_get, including_default_value_fields=True, preserving_proto_field_name=True
+        )
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("feature", ["repeater0"])
+    async def test_async_start_wps_clone(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        wps = WifiRepeaterWpsClonePbcStart()
+        httpx_mock.add_response(content=wps.SerializeToString())
+        assert await device_api.async_start_wps_clone()
+
+    @pytest.mark.parametrize("feature", ["repeater0"])
+    def test_start_wps_clone(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        wps = WifiRepeaterWpsClonePbcStart()
+        httpx_mock.add_response(content=wps.SerializeToString())
+        assert device_api.start_wps_clone()
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["restart"])
@@ -185,25 +218,6 @@ class TestDeviceApi:
         wifi_neighbor_access_points = device_api.get_wifi_neighbor_access_points()
         assert wifi_neighbor_access_points == MessageToDict(
             wifi_neighbor_accesspoints_get, including_default_value_fields=True, preserving_proto_field_name=True
-        )
-
-    @pytest.mark.asyncio
-    @pytest.mark.parametrize("feature", ["wifi1"])
-    async def test_async_get_wifi_repeated_access_points(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
-        wifi_repeated_accesspoints_get = WifiRepeatedAPsGet()
-        httpx_mock.add_response(content=wifi_repeated_accesspoints_get.SerializeToString())
-        wifi_repeated_access_points = await device_api.async_get_wifi_repeated_access_points()
-        assert wifi_repeated_access_points == MessageToDict(
-            wifi_repeated_accesspoints_get, including_default_value_fields=True, preserving_proto_field_name=True
-        )
-
-    @pytest.mark.parametrize("feature", ["wifi1"])
-    def test_get_wifi_repeated_access_points(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
-        wifi_repeated_accesspoints_get = WifiRepeatedAPsGet()
-        httpx_mock.add_response(content=wifi_repeated_accesspoints_get.SerializeToString())
-        wifi_repeated_access_points = device_api.get_wifi_repeated_access_points()
-        assert wifi_repeated_access_points == MessageToDict(
-            wifi_repeated_accesspoints_get, including_default_value_fields=True, preserving_proto_field_name=True
         )
 
     @pytest.mark.asyncio

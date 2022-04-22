@@ -1,2 +1,7 @@
 """devolo PLC API"""
-from ._version import version as __version__
+try:
+    from setuptools_scm import get_version
+
+    __version__ = get_version(fallback_version="0.0.0")
+except ImportError:
+    __version__ = "0.0.0"
