@@ -2,10 +2,11 @@ import pytest
 from google.protobuf.json_format import MessageToDict
 from pytest_httpx import HTTPXMock
 
-from devolo_plc_api.plcnet_api.devolo_idl_proto_plcnetapi_getnetworkoverview_pb2 import GetNetworkOverview
-from devolo_plc_api.plcnet_api.devolo_idl_proto_plcnetapi_identifydevice_pb2 import IdentifyDeviceResponse
-from devolo_plc_api.plcnet_api.devolo_idl_proto_plcnetapi_setuserdevicename_pb2 import SetUserDeviceNameResponse
+from devolo_plc_api.plcnet_api.getnetworkoverview_pb2 import GetNetworkOverview
+from devolo_plc_api.plcnet_api.identifydevice_pb2 import IdentifyDeviceResponse
+from devolo_plc_api.plcnet_api.pairdevice_pb2 import PairDeviceStart
 from devolo_plc_api.plcnet_api.plcnetapi import PlcNetApi
+from devolo_plc_api.plcnet_api.setuserdevicename_pb2 import SetUserDeviceNameResponse
 
 
 class TestDeviceApi:
@@ -47,6 +48,17 @@ class TestDeviceApi:
         identify_device = IdentifyDeviceResponse()
         httpx_mock.add_response(content=identify_device.SerializeToString())
         assert plcnet_api.identify_device_stop()
+
+    @pytest.mark.asyncio
+    async def test_async_pair_device(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
+        pair_device = PairDeviceStart()
+        httpx_mock.add_response(content=pair_device.SerializeToString())
+        assert await plcnet_api.async_pair_device()
+
+    def test_pair_device(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
+        pair_device = PairDeviceStart()
+        httpx_mock.add_response(content=pair_device.SerializeToString())
+        assert plcnet_api.pair_device()
 
     @pytest.mark.asyncio
     async def test_async_set_user_device_name(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):

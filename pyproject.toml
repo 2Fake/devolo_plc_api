@@ -1,6 +1,6 @@
 [build-system]
-requires = ["flit_scm"]
-build-backend = "flit_scm:buildapi"
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
 
 [project]
 authors = [
@@ -25,7 +25,7 @@ license = { file = "LICENSE" }
 name = "devolo_plc_api"
 readme = "README.md"
 requires-python = ">= 3.8"
-urls = {source = "https://github.com/2Fake/devolo_plc_api"}
+urls = {changelog = "https://github.com/2Fake/devolo_plc_api/docs/CHANGELOG.md", homepage = "https://github.com/2Fake/devolo_plc_api"}
 
 [project.optional-dependencies]
 dev = [
@@ -56,13 +56,6 @@ skip_glob = "*_pb2.py"
 [tool.mypy]
 ignore_missing_imports = true
 
-[[tool.mypy.overrides]]
-module = [
-    "devolo_plc_api.plcnet_api.devolo_idl_proto_plcnetapi_getnetworkoverview_pb2",
-    "devolo_plc_api.device_api.devolo_idl_proto_deviceapi_wifinetwork_pb2"
-]
-ignore_errors = true
-
 [tool.pylint.design]
 max-attributes = 8
 
@@ -76,6 +69,9 @@ good-names = "ip"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+
+[tool.setuptools]
+packages = { find = {exclude=["docs*", "tests*"]} }
 
 [tool.setuptools_scm]
 write_to = "devolo_plc_api/_version.py"
