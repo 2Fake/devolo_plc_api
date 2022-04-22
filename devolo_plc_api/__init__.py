@@ -1,7 +1,8 @@
 """devolo PLC API"""
-try:
-    from setuptools_scm import get_version
+from importlib.metadata import PackageNotFoundError, version
 
-    __version__ = get_version(fallback_version="0.0.0")
-except ImportError:
+try:
+    __version__ = version("devolo_plc_api")
+except PackageNotFoundError:
+    # package is not installed - e.g. pulled and run locally
     __version__ = "0.0.0"

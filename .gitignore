@@ -140,6 +140,3 @@ dmypy.json
 
 ### Testfile ###
 test.py
-
-# _version file provided by scm version control
-devolo_plc_api/_version.py
