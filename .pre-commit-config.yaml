@@ -18,5 +18,5 @@ repos:
           name: check API stub files
           entry: script/stubgen.py
           description: check if stub files of the APIs are up-to-date
-          language: system
+          language: script
           types: [python]
