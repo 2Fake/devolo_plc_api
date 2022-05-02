@@ -17,13 +17,12 @@ if TYPE_CHECKING:
     _P = ParamSpec("_P")
 
 
-# Issue: https://github.com/python/mypy/issues/11833
 def _feature(
     feature: str,
-) -> Callable[[Callable[Concatenate[DeviceApi, _P], _ReturnT]], Callable[Concatenate[DeviceApi, _P], _ReturnT]]:  # type:ignore
+) -> Callable[[Callable[Concatenate[DeviceApi, _P], _ReturnT]], Callable[Concatenate[DeviceApi, _P], _ReturnT]]:
     """Decorator to filter unsupported features before querying the device."""
 
-    def feature_decorator(method: Callable[Concatenate[DeviceApi, _P], _ReturnT]) -> Callable[..., _ReturnT]:  # type:ignore
+    def feature_decorator(method: Callable[Concatenate[DeviceApi, _P], _ReturnT]) -> Callable[..., _ReturnT]:
         @functools.wraps(method)
         def wrapper(deviceapi: DeviceApi, *args: _P.args, **kwargs: _P.kwargs) -> _ReturnT:
             if feature in deviceapi.features:
