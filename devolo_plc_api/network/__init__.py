@@ -9,8 +9,6 @@ from zeroconf import DNSQuestionType, ServiceBrowser, ServiceStateChange, Zeroco
 from ..device import Device
 from ..device_api import SERVICE_TYPE
 
-_devices: dict[str, Device] = {}
-
 
 async def async_discover_network() -> dict[str, Device]:
     """
@@ -18,9 +16,13 @@ async def async_discover_network() -> dict[str, Device]:
 
     :return: Devices accessible via serial number.
     """
-    global _devices  # pylint: disable=global-statement,invalid-name
-    _devices = {}
-    browser = ServiceBrowser(Zeroconf(), SERVICE_TYPE, [_add], question_type=DNSQuestionType.QM)
+    _devices: dict[str, Device] = {}
+
+    def add(zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange) -> None:
+        """React on state changes."""
+        _add(_devices, zeroconf, service_type, name, state_change)
+
+    browser = ServiceBrowser(Zeroconf(), SERVICE_TYPE, [add], question_type=DNSQuestionType.QM)
     await asyncio.sleep(3)
     browser.cancel()
     return _devices
@@ -32,15 +34,21 @@ def discover_network() -> dict[str, Device]:
 
     :return: Devices accessible via serial number.
     """
-    global _devices  # pylint: disable=global-statement,invalid-name
     _devices = {}
-    browser = ServiceBrowser(Zeroconf(), SERVICE_TYPE, [_add], question_type=DNSQuestionType.QM)
+
+    def add(zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange) -> None:
+        """React on state changes."""
+        _add(_devices, zeroconf, service_type, name, state_change)
+
+    browser = ServiceBrowser(Zeroconf(), SERVICE_TYPE, [add], question_type=DNSQuestionType.QM)
     time.sleep(3)
     browser.cancel()
     return _devices
 
 
-def _add(zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange) -> None:
+def _add(
+    devices: dict[str, Device], zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange
+) -> None:
     """Create a device object to each matching device."""
     if state_change is not ServiceStateChange.Added:
         return
@@ -52,4 +60,4 @@ def _add(zeroconf: Zeroconf, service_type: str, name: str, state_change: Service
     if info is None or info["properties"]["MT"] in ("2600", "2601"):
         return  # Don't react on devolo Home Control central units
 
-    _devices[info["properties"]["SN"]] = Device(ip=info["address"], deviceapi=info, zeroconf_instance=zeroconf)
+    devices[info["properties"]["SN"]] = Device(ip=info["address"], deviceapi=info, zeroconf_instance=zeroconf)
