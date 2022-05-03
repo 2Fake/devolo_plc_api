@@ -39,14 +39,16 @@ jobs:
         flake8 . --count --exit-zero --statistics
     - name: Lint with pylint
       run: |
-        python -m pip install pylint
+        python -m pip install pylint pylint-pytest
         python -m pip install -e .
         pylint --errors-only --score=n devolo_plc_api
         pylint --exit-zero --score=n --disable=E --enable=useless-suppression devolo_plc_api
+        pylint --exit-zero --score=n --disable=C0103,R0201,R0801,R0903,R0904 --enable=useless-suppression --load-plugins pylint_pytest tests
     - name: Lint with mypy
       run: |
         python -m pip install mypy types-protobuf
         mypy devolo_plc_api
+        mypy tests || true
 
   test:
     name: Test with Python ${{ matrix.python-version }}

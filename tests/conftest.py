@@ -1,9 +1,13 @@
+"""Test configuration."""
+from __future__ import annotations
+
 import asyncio
-import json
-import pathlib
 from typing import Generator
+from unittest.mock import AsyncMock, patch
 
 import pytest
+
+from . import TestData, load_test_data
 
 pytest_plugins = [
     "tests.fixtures.device",
@@ -12,16 +16,20 @@ pytest_plugins = [
     "tests.fixtures.protobuf",
 ]
 
-file = pathlib.Path(__file__).parent / "test_data.json"
-with file.open("r") as fh:
-    test_data = json.load(fh)
 
-
-@pytest.fixture(autouse=True, scope="class")
-def test_data_fixture(request: pytest.FixtureRequest) -> None:
+@pytest.fixture(scope="session")
+def test_data() -> TestData:
     """Load test data."""
-    request.cls.device_info = test_data["device_info"]
-    request.cls.ip = test_data["ip"]
+    return load_test_data()
+
+
+@pytest.fixture()
+def block_communication() -> Generator[None, None, None]:
+    """Block external communication."""
+    with patch("devolo_plc_api.device.AsyncZeroconf", new=AsyncMock), patch(
+        "devolo_plc_api.device.httpx.AsyncClient", new=AsyncMock
+    ), patch("devolo_plc_api.network.Zeroconf"):
+        yield
 
 
 @pytest.fixture()

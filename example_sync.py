@@ -1,4 +1,4 @@
-from devolo_plc_api.device import Device
+from devolo_plc_api import Device
 
 # IP of the device to query
 IP = "192.168.0.10"
