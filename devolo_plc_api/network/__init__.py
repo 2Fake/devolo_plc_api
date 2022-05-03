@@ -34,7 +34,7 @@ def discover_network() -> dict[str, Device]:
 
     :return: Devices accessible via serial number.
     """
-    devices = {}
+    devices: dict[str, Device] = {}
 
     def add(zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange) -> None:
         """React on state changes."""
