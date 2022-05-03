@@ -16,16 +16,16 @@ async def async_discover_network() -> dict[str, Device]:
 
     :return: Devices accessible via serial number.
     """
-    _devices: dict[str, Device] = {}
+    devices: dict[str, Device] = {}
 
     def add(zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange) -> None:
         """React on state changes."""
-        _add(_devices, zeroconf, service_type, name, state_change)
+        _add(devices, zeroconf, service_type, name, state_change)
 
     browser = ServiceBrowser(Zeroconf(), SERVICE_TYPE, [add], question_type=DNSQuestionType.QM)
     await asyncio.sleep(3)
     browser.cancel()
-    return _devices
+    return devices
 
 
 def discover_network() -> dict[str, Device]:
@@ -34,16 +34,16 @@ def discover_network() -> dict[str, Device]:
 
     :return: Devices accessible via serial number.
     """
-    _devices = {}
+    devices = {}
 
     def add(zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange) -> None:
         """React on state changes."""
-        _add(_devices, zeroconf, service_type, name, state_change)
+        _add(devices, zeroconf, service_type, name, state_change)
 
     browser = ServiceBrowser(Zeroconf(), SERVICE_TYPE, [add], question_type=DNSQuestionType.QM)
     time.sleep(3)
     browser.cancel()
-    return _devices
+    return devices
 
 
 def _add(
