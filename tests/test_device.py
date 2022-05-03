@@ -92,7 +92,7 @@ class TestDevice:
         """Test the async context manager."""
         with patch("devolo_plc_api.device.Device._state_change", state_change):
             async with Device(test_data.ip) as device:
-                assert not getattr(device, "_connected")
+                assert getattr(device, "_connected")
             assert not getattr(device, "_connected")
 
     @pytest.mark.usefixtures("mock_service_browser")
