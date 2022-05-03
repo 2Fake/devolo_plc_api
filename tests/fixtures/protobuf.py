@@ -11,4 +11,4 @@ async def mock_protobuf() -> AsyncGenerator[StubProtobuf, None]:
     """Use protobuf stub."""
     protobuf = StubProtobuf()
     yield protobuf
-    await protobuf._session.aclose()  # pylint: disable=protected-access
+    await protobuf.close_session()

@@ -21,3 +21,6 @@ class StubProtobuf(Protobuf):
         self._user = "user"
 
         self.password = "password"
+
+    async def close_session(self) -> None:
+        await self._session.aclose()
