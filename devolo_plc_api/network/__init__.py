@@ -18,7 +18,7 @@ async def async_discover_network() -> dict[str, Device]:
 
     :return: Devices accessible via serial number.
     """
-    global _devices
+    global _devices  # pylint: disable=global-statement,invalid-name
     _devices = {}
     browser = ServiceBrowser(Zeroconf(), SERVICE_TYPE, [_add], question_type=DNSQuestionType.QM)
     await asyncio.sleep(3)
@@ -32,7 +32,7 @@ def discover_network() -> dict[str, Device]:
 
     :return: Devices accessible via serial number.
     """
-    global _devices
+    global _devices  # pylint: disable=global-statement,invalid-name
     _devices = {}
     browser = ServiceBrowser(Zeroconf(), SERVICE_TYPE, [_add], question_type=DNSQuestionType.QM)
     time.sleep(3)
