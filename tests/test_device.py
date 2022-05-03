@@ -65,6 +65,7 @@ class TestDevice:
             assert ac.call_count == 1
 
     @pytest.mark.asyncio
+    # pylint: disable=protected-access
     async def test_async_disconnect(self, mock_device: Device):
         """Test that disconnecting from a device cleans up Zeroconf and the HTTP client."""
         await mock_device.async_connect()
@@ -87,7 +88,6 @@ class TestDevice:
 
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("mock_service_browser")
-    # pylint: disable=protected-access
     async def test_async_context_manager(self, test_data: TestData):
         """Test the async context manager."""
         with patch("devolo_plc_api.device.Device._state_change", state_change):
@@ -96,7 +96,6 @@ class TestDevice:
             assert not getattr(device, "_connected")
 
     @pytest.mark.usefixtures("mock_service_browser")
-    # pylint: disable=protected-access
     def test_context_manager(self, test_data: TestData):
         """Test the sync context manager."""
         with patch("devolo_plc_api.device.Device._state_change", state_change):
@@ -152,7 +151,6 @@ class TestDevice:
             assert not mock_device.plcnet
 
     @pytest.mark.asyncio
-    # pylint: disable=protected-access
     async def test__get_plcnet_info_multicast(self, test_data: TestData):
         """Test that devices having trouble with unicast zeroconf are queried twice."""
         with patch("devolo_plc_api.device.Device._get_zeroconf_info") as gzi, pytest.raises(DeviceNotFound):

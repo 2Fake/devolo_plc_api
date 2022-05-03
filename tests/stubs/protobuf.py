@@ -23,4 +23,5 @@ class StubProtobuf(Protobuf):
         self.password = "password"
 
     async def close_session(self) -> None:
+        """Close HTTP session."""
         await self._session.aclose()
