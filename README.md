@@ -22,7 +22,6 @@ Other versions and even other operating systems might work. Feel free to tell us
 
 * pytest 6.2.5
 * pytest-asyncio 0.15.1
-* pytest-mock 3.6.1
 * pytest-httpx 0.18
 
 ## Versioning
