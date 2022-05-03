@@ -51,7 +51,6 @@ setup(
             "pytest-asyncio",
             "pytest-cov",
             "pytest-httpx>=0.18.0",
-            "pytest-mock",
             "typing-extensions",
         ],
     },
