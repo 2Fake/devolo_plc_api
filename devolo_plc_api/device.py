@@ -141,7 +141,9 @@ class Device:  # pylint: disable=too-many-instance-attributes
         if not self._info[service_type]["properties"]:
             await self._retry_zeroconf_info(service_type=service_type)
         if self._info[service_type]["properties"]:
-            self.firmware_date = date.fromisoformat(self._info[service_type]["properties"].get("FirmwareDate", "1970-01-01"))
+            self.firmware_date = date.fromisoformat(
+                self._info[service_type]["properties"].get("FirmwareDate", "1970-01-01")[:10]
+            )
             self.firmware_version = self._info[service_type]["properties"].get("FirmwareVersion", "")
             self.hostname = self._info[service_type].get("hostname", "")
             self.mt_number = self._info[service_type]["properties"].get("MT", 0)
