@@ -8,7 +8,7 @@ from httpx import AsyncClient
 
 from ..clients.protobuf import Protobuf
 from ..exceptions.feature import FeatureNotSupported
-from . import ledsettings_pb2, restart_pb2, updatefirmware_pb2, wifinetwork_pb2
+from . import factoryreset_pb2, ledsettings_pb2, restart_pb2, updatefirmware_pb2, wifinetwork_pb2
 
 if TYPE_CHECKING:
     from typing_extensions import Concatenate, ParamSpec
@@ -17,13 +17,12 @@ if TYPE_CHECKING:
     _P = ParamSpec("_P")
 
 
-# Issue: https://github.com/python/mypy/issues/11833
 def _feature(
     feature: str,
-) -> Callable[[Callable[Concatenate[DeviceApi, _P], _ReturnT]], Callable[Concatenate[DeviceApi, _P], _ReturnT]]:  # type:ignore
+) -> Callable[[Callable[Concatenate[DeviceApi, _P], _ReturnT]], Callable[Concatenate[DeviceApi, _P], _ReturnT]]:
     """Decorator to filter unsupported features before querying the device."""
 
-    def feature_decorator(method: Callable[Concatenate[DeviceApi, _P], _ReturnT]) -> Callable[..., _ReturnT]:  # type:ignore
+    def feature_decorator(method: Callable[Concatenate[DeviceApi, _P], _ReturnT]) -> Callable[..., _ReturnT]:
         @functools.wraps(method)
         def wrapper(deviceapi: DeviceApi, *args: _P.args, **kwargs: _P.kwargs) -> _ReturnT:
             if feature in deviceapi.features:
@@ -57,7 +56,7 @@ class DeviceApi(Protobuf):
         self._version = info["properties"]["Version"]
 
         features: str = info["properties"].get("Features", "")
-        self.features: list[str] = features.split(",") if features else ["reset", "update", "led", "intmtg"]
+        self.features = features.split(",") if features else ["reset", "update", "led", "intmtg"]
         self.password = ""
 
     @_feature("led")
@@ -115,6 +114,19 @@ class DeviceApi(Protobuf):
         response = await self._async_get("WifiRepeaterWpsClonePbcStart")
         wps_clone.FromString(await response.aread())
         return wps_clone.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS  # pylint: disable=no-member
+
+    @_feature("reset")
+    async def async_factory_reset(self) -> bool:
+        """
+        Factory reset the device. This feature only works on devices, that announce the reset feature.
+
+        :return: True if reset is started, otherwise False
+        """
+        self._logger.debug("Resetting the device.")
+        reset = factoryreset_pb2.FactoryResetStart()
+        response = await self._async_get("FactoryResetStart")
+        reset.FromString(await response.aread())
+        return reset.result == reset.SUCCESS  # pylint: disable=no-member
 
     @_feature("restart")
     async def async_restart(self) -> bool:

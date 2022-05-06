@@ -81,7 +81,7 @@ class TestProtobuf:
     async def test__async_wrong_password_type(self, httpx_mock: HTTPXMock, mock_protobuf: StubProtobuf):
         httpx_mock.add_response(status_code=HTTPStatus.UNAUTHORIZED)
         with pytest.raises(DevicePasswordProtected):
-            await mock_protobuf._async_get("LedSettingsGet", b"")
+            await mock_protobuf._async_get("LedSettingsGet")
 
         assert httpx_mock.get_requests()
         assert mock_protobuf.password == "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"

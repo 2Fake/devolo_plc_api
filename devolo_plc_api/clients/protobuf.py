@@ -42,10 +42,10 @@ class Protobuf(ABC):
         self._user: str
         self._version: str
 
-    def __getattr__(self, attr: str) -> Callable:
+    def __getattr__(self, attr: str) -> Callable[..., Any]:
         """Catch attempts to call methods synchronously."""
 
-        def method(*args, **kwargs):
+        def method(*args: Any, **kwargs: Any) -> Any:
             return asyncio.run(getattr(self, async_method)(*args, **kwargs))
 
         async_method = f"async_{attr}"
