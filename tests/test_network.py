@@ -1,72 +1,72 @@
+"""Test network discovery."""
 from unittest.mock import patch
 
 import pytest
-from pytest_mock import MockerFixture
 from zeroconf import ServiceStateChange, Zeroconf
 
-import devolo_plc_api.network as network
-from devolo_plc_api.device import Device
+from devolo_plc_api import Device, network
 from devolo_plc_api.device_api import SERVICE_TYPE
+
+from . import TestData
+from .mocks.mock_zeroconf import MockServiceBrowser
 
 
 class TestNetwork:
+    """Test devolo_plc_api.network functions."""
+
     @pytest.mark.asyncio
-    async def test_async_discover_network(self):
-        device = {"1234567890123456": Device(ip="123.123.123.123")}
-        with patch("devolo_plc_api.network.Zeroconf"), patch("devolo_plc_api.network.ServiceBrowser"), patch("asyncio.sleep"):
-            network._devices = device
+    @pytest.mark.usefixtures("block_communication")
+    async def test_async_discover_network(self, test_data: TestData):
+        """Test discovering the network asynchronously."""
+        serial_number = test_data.device_info[SERVICE_TYPE]["properties"]["SN"]
+        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
+            "devolo_plc_api.device.Device.info_from_service",
+            return_value={"address": test_data.ip, "properties": test_data.device_info[SERVICE_TYPE]["properties"]},
+        ), patch("asyncio.sleep"):
             discovered = await network.async_discover_network()
-            assert discovered == device
+            assert serial_number in discovered
+            assert isinstance(discovered[serial_number], Device)
 
-    def test_discover_network(self):
-        device = {"1234567890123456": Device(ip="123.123.123.123")}
-        with patch("devolo_plc_api.network.Zeroconf"), patch("devolo_plc_api.network.ServiceBrowser"), patch("time.sleep"):
-            network._devices = device
+    @pytest.mark.usefixtures("block_communication")
+    def test_discover_network(self, test_data: TestData):
+        """Test discovering the network synchronously."""
+        serial_number = test_data.device_info[SERVICE_TYPE]["properties"]["SN"]
+        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
+            "devolo_plc_api.device.Device.info_from_service",
+            return_value={"address": test_data.ip, "properties": test_data.device_info[SERVICE_TYPE]["properties"]},
+        ), patch("time.sleep"):
             discovered = network.discover_network()
-            assert discovered == device
+            assert serial_number in discovered
+            assert isinstance(discovered[serial_number], Device)
 
-    def test__add(self):
-        service_info = {
-            "properties": {"MT": "2673", "SN": "1234567890123456"},
-            "address": "123.123.123.123",
-        }
-        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), patch(
-            "devolo_plc_api.device.Device.info_from_service", return_value=service_info
-        ):
-            network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
-            assert "1234567890123456" in network._devices
+    # pylint: disable=protected-access
+    def test_add_wrong_state(self):
+        """Test early return on wrong state changes."""
+        with patch("devolo_plc_api.network.Zeroconf.get_service_info") as gsi:
+            network._add({}, Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Removed)
+            assert gsi.call_count == 0
 
-    def test__add_wrong_state(self, mocker: MockerFixture):
-        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), patch(
-            "devolo_plc_api.device.Device.info_from_service", return_value=None
-        ):
-            spy_device = mocker.spy(Device, "__init__")
-            network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Removed)
-            assert spy_device.call_count == 0
+    def test_no_devices(self):
+        """Test discovery with no devices."""
+        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
+            "devolo_plc_api.network.Zeroconf.get_service_info", return_value=None
+        ), patch("time.sleep"):
+            discovered = network.discover_network()
+            assert not discovered
 
-    def test__add_no_device(self, mocker: MockerFixture):
-        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value=None):
-            spy_info = mocker.spy(Device, "info_from_service")
-            network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
-            assert spy_info.call_count == 0
+    @pytest.mark.usefixtures("block_communication")
+    def test_hcu(self, test_data: TestData):
+        """Test ignoring Home Control Central Units."""
+        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
+            "devolo_plc_api.device.Device.info_from_service",
+            return_value={"address": test_data.ip, "properties": {"MT": "2600"}},
+        ), patch("time.sleep"):
+            discovered = network.discover_network()
+            assert not discovered
 
-    def test__add_no_info(self, mocker: MockerFixture):
-        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), patch(
-            "devolo_plc_api.device.Device.info_from_service", return_value=None
-        ):
-            spy_device = mocker.spy(Device, "__init__")
-            network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
-            assert spy_device.call_count == 0
-
-    def test__add_hcu(self, mocker: MockerFixture):
-        spy_device = mocker.spy(Device, "__init__")
-        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), patch(
-            "devolo_plc_api.device.Device.info_from_service", return_value={"properties": {"MT": "2600"}}
-        ):
-            network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
-            assert spy_device.call_count == 0
-        with patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value="service_info"), patch(
-            "devolo_plc_api.device.Device.info_from_service", return_value={"properties": {"MT": "2601"}}
-        ):
-            network._add(Zeroconf(), SERVICE_TYPE, SERVICE_TYPE, ServiceStateChange.Added)
-            assert spy_device.call_count == 0
+        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
+            "devolo_plc_api.device.Device.info_from_service",
+            return_value={"address": test_data.ip, "properties": {"MT": "2601"}},
+        ), patch("time.sleep"):
+            discovered = network.discover_network()
+            assert not discovered

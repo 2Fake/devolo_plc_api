@@ -36,7 +36,6 @@ test = [
     "pytest-asyncio",
     "pytest-cov",
     "pytest-httpx>=0.18.0",
-    "pytest-mock",
     "typing-extensions",
 ]
 
@@ -65,7 +64,7 @@ max-line-length = 127
 
 [tool.pylint.messages_control]
 disable = "C0330, C0326"
-good-names = "ip"
+good-names = "e,ip"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
