@@ -15,7 +15,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11wifinetwork.proto\x12\ndevice.api\".\n\x11WifiParametersSet\x12\x0c\n\x04ssid\x18\x01 \x01(\t\x12\x0b\n\x03key\x18\x02 \x01(\t\"C\n\x19WifiParametersSetResponse\x12&\n\x06result\x18\x01 \x01(\x0e\x32\x16.device.api.WifiResult\"6\n\x12WifiGuestAccessSet\x12\x0e\n\x06\x65nable\x18\x01 \x01(\x08\x12\x10\n\x08\x64uration\x18\x02 \x01(\r\"D\n\x1aWifiGuestAccessSetResponse\x12&\n\x06result\x18\x01 \x01(\x0e\x32\x16.device.api.WifiResult\"\\\n\x12WifiGuestAccessGet\x12\x0f\n\x07\x65nabled\x18\x01 \x01(\x08\x12\x1a\n\x12remaining_duration\x18\x02 \x01(\r\x12\x0c\n\x04ssid\x18\x03 \x01(\t\x12\x0b\n\x03key\x18\x04 \x01(\t\"\xe9\x01\n\x12WifiNeighborAPsGet\x12\x43\n\x0cneighbor_aps\x18\x01 \x03(\x0b\x32-.device.api.WifiNeighborAPsGet.NeighborAPInfo\x1a\x8d\x01\n\x0eNeighborAPInfo\x12\x13\n\x0bmac_address\x18\x01 \x01(\t\x12\x0c\n\x04ssid\x18\x02 \x01(\t\x12\"\n\x04\x62\x61nd\x18\x03 \x01(\x0e\x32\x14.device.api.WifiBand\x12\x0f\n\x07\x63hannel\x18\x04 \x01(\r\x12\x0e\n\x06signal\x18\x05 \x01(\x05\x12\x13\n\x0bsignal_bars\x18\x06 \x01(\x05\"\xf7\x01\n\x12WifiRepeatedAPsGet\x12\x43\n\x0crepeated_aps\x18\x01 \x03(\x0b\x32-.device.api.WifiRepeatedAPsGet.RepeatedAPInfo\x1a\x9b\x01\n\x0eRepeatedAPInfo\x12\x13\n\x0bmac_address\x18\x01 \x01(\t\x12\x0c\n\x04ssid\x18\x02 \x01(\t\x12\"\n\x04\x62\x61nd\x18\x03 \x01(\x0e\x32\x14.device.api.WifiBand\x12\x0f\n\x07\x63hannel\x18\x04 \x01(\r\x12\x0c\n\x04rate\x18\x05 \x01(\r\x12\x0e\n\x06signal\x18\x06 \x01(\x05\x12\x13\n\x0bsignal_bars\x18\x07 \x01(\x05\"\x90\x02\n\x18WifiConnectedStationsGet\x12U\n\x12\x63onnected_stations\x18\x01 \x03(\x0b\x32\x39.device.api.WifiConnectedStationsGet.ConnectedStationInfo\x1a\x9c\x01\n\x14\x43onnectedStationInfo\x12\x13\n\x0bmac_address\x18\x01 \x01(\t\x12)\n\x08vap_type\x18\x02 \x01(\x0e\x32\x17.device.api.WifiVAPType\x12\"\n\x04\x62\x61nd\x18\x03 \x01(\x0e\x32\x14.device.api.WifiBand\x12\x0f\n\x07rx_rate\x18\x04 \x01(\r\x12\x0f\n\x07tx_rate\x18\x05 \x01(\r\"u\n\x19WifiRepeaterParametersSet\x12\x0c\n\x04ssid\x18\x01 \x01(\t\x12\x0b\n\x03key\x18\x02 \x01(\t\x12\x11\n\tcrossband\x18\x03 \x01(\x08\x12*\n\x0cprimary_band\x18\x04 \x01(\x0e\x32\x14.device.api.WifiBand\"K\n!WifiRepeaterParametersSetResponse\x12&\n\x06result\x18\x01 \x01(\x0e\x32\x16.device.api.WifiResult\"9\n\x0fWifiWpsPbcStart\x12&\n\x06result\x18\x01 \x01(\x0e\x32\x16.device.api.WifiResult\"F\n\x1cWifiRepeaterWpsClonePbcStart\x12&\n\x06result\x18\x01 \x01(\x0e\x32\x16.device.api.WifiResult*z\n\nWifiResult\x12\x10\n\x0cWIFI_SUCCESS\x10\x00\x12\x15\n\x11WIFI_INVALID_SSID\x10\x01\x12\x14\n\x10WIFI_INVALID_KEY\x10\x02\x12\x14\n\x10WIFI_IS_DISABLED\x10\x03\x12\x17\n\x12WIFI_UNKNOWN_ERROR\x10\xff\x01*E\n\x08WifiBand\x12\x15\n\x11WIFI_BAND_UNKNOWN\x10\x00\x12\x10\n\x0cWIFI_BAND_2G\x10\x01\x12\x10\n\x0cWIFI_BAND_5G\x10\x02*f\n\x0bWifiVAPType\x12\x14\n\x10WIFI_VAP_UNKNOWN\x10\x00\x12\x14\n\x10WIFI_VAP_MAIN_AP\x10\x01\x12\x15\n\x11WIFI_VAP_GUEST_AP\x10\x02\x12\x14\n\x10WIFI_VAP_STATION\x10\x03\x42\x15\n\x06\x64\x65viceB\x0bwifinetworkb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11wifinetwork.proto\x12\ndevice.api\"E\n\x19WifiDeviceModeGetResponse\x12(\n\x04mode\x18\x01 \x01(\x0e\x32\x1a.device.api.WifiDeviceMode\"\xa9\x01\n\x11WifiDeviceModeSet\x12(\n\x04mode\x18\x01 \x01(\x0e\x32\x1a.device.api.WifiDeviceMode\x12\x30\n\tfh_params\x18\x02 \x01(\x0b\x32\x1d.device.api.WifiParametersSet\x12\x38\n\tbh_params\x18\x03 \x01(\x0b\x32%.device.api.WifiRepeaterParametersSet\"C\n\x19WifiDeviceModeSetResponse\x12&\n\x06result\x18\x01 \x01(\x0e\x32\x16.device.api.WifiResult\".\n\x11WifiParametersSet\x12\x0c\n\x04ssid\x18\x01 \x01(\t\x12\x0b\n\x03key\x18\x02 \x01(\t\"C\n\x19WifiParametersSetResponse\x12&\n\x06result\x18\x01 \x01(\x0e\x32\x16.device.api.WifiResult\"w\n\x12WifiGuestAccessSet\x12\x0e\n\x06\x65nable\x18\x01 \x01(\x08\x12\x10\n\x08\x64uration\x18\x02 \x01(\r\x12\x0c\n\x04ssid\x18\x03 \x01(\t\x12\x0b\n\x03key\x18\x04 \x01(\t\x12$\n\x03wpa\x18\x05 \x01(\x0e\x32\x17.device.api.WifiWpaMode\"D\n\x1aWifiGuestAccessSetResponse\x12&\n\x06result\x18\x01 \x01(\x0e\x32\x16.device.api.WifiResult\"\x82\x01\n\x12WifiGuestAccessGet\x12\x0f\n\x07\x65nabled\x18\x01 \x01(\x08\x12\x1a\n\x12remaining_duration\x18\x02 \x01(\r\x12\x0c\n\x04ssid\x18\x03 \x01(\t\x12\x0b\n\x03key\x18\x04 \x01(\t\x12$\n\x03wpa\x18\x05 \x01(\x0e\x32\x17.device.api.WifiWpaMode\"\xe9\x01\n\x12WifiNeighborAPsGet\x12\x43\n\x0cneighbor_aps\x18\x01 \x03(\x0b\x32-.device.api.WifiNeighborAPsGet.NeighborAPInfo\x1a\x8d\x01\n\x0eNeighborAPInfo\x12\x13\n\x0bmac_address\x18\x01 \x01(\t\x12\x0c\n\x04ssid\x18\x02 \x01(\t\x12\"\n\x04\x62\x61nd\x18\x03 \x01(\x0e\x32\x14.device.api.WifiBand\x12\x0f\n\x07\x63hannel\x18\x04 \x01(\r\x12\x0e\n\x06signal\x18\x05 \x01(\x05\x12\x13\n\x0bsignal_bars\x18\x06 \x01(\x05\"\xf7\x01\n\x12WifiRepeatedAPsGet\x12\x43\n\x0crepeated_aps\x18\x01 \x03(\x0b\x32-.device.api.WifiRepeatedAPsGet.RepeatedAPInfo\x1a\x9b\x01\n\x0eRepeatedAPInfo\x12\x13\n\x0bmac_address\x18\x01 \x01(\t\x12\x0c\n\x04ssid\x18\x02 \x01(\t\x12\"\n\x04\x62\x61nd\x18\x03 \x01(\x0e\x32\x14.device.api.WifiBand\x12\x0f\n\x07\x63hannel\x18\x04 \x01(\r\x12\x0c\n\x04rate\x18\x05 \x01(\r\x12\x0e\n\x06signal\x18\x06 \x01(\x05\x12\x13\n\x0bsignal_bars\x18\x07 \x01(\x05\"\x90\x02\n\x18WifiConnectedStationsGet\x12U\n\x12\x63onnected_stations\x18\x01 \x03(\x0b\x32\x39.device.api.WifiConnectedStationsGet.ConnectedStationInfo\x1a\x9c\x01\n\x14\x43onnectedStationInfo\x12\x13\n\x0bmac_address\x18\x01 \x01(\t\x12)\n\x08vap_type\x18\x02 \x01(\x0e\x32\x17.device.api.WifiVAPType\x12\"\n\x04\x62\x61nd\x18\x03 \x01(\x0e\x32\x14.device.api.WifiBand\x12\x0f\n\x07rx_rate\x18\x04 \x01(\r\x12\x0f\n\x07tx_rate\x18\x05 \x01(\r\"u\n\x19WifiRepeaterParametersSet\x12\x0c\n\x04ssid\x18\x01 \x01(\t\x12\x0b\n\x03key\x18\x02 \x01(\t\x12\x11\n\tcrossband\x18\x03 \x01(\x08\x12*\n\x0cprimary_band\x18\x04 \x01(\x0e\x32\x14.device.api.WifiBand\"K\n!WifiRepeaterParametersSetResponse\x12&\n\x06result\x18\x01 \x01(\x0e\x32\x16.device.api.WifiResult\"9\n\x0fWifiWpsPbcStart\x12&\n\x06result\x18\x01 \x01(\x0e\x32\x16.device.api.WifiResult\"F\n\x1cWifiRepeaterWpsClonePbcStart\x12&\n\x06result\x18\x01 \x01(\x0e\x32\x16.device.api.WifiResult*\xdb\x01\n\nWifiResult\x12\x10\n\x0cWIFI_SUCCESS\x10\x00\x12\x15\n\x11WIFI_INVALID_SSID\x10\x01\x12\x14\n\x10WIFI_INVALID_KEY\x10\x02\x12\x14\n\x10WIFI_IS_DISABLED\x10\x03\x12\x1e\n\x1aWIFI_INVALID_BACKHAUL_SSID\x10\x04\x12\x1d\n\x19WIFI_INVALID_BACKHAUL_KEY\x10\x05\x12 \n\x1cWIFI_UNSUPPORTED_DEVICE_MODE\x10\x06\x12\x17\n\x12WIFI_UNKNOWN_ERROR\x10\xff\x01*E\n\x08WifiBand\x12\x15\n\x11WIFI_BAND_UNKNOWN\x10\x00\x12\x10\n\x0cWIFI_BAND_2G\x10\x01\x12\x10\n\x0cWIFI_BAND_5G\x10\x02*f\n\x0bWifiVAPType\x12\x14\n\x10WIFI_VAP_UNKNOWN\x10\x00\x12\x14\n\x10WIFI_VAP_MAIN_AP\x10\x01\x12\x15\n\x11WIFI_VAP_GUEST_AP\x10\x02\x12\x14\n\x10WIFI_VAP_STATION\x10\x03*^\n\x0bWifiWpaMode\x12\x11\n\rWPA_NO_CHANGE\x10\x00\x12\x0c\n\x08WPA_NONE\x10\x01\x12\x0b\n\x07WPA_1_2\x10\x02\x12\t\n\x05WPA_2\x10\x03\x12\x0b\n\x07WPA_2_3\x10\x04\x12\t\n\x05WPA_3\x10\x05*?\n\x0eWifiDeviceMode\x12\x0f\n\x0bWDM_NO_CONF\x10\x00\x12\n\n\x06WDM_AP\x10\x02\x12\x10\n\x0cWDM_REPEATER\x10\x03\x42\x15\n\x06\x64\x65viceB\x0bwifinetworkb\x06proto3')
 
 _WIFIRESULT = DESCRIPTOR.enum_types_by_name['WifiResult']
 WifiResult = enum_type_wrapper.EnumTypeWrapper(_WIFIRESULT)
@@ -23,10 +23,17 @@ _WIFIBAND = DESCRIPTOR.enum_types_by_name['WifiBand']
 WifiBand = enum_type_wrapper.EnumTypeWrapper(_WIFIBAND)
 _WIFIVAPTYPE = DESCRIPTOR.enum_types_by_name['WifiVAPType']
 WifiVAPType = enum_type_wrapper.EnumTypeWrapper(_WIFIVAPTYPE)
+_WIFIWPAMODE = DESCRIPTOR.enum_types_by_name['WifiWpaMode']
+WifiWpaMode = enum_type_wrapper.EnumTypeWrapper(_WIFIWPAMODE)
+_WIFIDEVICEMODE = DESCRIPTOR.enum_types_by_name['WifiDeviceMode']
+WifiDeviceMode = enum_type_wrapper.EnumTypeWrapper(_WIFIDEVICEMODE)
 WIFI_SUCCESS = 0
 WIFI_INVALID_SSID = 1
 WIFI_INVALID_KEY = 2
 WIFI_IS_DISABLED = 3
+WIFI_INVALID_BACKHAUL_SSID = 4
+WIFI_INVALID_BACKHAUL_KEY = 5
+WIFI_UNSUPPORTED_DEVICE_MODE = 6
 WIFI_UNKNOWN_ERROR = 255
 WIFI_BAND_UNKNOWN = 0
 WIFI_BAND_2G = 1
@@ -35,8 +42,20 @@ WIFI_VAP_UNKNOWN = 0
 WIFI_VAP_MAIN_AP = 1
 WIFI_VAP_GUEST_AP = 2
 WIFI_VAP_STATION = 3
+WPA_NO_CHANGE = 0
+WPA_NONE = 1
+WPA_1_2 = 2
+WPA_2 = 3
+WPA_2_3 = 4
+WPA_3 = 5
+WDM_NO_CONF = 0
+WDM_AP = 2
+WDM_REPEATER = 3
 
 
+_WIFIDEVICEMODEGETRESPONSE = DESCRIPTOR.message_types_by_name['WifiDeviceModeGetResponse']
+_WIFIDEVICEMODESET = DESCRIPTOR.message_types_by_name['WifiDeviceModeSet']
+_WIFIDEVICEMODESETRESPONSE = DESCRIPTOR.message_types_by_name['WifiDeviceModeSetResponse']
 _WIFIPARAMETERSSET = DESCRIPTOR.message_types_by_name['WifiParametersSet']
 _WIFIPARAMETERSSETRESPONSE = DESCRIPTOR.message_types_by_name['WifiParametersSetResponse']
 _WIFIGUESTACCESSSET = DESCRIPTOR.message_types_by_name['WifiGuestAccessSet']
@@ -52,6 +71,27 @@ _WIFIREPEATERPARAMETERSSET = DESCRIPTOR.message_types_by_name['WifiRepeaterParam
 _WIFIREPEATERPARAMETERSSETRESPONSE = DESCRIPTOR.message_types_by_name['WifiRepeaterParametersSetResponse']
 _WIFIWPSPBCSTART = DESCRIPTOR.message_types_by_name['WifiWpsPbcStart']
 _WIFIREPEATERWPSCLONEPBCSTART = DESCRIPTOR.message_types_by_name['WifiRepeaterWpsClonePbcStart']
+WifiDeviceModeGetResponse = _reflection.GeneratedProtocolMessageType('WifiDeviceModeGetResponse', (_message.Message,), {
+  'DESCRIPTOR' : _WIFIDEVICEMODEGETRESPONSE,
+  '__module__' : 'wifinetwork_pb2'
+  # @@protoc_insertion_point(class_scope:device.api.WifiDeviceModeGetResponse)
+  })
+_sym_db.RegisterMessage(WifiDeviceModeGetResponse)
+
+WifiDeviceModeSet = _reflection.GeneratedProtocolMessageType('WifiDeviceModeSet', (_message.Message,), {
+  'DESCRIPTOR' : _WIFIDEVICEMODESET,
+  '__module__' : 'wifinetwork_pb2'
+  # @@protoc_insertion_point(class_scope:device.api.WifiDeviceModeSet)
+  })
+_sym_db.RegisterMessage(WifiDeviceModeSet)
+
+WifiDeviceModeSetResponse = _reflection.GeneratedProtocolMessageType('WifiDeviceModeSetResponse', (_message.Message,), {
+  'DESCRIPTOR' : _WIFIDEVICEMODESETRESPONSE,
+  '__module__' : 'wifinetwork_pb2'
+  # @@protoc_insertion_point(class_scope:device.api.WifiDeviceModeSetResponse)
+  })
+_sym_db.RegisterMessage(WifiDeviceModeSetResponse)
+
 WifiParametersSet = _reflection.GeneratedProtocolMessageType('WifiParametersSet', (_message.Message,), {
   'DESCRIPTOR' : _WIFIPARAMETERSSET,
   '__module__' : 'wifinetwork_pb2'
@@ -164,40 +204,50 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   DESCRIPTOR._serialized_options = b'\n\006deviceB\013wifinetwork'
-  _WIFIRESULT._serialized_start=1458
-  _WIFIRESULT._serialized_end=1580
-  _WIFIBAND._serialized_start=1582
-  _WIFIBAND._serialized_end=1651
-  _WIFIVAPTYPE._serialized_start=1653
-  _WIFIVAPTYPE._serialized_end=1755
-  _WIFIPARAMETERSSET._serialized_start=33
-  _WIFIPARAMETERSSET._serialized_end=79
-  _WIFIPARAMETERSSETRESPONSE._serialized_start=81
-  _WIFIPARAMETERSSETRESPONSE._serialized_end=148
-  _WIFIGUESTACCESSSET._serialized_start=150
-  _WIFIGUESTACCESSSET._serialized_end=204
-  _WIFIGUESTACCESSSETRESPONSE._serialized_start=206
-  _WIFIGUESTACCESSSETRESPONSE._serialized_end=274
-  _WIFIGUESTACCESSGET._serialized_start=276
-  _WIFIGUESTACCESSGET._serialized_end=368
-  _WIFINEIGHBORAPSGET._serialized_start=371
-  _WIFINEIGHBORAPSGET._serialized_end=604
-  _WIFINEIGHBORAPSGET_NEIGHBORAPINFO._serialized_start=463
-  _WIFINEIGHBORAPSGET_NEIGHBORAPINFO._serialized_end=604
-  _WIFIREPEATEDAPSGET._serialized_start=607
-  _WIFIREPEATEDAPSGET._serialized_end=854
-  _WIFIREPEATEDAPSGET_REPEATEDAPINFO._serialized_start=699
-  _WIFIREPEATEDAPSGET_REPEATEDAPINFO._serialized_end=854
-  _WIFICONNECTEDSTATIONSGET._serialized_start=857
-  _WIFICONNECTEDSTATIONSGET._serialized_end=1129
-  _WIFICONNECTEDSTATIONSGET_CONNECTEDSTATIONINFO._serialized_start=973
-  _WIFICONNECTEDSTATIONSGET_CONNECTEDSTATIONINFO._serialized_end=1129
-  _WIFIREPEATERPARAMETERSSET._serialized_start=1131
-  _WIFIREPEATERPARAMETERSSET._serialized_end=1248
-  _WIFIREPEATERPARAMETERSSETRESPONSE._serialized_start=1250
-  _WIFIREPEATERPARAMETERSSETRESPONSE._serialized_end=1325
-  _WIFIWPSPBCSTART._serialized_start=1327
-  _WIFIWPSPBCSTART._serialized_end=1384
-  _WIFIREPEATERWPSCLONEPBCSTART._serialized_start=1386
-  _WIFIREPEATERWPSCLONEPBCSTART._serialized_end=1456
+  _WIFIRESULT._serialized_start=1875
+  _WIFIRESULT._serialized_end=2094
+  _WIFIBAND._serialized_start=2096
+  _WIFIBAND._serialized_end=2165
+  _WIFIVAPTYPE._serialized_start=2167
+  _WIFIVAPTYPE._serialized_end=2269
+  _WIFIWPAMODE._serialized_start=2271
+  _WIFIWPAMODE._serialized_end=2365
+  _WIFIDEVICEMODE._serialized_start=2367
+  _WIFIDEVICEMODE._serialized_end=2430
+  _WIFIDEVICEMODEGETRESPONSE._serialized_start=33
+  _WIFIDEVICEMODEGETRESPONSE._serialized_end=102
+  _WIFIDEVICEMODESET._serialized_start=105
+  _WIFIDEVICEMODESET._serialized_end=274
+  _WIFIDEVICEMODESETRESPONSE._serialized_start=276
+  _WIFIDEVICEMODESETRESPONSE._serialized_end=343
+  _WIFIPARAMETERSSET._serialized_start=345
+  _WIFIPARAMETERSSET._serialized_end=391
+  _WIFIPARAMETERSSETRESPONSE._serialized_start=393
+  _WIFIPARAMETERSSETRESPONSE._serialized_end=460
+  _WIFIGUESTACCESSSET._serialized_start=462
+  _WIFIGUESTACCESSSET._serialized_end=581
+  _WIFIGUESTACCESSSETRESPONSE._serialized_start=583
+  _WIFIGUESTACCESSSETRESPONSE._serialized_end=651
+  _WIFIGUESTACCESSGET._serialized_start=654
+  _WIFIGUESTACCESSGET._serialized_end=784
+  _WIFINEIGHBORAPSGET._serialized_start=787
+  _WIFINEIGHBORAPSGET._serialized_end=1020
+  _WIFINEIGHBORAPSGET_NEIGHBORAPINFO._serialized_start=879
+  _WIFINEIGHBORAPSGET_NEIGHBORAPINFO._serialized_end=1020
+  _WIFIREPEATEDAPSGET._serialized_start=1023
+  _WIFIREPEATEDAPSGET._serialized_end=1270
+  _WIFIREPEATEDAPSGET_REPEATEDAPINFO._serialized_start=1115
+  _WIFIREPEATEDAPSGET_REPEATEDAPINFO._serialized_end=1270
+  _WIFICONNECTEDSTATIONSGET._serialized_start=1273
+  _WIFICONNECTEDSTATIONSGET._serialized_end=1545
+  _WIFICONNECTEDSTATIONSGET_CONNECTEDSTATIONINFO._serialized_start=1389
+  _WIFICONNECTEDSTATIONSGET_CONNECTEDSTATIONINFO._serialized_end=1545
+  _WIFIREPEATERPARAMETERSSET._serialized_start=1547
+  _WIFIREPEATERPARAMETERSSET._serialized_end=1664
+  _WIFIREPEATERPARAMETERSSETRESPONSE._serialized_start=1666
+  _WIFIREPEATERPARAMETERSSETRESPONSE._serialized_end=1741
+  _WIFIWPSPBCSTART._serialized_start=1743
+  _WIFIWPSPBCSTART._serialized_end=1800
+  _WIFIREPEATERWPSCLONEPBCSTART._serialized_start=1802
+  _WIFIREPEATERWPSCLONEPBCSTART._serialized_end=1872
 # @@protoc_insertion_point(module_scope)
