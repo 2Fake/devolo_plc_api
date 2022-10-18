@@ -109,6 +109,7 @@ class TestDevice:
         """Test that information from the device API are filled in."""
         with patch("devolo_plc_api.device.Device._get_zeroconf_info"):
             device_info = test_data.device_info[DEVICEAPI]
+            mock_device.password = "super_secret"
             await mock_device.async_connect()
             assert mock_device.firmware_date == date.fromisoformat(device_info["properties"]["FirmwareDate"])
             assert mock_device.firmware_version == device_info["properties"]["FirmwareVersion"]
@@ -116,6 +117,7 @@ class TestDevice:
             assert mock_device.mt_number == device_info["properties"]["MT"]
             assert mock_device.product == device_info["properties"]["Product"]
             assert isinstance(mock_device.device, DeviceApi)
+            assert mock_device.device.password == mock_device.password
 
     @pytest.mark.asyncio
     async def test__get_device_info_multicast(self, test_data: TestData):

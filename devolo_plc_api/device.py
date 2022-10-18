@@ -150,6 +150,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
             self.product = self._info[service_type]["properties"].get("Product", "")
             self.serial_number = self._info[service_type]["properties"]["SN"]
             self.device = DeviceApi(ip=self.ip, session=self._session, info=self._info[service_type])
+            self.device.password = self.password
 
     async def _get_plcnet_info(self) -> None:
         """Get information from the devolo PlcNet API."""
