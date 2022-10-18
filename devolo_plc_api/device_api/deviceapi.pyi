@@ -6,7 +6,6 @@ from __future__ import annotations
 from ..clients.protobuf import Protobuf
 from httpx import AsyncClient as AsyncClient
 from typing import Any
-from typing_extensions import Concatenate as Concatenate
 
 class DeviceApi(Protobuf):
     features: list[str]

@@ -30,6 +30,7 @@ urls = {changelog = "https://github.com/2Fake/devolo_plc_api/docs/CHANGELOG.md",
 [project.optional-dependencies]
 dev = [
     "pre-commit",
+    "mypy>=0.981"
 ]
 test = [
     "pytest",
