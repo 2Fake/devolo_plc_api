@@ -89,18 +89,12 @@ def generate_stubs() -> None:
         target = os.path.join(options.output_dir, target)
         files.append(target)
         with generate_guarded(mod.module, target, options.ignore_errors, options.verbose):
-            generate_stub_from_ast(
-                mod, target, options.parse_only, options.pyversion, options.include_private, options.export_less
-            )
+            generate_stub_from_ast(mod, target, options.parse_only, options.include_private, options.export_less)
 
 
-def generate_stub_from_ast(
-    mod: StubSource, target: str, parse_only: bool, pyversion: tuple[int, int], include_private: bool, export_less: bool
-) -> None:
+def generate_stub_from_ast(mod: StubSource, target: str, parse_only: bool, include_private: bool, export_less: bool) -> None:
     """Use analysed (or just parsed) AST to generate type stub for single file."""
-    gen = ApiStubGenerator(
-        mod.runtime_all, pyversion=pyversion, include_private=include_private, analyzed=not parse_only, export_less=export_less
-    )
+    gen = ApiStubGenerator(mod.runtime_all, include_private=include_private, analyzed=not parse_only, export_less=export_less)
     mod.ast.accept(gen)
     if "annotations" in mod.ast.future_import_flags:
         gen.add_import_line("from __future__ import annotations\n")
