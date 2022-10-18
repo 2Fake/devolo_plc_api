@@ -3,64 +3,83 @@
 isort:skip_file
 """
 import builtins
+import collections.abc
 import google.protobuf.descriptor
 import google.protobuf.internal.containers
 import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
+import sys
 import typing
-import typing_extensions
+
+if sys.version_info >= (3, 10):
+    import typing as typing_extensions
+else:
+    import typing_extensions
 
 DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
 class _WifiResult:
-    ValueType = typing.NewType('ValueType', builtins.int)
+    ValueType = typing.NewType("ValueType", builtins.int)
     V: typing_extensions.TypeAlias = ValueType
-class _WifiResultEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_WifiResult.ValueType], builtins.type):
+
+class _WifiResultEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_WifiResult.ValueType], builtins.type):  # noqa: F821
     DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
     WIFI_SUCCESS: _WifiResult.ValueType  # 0
     WIFI_INVALID_SSID: _WifiResult.ValueType  # 1
     WIFI_INVALID_KEY: _WifiResult.ValueType  # 2
     WIFI_IS_DISABLED: _WifiResult.ValueType  # 3
+    WIFI_INVALID_BACKHAUL_SSID: _WifiResult.ValueType  # 4
+    """@since 1"""
+    WIFI_INVALID_BACKHAUL_KEY: _WifiResult.ValueType  # 5
+    """@since 1"""
+    WIFI_UNSUPPORTED_DEVICE_MODE: _WifiResult.ValueType  # 6
+    """@since 1"""
     WIFI_UNKNOWN_ERROR: _WifiResult.ValueType  # 255
-class WifiResult(_WifiResult, metaclass=_WifiResultEnumTypeWrapper):
-    pass
+
+class WifiResult(_WifiResult, metaclass=_WifiResultEnumTypeWrapper): ...
 
 WIFI_SUCCESS: WifiResult.ValueType  # 0
 WIFI_INVALID_SSID: WifiResult.ValueType  # 1
 WIFI_INVALID_KEY: WifiResult.ValueType  # 2
 WIFI_IS_DISABLED: WifiResult.ValueType  # 3
+WIFI_INVALID_BACKHAUL_SSID: WifiResult.ValueType  # 4
+"""@since 1"""
+WIFI_INVALID_BACKHAUL_KEY: WifiResult.ValueType  # 5
+"""@since 1"""
+WIFI_UNSUPPORTED_DEVICE_MODE: WifiResult.ValueType  # 6
+"""@since 1"""
 WIFI_UNKNOWN_ERROR: WifiResult.ValueType  # 255
 global___WifiResult = WifiResult
 
-
 class _WifiBand:
-    ValueType = typing.NewType('ValueType', builtins.int)
+    ValueType = typing.NewType("ValueType", builtins.int)
     V: typing_extensions.TypeAlias = ValueType
-class _WifiBandEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_WifiBand.ValueType], builtins.type):
+
+class _WifiBandEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_WifiBand.ValueType], builtins.type):  # noqa: F821
     DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
     WIFI_BAND_UNKNOWN: _WifiBand.ValueType  # 0
     WIFI_BAND_2G: _WifiBand.ValueType  # 1
     WIFI_BAND_5G: _WifiBand.ValueType  # 2
-class WifiBand(_WifiBand, metaclass=_WifiBandEnumTypeWrapper):
-    pass
+
+class WifiBand(_WifiBand, metaclass=_WifiBandEnumTypeWrapper): ...
 
 WIFI_BAND_UNKNOWN: WifiBand.ValueType  # 0
 WIFI_BAND_2G: WifiBand.ValueType  # 1
 WIFI_BAND_5G: WifiBand.ValueType  # 2
 global___WifiBand = WifiBand
 
-
 class _WifiVAPType:
-    ValueType = typing.NewType('ValueType', builtins.int)
+    ValueType = typing.NewType("ValueType", builtins.int)
     V: typing_extensions.TypeAlias = ValueType
-class _WifiVAPTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_WifiVAPType.ValueType], builtins.type):
+
+class _WifiVAPTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_WifiVAPType.ValueType], builtins.type):  # noqa: F821
     DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
     WIFI_VAP_UNKNOWN: _WifiVAPType.ValueType  # 0
     WIFI_VAP_MAIN_AP: _WifiVAPType.ValueType  # 1
     WIFI_VAP_GUEST_AP: _WifiVAPType.ValueType  # 2
     WIFI_VAP_STATION: _WifiVAPType.ValueType  # 3
-class WifiVAPType(_WifiVAPType, metaclass=_WifiVAPTypeEnumTypeWrapper):
-    pass
+
+class WifiVAPType(_WifiVAPType, metaclass=_WifiVAPTypeEnumTypeWrapper): ...
 
 WIFI_VAP_UNKNOWN: WifiVAPType.ValueType  # 0
 WIFI_VAP_MAIN_AP: WifiVAPType.ValueType  # 1
@@ -68,128 +87,272 @@ WIFI_VAP_GUEST_AP: WifiVAPType.ValueType  # 2
 WIFI_VAP_STATION: WifiVAPType.ValueType  # 3
 global___WifiVAPType = WifiVAPType
 
+class _WifiWpaMode:
+    ValueType = typing.NewType("ValueType", builtins.int)
+    V: typing_extensions.TypeAlias = ValueType
+
+class _WifiWpaModeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_WifiWpaMode.ValueType], builtins.type):  # noqa: F821
+    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+    WPA_NO_CHANGE: _WifiWpaMode.ValueType  # 0
+    WPA_NONE: _WifiWpaMode.ValueType  # 1
+    WPA_1_2: _WifiWpaMode.ValueType  # 2
+    WPA_2: _WifiWpaMode.ValueType  # 3
+    WPA_2_3: _WifiWpaMode.ValueType  # 4
+    WPA_3: _WifiWpaMode.ValueType  # 5
+
+class WifiWpaMode(_WifiWpaMode, metaclass=_WifiWpaModeEnumTypeWrapper):
+    """@since 1"""
+
+WPA_NO_CHANGE: WifiWpaMode.ValueType  # 0
+WPA_NONE: WifiWpaMode.ValueType  # 1
+WPA_1_2: WifiWpaMode.ValueType  # 2
+WPA_2: WifiWpaMode.ValueType  # 3
+WPA_2_3: WifiWpaMode.ValueType  # 4
+WPA_3: WifiWpaMode.ValueType  # 5
+global___WifiWpaMode = WifiWpaMode
+
+class _WifiDeviceMode:
+    ValueType = typing.NewType("ValueType", builtins.int)
+    V: typing_extensions.TypeAlias = ValueType
+
+class _WifiDeviceModeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_WifiDeviceMode.ValueType], builtins.type):  # noqa: F821
+    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+    WDM_NO_CONF: _WifiDeviceMode.ValueType  # 0
+    """Unconfigured, built in automation defines operating mode"""
+    WDM_AP: _WifiDeviceMode.ValueType  # 2
+    """Configured to run as access point"""
+    WDM_REPEATER: _WifiDeviceMode.ValueType  # 3
+    """Configured to run as WiFi repeater"""
+
+class WifiDeviceMode(_WifiDeviceMode, metaclass=_WifiDeviceModeEnumTypeWrapper):
+    """@since 1"""
+
+WDM_NO_CONF: WifiDeviceMode.ValueType  # 0
+"""Unconfigured, built in automation defines operating mode"""
+WDM_AP: WifiDeviceMode.ValueType  # 2
+"""Configured to run as access point"""
+WDM_REPEATER: WifiDeviceMode.ValueType  # 3
+"""Configured to run as WiFi repeater"""
+global___WifiDeviceMode = WifiDeviceMode
+
+class WifiDeviceModeGetResponse(google.protobuf.message.Message):
+    """@since 1"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    MODE_FIELD_NUMBER: builtins.int
+    mode: global___WifiDeviceMode.ValueType
+    """The mode the device is currently operating in, e.g. repeater, AP."""
+    def __init__(
+        self,
+        *,
+        mode: global___WifiDeviceMode.ValueType = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["mode", b"mode"]) -> None: ...
+
+global___WifiDeviceModeGetResponse = WifiDeviceModeGetResponse
+
+class WifiDeviceModeSet(google.protobuf.message.Message):
+    """@since 1"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    MODE_FIELD_NUMBER: builtins.int
+    FH_PARAMS_FIELD_NUMBER: builtins.int
+    BH_PARAMS_FIELD_NUMBER: builtins.int
+    mode: global___WifiDeviceMode.ValueType
+    """The mode the device shall operate in, e.g. repeater, AP."""
+    @property
+    def fh_params(self) -> global___WifiParametersSet:
+        """The front haul WiFi parameters, i.e. the WiFi the clients connect to."""
+    @property
+    def bh_params(self) -> global___WifiRepeaterParametersSet:
+        """  When left out, parameters are not changed on the device.
+        The back haul WiFi parameters, i.e. the gateway's WiFi the repeater connects to.
+        """
+    def __init__(
+        self,
+        *,
+        mode: global___WifiDeviceMode.ValueType = ...,
+        fh_params: global___WifiParametersSet | None = ...,
+        bh_params: global___WifiRepeaterParametersSet | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal["bh_params", b"bh_params", "fh_params", b"fh_params"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["bh_params", b"bh_params", "fh_params", b"fh_params", "mode", b"mode"]) -> None: ...
+
+global___WifiDeviceModeSet = WifiDeviceModeSet
+
+class WifiDeviceModeSetResponse(google.protobuf.message.Message):
+    """@since 1"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    RESULT_FIELD_NUMBER: builtins.int
+    result: global___WifiResult.ValueType
+    """Success or failure status."""
+    def __init__(
+        self,
+        *,
+        result: global___WifiResult.ValueType = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["result", b"result"]) -> None: ...
+
+global___WifiDeviceModeSetResponse = WifiDeviceModeSetResponse
 
 class WifiParametersSet(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     SSID_FIELD_NUMBER: builtins.int
     KEY_FIELD_NUMBER: builtins.int
-    ssid: typing.Text
+    ssid: builtins.str
     """WiFi ssid"""
-
-    key: typing.Text
+    key: builtins.str
     """WiFi key, independent of the type (WPA2, ...)"""
-
-    def __init__(self,
+    def __init__(
+        self,
         *,
-        ssid: typing.Text = ...,
-        key: typing.Text = ...,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["key",b"key","ssid",b"ssid"]) -> None: ...
+        ssid: builtins.str = ...,
+        key: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["key", b"key", "ssid", b"ssid"]) -> None: ...
+
 global___WifiParametersSet = WifiParametersSet
 
 class WifiParametersSetResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     RESULT_FIELD_NUMBER: builtins.int
     result: global___WifiResult.ValueType
     """contains the result of setting WiFi Parameter message"""
-
-    def __init__(self,
+    def __init__(
+        self,
         *,
         result: global___WifiResult.ValueType = ...,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["result",b"result"]) -> None: ...
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["result", b"result"]) -> None: ...
+
 global___WifiParametersSetResponse = WifiParametersSetResponse
 
 class WifiGuestAccessSet(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     ENABLE_FIELD_NUMBER: builtins.int
     DURATION_FIELD_NUMBER: builtins.int
+    SSID_FIELD_NUMBER: builtins.int
+    KEY_FIELD_NUMBER: builtins.int
+    WPA_FIELD_NUMBER: builtins.int
     enable: builtins.bool
     duration: builtins.int
     """time in minutes; 0 is infinity"""
-
-    def __init__(self,
+    ssid: builtins.str
+    """Guest WiFi SSID. Leaving it out means not to change the current value.  (@since 1)"""
+    key: builtins.str
+    """Guest WiFi key. Leaving it out means not to change the current value.   (@since 1)"""
+    wpa: global___WifiWpaMode.ValueType
+    """Encryption mode. Leaving it out means not to change the current value.  (@since 1)"""
+    def __init__(
+        self,
         *,
         enable: builtins.bool = ...,
         duration: builtins.int = ...,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["duration",b"duration","enable",b"enable"]) -> None: ...
+        ssid: builtins.str = ...,
+        key: builtins.str = ...,
+        wpa: global___WifiWpaMode.ValueType = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["duration", b"duration", "enable", b"enable", "key", b"key", "ssid", b"ssid", "wpa", b"wpa"]) -> None: ...
+
 global___WifiGuestAccessSet = WifiGuestAccessSet
 
 class WifiGuestAccessSetResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     RESULT_FIELD_NUMBER: builtins.int
     result: global___WifiResult.ValueType
     """contains the result of setting WiFi Guest Access parameters"""
-
-    def __init__(self,
+    def __init__(
+        self,
         *,
         result: global___WifiResult.ValueType = ...,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["result",b"result"]) -> None: ...
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["result", b"result"]) -> None: ...
+
 global___WifiGuestAccessSetResponse = WifiGuestAccessSetResponse
 
 class WifiGuestAccessGet(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     ENABLED_FIELD_NUMBER: builtins.int
     REMAINING_DURATION_FIELD_NUMBER: builtins.int
     SSID_FIELD_NUMBER: builtins.int
     KEY_FIELD_NUMBER: builtins.int
+    WPA_FIELD_NUMBER: builtins.int
     enabled: builtins.bool
     remaining_duration: builtins.int
-    ssid: typing.Text
-    key: typing.Text
-    def __init__(self,
+    ssid: builtins.str
+    key: builtins.str
+    wpa: global___WifiWpaMode.ValueType
+    """Encryption mode.  (@since 1)"""
+    def __init__(
+        self,
         *,
         enabled: builtins.bool = ...,
         remaining_duration: builtins.int = ...,
-        ssid: typing.Text = ...,
-        key: typing.Text = ...,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["enabled",b"enabled","key",b"key","remaining_duration",b"remaining_duration","ssid",b"ssid"]) -> None: ...
+        ssid: builtins.str = ...,
+        key: builtins.str = ...,
+        wpa: global___WifiWpaMode.ValueType = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["enabled", b"enabled", "key", b"key", "remaining_duration", b"remaining_duration", "ssid", b"ssid", "wpa", b"wpa"]) -> None: ...
+
 global___WifiGuestAccessGet = WifiGuestAccessGet
 
 class WifiNeighborAPsGet(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     class NeighborAPInfo(google.protobuf.message.Message):
         DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
         MAC_ADDRESS_FIELD_NUMBER: builtins.int
         SSID_FIELD_NUMBER: builtins.int
         BAND_FIELD_NUMBER: builtins.int
         CHANNEL_FIELD_NUMBER: builtins.int
         SIGNAL_FIELD_NUMBER: builtins.int
         SIGNAL_BARS_FIELD_NUMBER: builtins.int
-        mac_address: typing.Text
-        ssid: typing.Text
+        mac_address: builtins.str
+        ssid: builtins.str
         band: global___WifiBand.ValueType
         channel: builtins.int
         signal: builtins.int
         signal_bars: builtins.int
-        def __init__(self,
+        def __init__(
+            self,
             *,
-            mac_address: typing.Text = ...,
-            ssid: typing.Text = ...,
+            mac_address: builtins.str = ...,
+            ssid: builtins.str = ...,
             band: global___WifiBand.ValueType = ...,
             channel: builtins.int = ...,
             signal: builtins.int = ...,
             signal_bars: builtins.int = ...,
-            ) -> None: ...
-        def ClearField(self, field_name: typing_extensions.Literal["band",b"band","channel",b"channel","mac_address",b"mac_address","signal",b"signal","signal_bars",b"signal_bars","ssid",b"ssid"]) -> None: ...
+        ) -> None: ...
+        def ClearField(self, field_name: typing_extensions.Literal["band", b"band", "channel", b"channel", "mac_address", b"mac_address", "signal", b"signal", "signal_bars", b"signal_bars", "ssid", b"ssid"]) -> None: ...
 
     NEIGHBOR_APS_FIELD_NUMBER: builtins.int
     @property
     def neighbor_aps(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___WifiNeighborAPsGet.NeighborAPInfo]: ...
-    def __init__(self,
+    def __init__(
+        self,
         *,
-        neighbor_aps: typing.Optional[typing.Iterable[global___WifiNeighborAPsGet.NeighborAPInfo]] = ...,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["neighbor_aps",b"neighbor_aps"]) -> None: ...
+        neighbor_aps: collections.abc.Iterable[global___WifiNeighborAPsGet.NeighborAPInfo] | None = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["neighbor_aps", b"neighbor_aps"]) -> None: ...
+
 global___WifiNeighborAPsGet = WifiNeighborAPsGet
 
 class WifiRepeatedAPsGet(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     class RepeatedAPInfo(google.protobuf.message.Message):
         DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
         MAC_ADDRESS_FIELD_NUMBER: builtins.int
         SSID_FIELD_NUMBER: builtins.int
         BAND_FIELD_NUMBER: builtins.int
@@ -197,126 +360,142 @@ class WifiRepeatedAPsGet(google.protobuf.message.Message):
         RATE_FIELD_NUMBER: builtins.int
         SIGNAL_FIELD_NUMBER: builtins.int
         SIGNAL_BARS_FIELD_NUMBER: builtins.int
-        mac_address: typing.Text
-        ssid: typing.Text
+        mac_address: builtins.str
+        ssid: builtins.str
         band: global___WifiBand.ValueType
         channel: builtins.int
         rate: builtins.int
         signal: builtins.int
         signal_bars: builtins.int
-        def __init__(self,
+        def __init__(
+            self,
             *,
-            mac_address: typing.Text = ...,
-            ssid: typing.Text = ...,
+            mac_address: builtins.str = ...,
+            ssid: builtins.str = ...,
             band: global___WifiBand.ValueType = ...,
             channel: builtins.int = ...,
             rate: builtins.int = ...,
             signal: builtins.int = ...,
             signal_bars: builtins.int = ...,
-            ) -> None: ...
-        def ClearField(self, field_name: typing_extensions.Literal["band",b"band","channel",b"channel","mac_address",b"mac_address","rate",b"rate","signal",b"signal","signal_bars",b"signal_bars","ssid",b"ssid"]) -> None: ...
+        ) -> None: ...
+        def ClearField(self, field_name: typing_extensions.Literal["band", b"band", "channel", b"channel", "mac_address", b"mac_address", "rate", b"rate", "signal", b"signal", "signal_bars", b"signal_bars", "ssid", b"ssid"]) -> None: ...
 
     REPEATED_APS_FIELD_NUMBER: builtins.int
     @property
     def repeated_aps(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___WifiRepeatedAPsGet.RepeatedAPInfo]: ...
-    def __init__(self,
+    def __init__(
+        self,
         *,
-        repeated_aps: typing.Optional[typing.Iterable[global___WifiRepeatedAPsGet.RepeatedAPInfo]] = ...,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["repeated_aps",b"repeated_aps"]) -> None: ...
+        repeated_aps: collections.abc.Iterable[global___WifiRepeatedAPsGet.RepeatedAPInfo] | None = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["repeated_aps", b"repeated_aps"]) -> None: ...
+
 global___WifiRepeatedAPsGet = WifiRepeatedAPsGet
 
 class WifiConnectedStationsGet(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     class ConnectedStationInfo(google.protobuf.message.Message):
         DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
         MAC_ADDRESS_FIELD_NUMBER: builtins.int
         VAP_TYPE_FIELD_NUMBER: builtins.int
         BAND_FIELD_NUMBER: builtins.int
         RX_RATE_FIELD_NUMBER: builtins.int
         TX_RATE_FIELD_NUMBER: builtins.int
-        mac_address: typing.Text
+        mac_address: builtins.str
         vap_type: global___WifiVAPType.ValueType
         band: global___WifiBand.ValueType
         rx_rate: builtins.int
         tx_rate: builtins.int
-        def __init__(self,
+        def __init__(
+            self,
             *,
-            mac_address: typing.Text = ...,
+            mac_address: builtins.str = ...,
             vap_type: global___WifiVAPType.ValueType = ...,
             band: global___WifiBand.ValueType = ...,
             rx_rate: builtins.int = ...,
             tx_rate: builtins.int = ...,
-            ) -> None: ...
-        def ClearField(self, field_name: typing_extensions.Literal["band",b"band","mac_address",b"mac_address","rx_rate",b"rx_rate","tx_rate",b"tx_rate","vap_type",b"vap_type"]) -> None: ...
+        ) -> None: ...
+        def ClearField(self, field_name: typing_extensions.Literal["band", b"band", "mac_address", b"mac_address", "rx_rate", b"rx_rate", "tx_rate", b"tx_rate", "vap_type", b"vap_type"]) -> None: ...
 
     CONNECTED_STATIONS_FIELD_NUMBER: builtins.int
     @property
     def connected_stations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___WifiConnectedStationsGet.ConnectedStationInfo]: ...
-    def __init__(self,
+    def __init__(
+        self,
         *,
-        connected_stations: typing.Optional[typing.Iterable[global___WifiConnectedStationsGet.ConnectedStationInfo]] = ...,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["connected_stations",b"connected_stations"]) -> None: ...
+        connected_stations: collections.abc.Iterable[global___WifiConnectedStationsGet.ConnectedStationInfo] | None = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["connected_stations", b"connected_stations"]) -> None: ...
+
 global___WifiConnectedStationsGet = WifiConnectedStationsGet
 
 class WifiRepeaterParametersSet(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     SSID_FIELD_NUMBER: builtins.int
     KEY_FIELD_NUMBER: builtins.int
     CROSSBAND_FIELD_NUMBER: builtins.int
     PRIMARY_BAND_FIELD_NUMBER: builtins.int
-    ssid: typing.Text
+    ssid: builtins.str
     """Wifi ssid"""
-
-    key: typing.Text
+    key: builtins.str
     """Wifi key, independent of the type (WPA2, ...)"""
-
     crossband: builtins.bool
     """Use crossband (true) or in-band repeating (false)"""
-
     primary_band: global___WifiBand.ValueType
     """Primary backhaul band when using crossband"""
-
-    def __init__(self,
+    def __init__(
+        self,
         *,
-        ssid: typing.Text = ...,
-        key: typing.Text = ...,
+        ssid: builtins.str = ...,
+        key: builtins.str = ...,
         crossband: builtins.bool = ...,
         primary_band: global___WifiBand.ValueType = ...,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["crossband",b"crossband","key",b"key","primary_band",b"primary_band","ssid",b"ssid"]) -> None: ...
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["crossband", b"crossband", "key", b"key", "primary_band", b"primary_band", "ssid", b"ssid"]) -> None: ...
+
 global___WifiRepeaterParametersSet = WifiRepeaterParametersSet
 
 class WifiRepeaterParametersSetResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     RESULT_FIELD_NUMBER: builtins.int
     result: global___WifiResult.ValueType
-    def __init__(self,
+    def __init__(
+        self,
         *,
         result: global___WifiResult.ValueType = ...,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["result",b"result"]) -> None: ...
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["result", b"result"]) -> None: ...
+
 global___WifiRepeaterParametersSetResponse = WifiRepeaterParametersSetResponse
 
 class WifiWpsPbcStart(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     RESULT_FIELD_NUMBER: builtins.int
     result: global___WifiResult.ValueType
-    def __init__(self,
+    def __init__(
+        self,
         *,
         result: global___WifiResult.ValueType = ...,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["result",b"result"]) -> None: ...
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["result", b"result"]) -> None: ...
+
 global___WifiWpsPbcStart = WifiWpsPbcStart
 
 class WifiRepeaterWpsClonePbcStart(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     RESULT_FIELD_NUMBER: builtins.int
     result: global___WifiResult.ValueType
-    def __init__(self,
+    def __init__(
+        self,
         *,
         result: global___WifiResult.ValueType = ...,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["result",b"result"]) -> None: ...
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["result", b"result"]) -> None: ...
+
 global___WifiRepeaterWpsClonePbcStart = WifiRepeaterWpsClonePbcStart
