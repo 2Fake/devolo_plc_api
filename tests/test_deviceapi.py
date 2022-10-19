@@ -1,5 +1,6 @@
 """Test communicating with a the device API."""
 from __future__ import annotations
+from typing import Any
 
 import pytest
 from pytest_httpx import HTTPXMock
@@ -149,7 +150,7 @@ class TestDeviceApi:
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["update"])
     async def test_async_check_firmware_available(
-        self, device_api: DeviceApi, httpx_mock: HTTPXMock, firmware_update: dict[str, str]
+        self, device_api: DeviceApi, httpx_mock: HTTPXMock, firmware_update: dict[str, Any]
     ):
         """Test checking for firmware updates asynchronously."""
         firmware_available = UpdateFirmwareCheck(**firmware_update)
@@ -158,7 +159,7 @@ class TestDeviceApi:
         assert firmware == firmware_available
 
     @pytest.mark.parametrize("feature", ["update"])
-    def test_check_firmware_available(self, device_api: DeviceApi, httpx_mock: HTTPXMock, firmware_update: dict[str, str]):
+    def test_check_firmware_available(self, device_api: DeviceApi, httpx_mock: HTTPXMock, firmware_update: dict[str, Any]):
         """Test checking for firmware updates synchronously."""
         firmware_available = UpdateFirmwareCheck(**firmware_update)
         httpx_mock.add_response(content=firmware_available.SerializeToString())
