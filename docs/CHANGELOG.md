@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **BREAKING**: The results are now dataclass-like objects
+
 ## [v0.9.0] - 2022/12/20
 
 ### Added
@@ -83,7 +89,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- ** BREAKING**: Drop support for Python 3.7
+- **BREAKING**: Drop support for Python 3.7
 - Use AsyncZeroconf instead of Zeroconf
 
 ### Fixed
@@ -138,7 +144,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-** BREAKING**: The discovery function does no longer connect to the device automatically
+- **BREAKING**: The discovery function does no longer connect to the device automatically
 
 ### Fixed
 

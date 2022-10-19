@@ -1,6 +1,7 @@
 """Fixture for device API tests."""
 from __future__ import annotations
 
+from secrets import randbelow
 from typing import AsyncGenerator, Generator
 from unittest.mock import patch
 
@@ -8,7 +9,7 @@ import pytest
 import pytest_asyncio
 from httpx import AsyncClient
 
-from devolo_plc_api.device_api import SERVICE_TYPE, DeviceApi
+from devolo_plc_api.device_api import SERVICE_TYPE, ConnectedStationInfo, DeviceApi, NeighborAPInfo, RepeatedAPInfo
 
 from .. import TestData
 
@@ -26,3 +27,42 @@ def mock_device_api() -> Generator[None, None, None]:
     """Mock DeviceApi object."""
     with patch("devolo_plc_api.device_api.deviceapi.DeviceApi"):
         yield
+
+
+@pytest.fixture(scope="session")
+def connected_station() -> ConnectedStationInfo:
+    """Generate mocked answer of a connected wifi station."""
+    station = ConnectedStationInfo()
+    station.mac_address = "aa:bb:cc:dd:ee:ff"
+    return station
+
+
+@pytest.fixture(scope="session")
+def firmware_update() -> dict[str, str]:
+    """Generate mocked firmware update message."""
+    return {
+        "result": "UPDATE_NOT_AVAILABLE",
+        "new_firmware_version": "",
+    }
+
+
+@pytest.fixture(scope="session")
+def neighbor_ap() -> NeighborAPInfo:
+    """Generate mocked answer of a neighbor access point."""
+    ap = NeighborAPInfo()
+    ap.mac_address = "aa:bb:cc:dd:ee:ff"
+    return ap
+
+
+@pytest.fixture(scope="session")
+def repeated_ap() -> RepeatedAPInfo:
+    """Generate mocked answer of a repeated access point."""
+    ap = RepeatedAPInfo()
+    ap.mac_address = "aa:bb:cc:dd:ee:ff"
+    return ap
+
+
+@pytest.fixture(scope="session")
+def runtime() -> int:
+    """Generate mocked runtime of a device."""
+    return randbelow(65536)

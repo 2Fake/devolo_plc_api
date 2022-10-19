@@ -42,7 +42,7 @@ test = [
 
 [tool.black]
 line-length = 127
-force-exclude = '.*_pb2\.py'
+force-exclude = '.*_pb2\.py|.*\.pyi'
 
 [tool.isort]
 filter_files = true
@@ -64,7 +64,6 @@ ignore-patterns = ".*_pb2.py"
 max-line-length = 127
 
 [tool.pylint.messages_control]
-disable = "C0330, C0326"
 good-names = "e,ip"
 
 [tool.pytest.ini_options]

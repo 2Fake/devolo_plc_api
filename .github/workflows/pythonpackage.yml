@@ -39,11 +39,11 @@ jobs:
         flake8 . --count --exit-zero --statistics
     - name: Lint with pylint
       run: |
-        python -m pip install pylint pylint-pytest
+        python -m pip install pylint pylint-protobuf
         python -m pip install -e .[test]
-        pylint --errors-only --score=n devolo_plc_api
-        pylint --exit-zero --score=n --disable=E --enable=useless-suppression devolo_plc_api
-        pylint --exit-zero --score=n --disable=C0103,R0201,R0801,R0903,R0904 --enable=useless-suppression --load-plugins pylint_pytest tests
+        pylint --errors-only --score=n --load-plugins pylint_protobuf devolo_plc_api
+        pylint --exit-zero --score=n --disable=E --enable=useless-suppression --load-plugins pylint_protobuf devolo_plc_api
+        pylint --exit-zero --score=n --disable=C0103,R0801,R0903,R0904 --load-plugins pylint_protobuf tests
     - name: Lint with mypy
       run: |
         python -m pip install mypy types-protobuf

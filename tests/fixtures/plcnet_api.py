@@ -6,7 +6,7 @@ import pytest
 import pytest_asyncio
 from httpx import AsyncClient
 
-from devolo_plc_api.plcnet_api import SERVICE_TYPE, PlcNetApi
+from devolo_plc_api.plcnet_api import SERVICE_TYPE, LogicalNetwork, PlcNetApi
 
 from .. import TestData
 
@@ -23,3 +23,9 @@ def mock_plcnet_api() -> Generator[None, None, None]:
     """Mock PlcNetApi object."""
     with patch("devolo_plc_api.plcnet_api.plcnetapi.PlcNetApi"):
         yield
+
+
+@pytest.fixture()
+def network() -> LogicalNetwork:
+    """Mock PLC network"""
+    return LogicalNetwork(devices=[], data_rates=[])
