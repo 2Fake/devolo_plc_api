@@ -19,7 +19,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --no-compile --no-binary=mypy mypy
     - name: Check formatting
-      uses: pre-commit/action@v3
+      uses: pre-commit/action@v3.0.0
 
   lint:
     name: Lint
