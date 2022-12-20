@@ -174,14 +174,6 @@ class TestDevice:
             assert sleep.call_count == 300
 
     @pytest.mark.asyncio
-    async def test__get_zeroconf_info(self, test_data: TestData, mock_service_browser: MockServiceBrowser):
-        """Test that after getting zeroconf information browsing is stopped."""
-        with patch("devolo_plc_api.device.Device._state_change", state_change):
-            mock_device = Device(ip=test_data.ip, plcnetapi=None, deviceapi=test_data.device_info[DEVICEAPI])
-            await mock_device.async_connect()
-            assert mock_service_browser.async_cancel.call_count == 1
-
-    @pytest.mark.asyncio
     async def test__get_zeroconf_info_device_info_exists(self, mock_device: Device, mock_service_browser: MockServiceBrowser):
         """Test early return if information already exist."""
         await mock_device.async_connect()
@@ -197,17 +189,6 @@ class TestDevice:
             mock_device = Device(ip=test_data.ip, plcnetapi=None, deviceapi=test_data.device_info[DEVICEAPI])
             await mock_device.async_connect()
             assert ifs.call_count == 0
-
-    @pytest.mark.asyncio
-    @pytest.mark.usefixtures("mock_service_browser")
-    async def test__state_change_added(self, test_data: TestData):
-        """Test that service information are processed on state change to added."""
-        with patch("devolo_plc_api.device.Device._get_service_info") as gsi, patch(
-            "devolo_plc_api.device.Device._retry_zeroconf_info"
-        ), patch("asyncio.sleep"):
-            mock_device = Device(ip=test_data.ip, plcnetapi=None, deviceapi=test_data.device_info[DEVICEAPI])
-            await mock_device.async_connect()
-            assert gsi.call_count == 1
 
     @pytest.mark.asyncio
     # pylint: disable=protected-access
@@ -228,7 +209,7 @@ class TestDevice:
         ), patch("devolo_plc_api.device.AsyncServiceInfo.async_request") as ar:
             mock_device = Device(ip=test_data.ip, plcnetapi=None, deviceapi=test_data.device_info[DEVICEAPI])
             await mock_device.async_connect()
-            assert ar.call_count == 1
+            assert ar.call_count == 2
             assert mock_device.mac == test_data.device_info[PLCNETAPI]["properties"]["PlcMacAddress"]
 
     def test_info_from_service_no_address(self, mock_device: Device):

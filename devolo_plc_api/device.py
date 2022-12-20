@@ -41,9 +41,6 @@ class Device:  # pylint: disable=too-many-instance-attributes
         deviceapi: dict[str, Any] | None = None,
         zeroconf_instance: AsyncZeroconf | Zeroconf | None = None,
     ) -> None:
-        self.firmware_date = date.fromtimestamp(0)
-        self.firmware_version = ""
-        self.hostname = ""
         self.ip = ip
         self.mac = ""
         self.mt_number = 0
@@ -54,6 +51,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
         self.device: DeviceApi | None = None
         self.plcnet: PlcNetApi | None = None
 
+        self._browser: dict[str, AsyncServiceBrowser] = {}
         self._connected = False
         self._info: dict[str, dict[str, Any]] = {
             PLCNETAPI: plcnetapi or EMPTY_INFO,
@@ -86,6 +84,25 @@ class Device:  # pylint: disable=too-many-instance-attributes
 
     def __exit__(self, exc_type: type | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
         self.disconnect()
+
+    @property
+    def firmware_date(self) -> date:
+        """Date the firmware was built."""
+        if DEVICEAPI in self._info:
+            return date.fromisoformat(self._info[DEVICEAPI]["properties"].get("FirmwareDate", "1970-01-01")[:10])
+        return date.fromtimestamp(0)
+
+    @property
+    def firmware_version(self) -> str:
+        if DEVICEAPI in self._info:
+            return self._info[DEVICEAPI]["properties"].get("FirmwareVersion", "")
+        return ""
+
+    @property
+    def hostname(self) -> str:
+        if DEVICEAPI in self._info:
+            return self._info[DEVICEAPI].get("hostname", "")
+        return ""
 
     @property
     def password(self) -> str:
@@ -124,11 +141,14 @@ class Device:  # pylint: disable=too-many-instance-attributes
 
     async def async_disconnect(self) -> None:
         """Disconnect from a device asynchronous."""
-        if not self._zeroconf_instance:
-            await self._zeroconf.async_close()
-        if not self._session_instance:
-            await self._session.aclose()
-        self._connected = False
+        if self._connected:
+            for browser in self._browser.values():
+                await browser.async_cancel()
+            if not self._zeroconf_instance:
+                await self._zeroconf.async_close()
+            if not self._session_instance:
+                await self._session.aclose()
+            self._connected = False
 
     def disconnect(self) -> None:
         """Disconnect from a device synchronous."""
@@ -141,11 +161,6 @@ class Device:  # pylint: disable=too-many-instance-attributes
         if not self._info[service_type]["properties"]:
             await self._retry_zeroconf_info(service_type=service_type)
         if self._info[service_type]["properties"]:
-            self.firmware_date = date.fromisoformat(
-                self._info[service_type]["properties"].get("FirmwareDate", "1970-01-01")[:10]
-            )
-            self.firmware_version = self._info[service_type]["properties"].get("FirmwareVersion", "")
-            self.hostname = self._info[service_type].get("hostname", "")
             self.mt_number = self._info[service_type]["properties"].get("MT", 0)
             self.product = self._info[service_type]["properties"].get("Product", "")
             self.serial_number = self._info[service_type]["properties"]["SN"]
@@ -167,14 +182,11 @@ class Device:  # pylint: disable=too-many-instance-attributes
 
     async def _get_zeroconf_info(self, service_type: str) -> None:
         """Browse for the desired mDNS service types and query them."""
-        if self._info[service_type]["properties"]:
-            return  # No need to continue, if device info already exist
-
         self._logger.debug("Browsing for %s", service_type)
         counter = 0
         addr = None if self._multicast else self.ip
         question_type = DNSQuestionType.QM if self._multicast else DNSQuestionType.QU
-        browser = AsyncServiceBrowser(
+        self._browser[service_type] = AsyncServiceBrowser(
             zeroconf=self._zeroconf.zeroconf,
             type_=service_type,
             handlers=[self._state_change],
@@ -184,7 +196,6 @@ class Device:  # pylint: disable=too-many-instance-attributes
         while not self._info[service_type]["properties"] and counter < 300:
             counter += 1
             await asyncio.sleep(0.01)
-        await browser.async_cancel()
 
     async def _retry_zeroconf_info(self, service_type: str) -> None:
         """Retry getting the zeroconf info using multicast."""
@@ -196,9 +207,9 @@ class Device:  # pylint: disable=too-many-instance-attributes
 
     def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange) -> None:
         """Evaluate the query result."""
-        if state_change is not ServiceStateChange.Added:
+        if state_change == ServiceStateChange.Removed:
             return
-        asyncio.ensure_future(self._get_service_info(zeroconf, service_type, name))
+        asyncio.create_task(self._get_service_info(zeroconf, service_type, name))
 
     async def _get_service_info(self, zeroconf: Zeroconf, service_type: str, name: str) -> None:
         """Get service information, if IP matches."""
@@ -214,7 +225,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
         ):
             return  # No need to continue, if there are no relevant service information
 
-        self._logger.debug("Adding service info of %s to %s", service_type, service_info.server_key)
+        self._logger.debug("Updating service info of %s for %s", service_type, service_info.server_key)
         self._info[service_type] = self.info_from_service(service_info)
 
     @staticmethod
