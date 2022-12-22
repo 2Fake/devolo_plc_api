@@ -9,7 +9,14 @@ import pytest
 import pytest_asyncio
 from httpx import AsyncClient
 
-from devolo_plc_api.device_api import SERVICE_TYPE, ConnectedStationInfo, DeviceApi, NeighborAPInfo, RepeatedAPInfo
+from devolo_plc_api.device_api import (
+    SERVICE_TYPE,
+    ConnectedStationInfo,
+    DeviceApi,
+    NeighborAPInfo,
+    RepeatedAPInfo,
+    UpdateFirmwareCheck,
+)
 
 from .. import TestData
 
@@ -38,12 +45,12 @@ def connected_station() -> ConnectedStationInfo:
 
 
 @pytest.fixture(scope="session")
-def firmware_update() -> dict[str, Any]:
+def firmware_update() -> UpdateFirmwareCheck:
     """Generate mocked firmware update message."""
-    return {
-        "result": "UPDATE_NOT_AVAILABLE",
-        "new_firmware_version": "",
-    }
+    update = UpdateFirmwareCheck()
+    update.result = "UPDATE_NOT_AVAILABLE"
+    update.new_firmware_version = ""
+    return update
 
 
 @pytest.fixture(scope="session")

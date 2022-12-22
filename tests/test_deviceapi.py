@@ -150,21 +150,21 @@ class TestDeviceApi:
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["update"])
     async def test_async_check_firmware_available(
-        self, device_api: DeviceApi, httpx_mock: HTTPXMock, firmware_update: dict[str, Any]
+        self, device_api: DeviceApi, httpx_mock: HTTPXMock, firmware_update: UpdateFirmwareCheck
     ):
         """Test checking for firmware updates asynchronously."""
-        firmware_available = UpdateFirmwareCheck(**firmware_update)
-        httpx_mock.add_response(content=firmware_available.SerializeToString())
+        httpx_mock.add_response(content=firmware_update.SerializeToString())
         firmware = await device_api.async_check_firmware_available()
-        assert firmware == firmware_available
+        assert firmware == firmware_update
 
     @pytest.mark.parametrize("feature", ["update"])
-    def test_check_firmware_available(self, device_api: DeviceApi, httpx_mock: HTTPXMock, firmware_update: dict[str, Any]):
+    def test_check_firmware_available(
+        self, device_api: DeviceApi, httpx_mock: HTTPXMock, firmware_update: UpdateFirmwareCheck
+    ):
         """Test checking for firmware updates synchronously."""
-        firmware_available = UpdateFirmwareCheck(**firmware_update)
-        httpx_mock.add_response(content=firmware_available.SerializeToString())
+        httpx_mock.add_response(content=firmware_update.SerializeToString())
         firmware = device_api.check_firmware_available()
-        assert firmware == firmware_available
+        assert firmware == firmware_update
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["update"])
