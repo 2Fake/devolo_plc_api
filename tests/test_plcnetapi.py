@@ -1,12 +1,11 @@
 """Test communicating with a the plcnet API."""
 import pytest
-from google.protobuf.json_format import MessageToDict
 from pytest_httpx import HTTPXMock
 
+from devolo_plc_api.plcnet_api import LogicalNetwork, PlcNetApi
 from devolo_plc_api.plcnet_api.getnetworkoverview_pb2 import GetNetworkOverview
 from devolo_plc_api.plcnet_api.identifydevice_pb2 import IdentifyDeviceResponse
 from devolo_plc_api.plcnet_api.pairdevice_pb2 import PairDeviceStart
-from devolo_plc_api.plcnet_api.plcnetapi import PlcNetApi
 from devolo_plc_api.plcnet_api.setuserdevicename_pb2 import SetUserDeviceNameResponse
 
 
@@ -14,23 +13,19 @@ class TestDeviceApi:
     """Test devolo_plc_api.plcnet_api.plcnetapi.PlcNetApi class."""
 
     @pytest.mark.asyncio
-    async def test_async_get_network_overview(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
+    async def test_async_get_network_overview(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock, network: LogicalNetwork):
         """Test getting the network overview asynchronously."""
-        network_overview = GetNetworkOverview()
+        network_overview = GetNetworkOverview(network=network)
         httpx_mock.add_response(content=network_overview.SerializeToString())
         overview = await plcnet_api.async_get_network_overview()
-        assert overview == MessageToDict(
-            network_overview, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert overview == network
 
-    def test_get_network_overview(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
+    def test_get_network_overview(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock, network: LogicalNetwork):
         """Test getting the network overview synchronously."""
-        network_overview = GetNetworkOverview()
+        network_overview = GetNetworkOverview(network=network)
         httpx_mock.add_response(content=network_overview.SerializeToString())
         overview = plcnet_api.get_network_overview()
-        assert overview == MessageToDict(
-            network_overview, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert overview == network
 
     @pytest.mark.asyncio
     async def test_async_identify_device_start(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):

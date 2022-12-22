@@ -16,6 +16,9 @@ class TestData:
     ip: str
     """IP address of a device."""
 
+    hostname: str
+    """Hostname of a device."""
+
     device_info: dict[str, dict[str, Any]]
     """Zeroconf info a device delivers."""
 
@@ -25,4 +28,4 @@ def load_test_data():
     file = pathlib.Path(__file__).parent / "test_data.json"
     with file.open("r") as handler:
         data = json.load(handler)
-    return TestData(ip=data["ip"], device_info=data["device_info"])
+    return TestData(ip=data["ip"], hostname=data["hostname"], device_info=data["device_info"])

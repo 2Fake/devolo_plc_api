@@ -11,7 +11,7 @@ jobs:
     - name: Checkout sources
       uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: "3.8"
     - name: Install dependencies
@@ -19,7 +19,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --no-compile --no-binary=mypy mypy
     - name: Check formatting
-      uses: pre-commit/action@v2.0.3
+      uses: pre-commit/action@v3.0.0
 
   lint:
     name: Lint
@@ -28,7 +28,7 @@ jobs:
     - name: Checkout sources
       uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: "3.8"
     - name: Lint with flake8
@@ -39,11 +39,11 @@ jobs:
         flake8 . --count --exit-zero --statistics
     - name: Lint with pylint
       run: |
-        python -m pip install pylint pylint-pytest
+        python -m pip install pylint pylint-protobuf
         python -m pip install -e .[test]
-        pylint --errors-only --score=n devolo_plc_api
-        pylint --exit-zero --score=n --disable=E --enable=useless-suppression devolo_plc_api
-        pylint --exit-zero --score=n --disable=C0103,R0201,R0801,R0903,R0904 --enable=useless-suppression --load-plugins pylint_pytest tests
+        pylint --errors-only --score=n --load-plugins pylint_protobuf devolo_plc_api
+        pylint --exit-zero --score=n --disable=E --enable=useless-suppression --load-plugins pylint_protobuf devolo_plc_api
+        pylint --exit-zero --score=n --disable=C0103,R0801,R0903,R0904 --load-plugins pylint_protobuf tests
     - name: Lint with mypy
       run: |
         python -m pip install mypy types-protobuf
@@ -55,14 +55,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
     steps:
     - name: Checkout sources
       uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+        check-latest: true
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -71,7 +72,7 @@ jobs:
       run: |
         pytest --cov=devolo_plc_api
     - name: Preserve coverage
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: coverage
         path: .coverage
@@ -84,11 +85,11 @@ jobs:
     - name: Checkout sources
       uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: "3.8"
     - name: Download coverage
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: coverage
     - name: Coveralls
@@ -98,6 +99,6 @@ jobs:
         export COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_TOKEN }}
         coveralls
     - name: Clean up coverage
-      uses: geekyeggo/delete-artifact@v1
+      uses: geekyeggo/delete-artifact@v2
       with:
         name: coverage

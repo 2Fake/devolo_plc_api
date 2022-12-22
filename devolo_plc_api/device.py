@@ -100,9 +100,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
 
     @property
     def hostname(self) -> str:
-        if DEVICEAPI in self._info:
-            return self._info[DEVICEAPI].get("hostname", "")
-        return ""
+        return self._info[DEVICEAPI]["hostname"] if DEVICEAPI in self._info else ""
 
     @property
     def password(self) -> str:

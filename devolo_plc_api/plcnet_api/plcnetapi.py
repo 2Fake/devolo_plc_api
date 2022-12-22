@@ -32,7 +32,7 @@ class PlcNetApi(Protobuf):
 
         self.password = ""  # PLC API is not password protected.
 
-    async def async_get_network_overview(self) -> dict[str, dict]:
+    async def async_get_network_overview(self) -> getnetworkoverview_pb2.GetNetworkOverview.LogicalNetwork:
         """
         Get a PLC network overview.
 
@@ -42,7 +42,7 @@ class PlcNetApi(Protobuf):
         network_overview = getnetworkoverview_pb2.GetNetworkOverview()
         response = await self._async_get("GetNetworkOverview")
         network_overview.ParseFromString(await response.aread())
-        return self._message_to_dict(network_overview)
+        return network_overview.network
 
     async def async_identify_device_start(self) -> bool:
         """
@@ -55,8 +55,8 @@ class PlcNetApi(Protobuf):
         identify_device.mac_address = self._mac
         query = await self._async_post("IdentifyDeviceStart", content=identify_device.SerializeToString())
         response = identifydevice_pb2.IdentifyDeviceResponse()
-        response.FromString(await query.aread())
-        return response.result == response.SUCCESS  # pylint: disable=no-member
+        response.ParseFromString(await query.aread())
+        return response.result == response.SUCCESS
 
     async def async_identify_device_stop(self) -> bool:
         """
@@ -69,8 +69,8 @@ class PlcNetApi(Protobuf):
         identify_device.mac_address = self._mac
         query = await self._async_post("IdentifyDeviceStop", content=identify_device.SerializeToString())
         response = identifydevice_pb2.IdentifyDeviceResponse()
-        response.FromString(await query.aread())
-        return response.result == response.SUCCESS  # pylint: disable=no-member
+        response.ParseFromString(await query.aread())
+        return response.result == response.SUCCESS
 
     async def async_pair_device(self) -> bool:
         """
@@ -83,8 +83,8 @@ class PlcNetApi(Protobuf):
         pair_device.mac_address = self._mac
         query = await self._async_post("PairDeviceStart", content=pair_device.SerializeToString())
         response = pairdevice_pb2.PairDeviceResponse()
-        response.FromString(await query.aread())
-        return response.result == response.SUCCESS  # pylint: disable=no-member
+        response.ParseFromString(await query.aread())
+        return response.result == response.SUCCESS
 
     async def async_set_user_device_name(self, name: str) -> bool:
         """
@@ -99,5 +99,5 @@ class PlcNetApi(Protobuf):
         set_user_name.user_device_name = name
         query = await self._async_post("SetUserDeviceName", content=set_user_name.SerializeToString())
         response = setuserdevicename_pb2.SetUserDeviceNameResponse()
-        response.FromString(await query.aread())
-        return response.result == response.SUCCESS  # pylint: disable=no-member
+        response.ParseFromString(await query.aread())
+        return response.result == response.SUCCESS

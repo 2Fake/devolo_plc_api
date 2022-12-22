@@ -1,9 +1,11 @@
 """Test communicating with a the device API."""
+from __future__ import annotations
+from typing import Any
+
 import pytest
-from google.protobuf.json_format import MessageToDict
 from pytest_httpx import HTTPXMock
 
-from devolo_plc_api.device_api import DeviceApi
+from devolo_plc_api.device_api import ConnectedStationInfo, DeviceApi, NeighborAPInfo, RepeatedAPInfo
 from devolo_plc_api.device_api.factoryreset_pb2 import FactoryResetStart
 from devolo_plc_api.device_api.ledsettings_pb2 import LedSettingsGet, LedSettingsSetResponse
 from devolo_plc_api.device_api.restart_pb2 import RestartResponse, UptimeGetResponse
@@ -15,6 +17,7 @@ from devolo_plc_api.device_api.wifinetwork_pb2 import (
     WifiNeighborAPsGet,
     WifiRepeatedAPsGet,
     WifiRepeaterWpsClonePbcStart,
+    WifiResult,
     WifiWpsPbcStart,
 )
 from devolo_plc_api.exceptions.feature import FeatureNotSupported
@@ -38,22 +41,18 @@ class TestDeviceApi:
     @pytest.mark.parametrize("feature", ["led"])
     async def test_async_get_led_setting(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test getting LED settings asynchronously."""
-        led_setting_get = LedSettingsGet()
+        led_setting_get = LedSettingsGet(state=LedSettingsGet.LED_ON)
         httpx_mock.add_response(content=led_setting_get.SerializeToString())
         led_setting = await device_api.async_get_led_setting()
-        assert led_setting == MessageToDict(
-            led_setting_get, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert led_setting
 
     @pytest.mark.parametrize("feature", ["led"])
     def test_get_led_setting(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test getting LED settings synchronously."""
-        led_setting_get = LedSettingsGet()
+        led_setting_get = LedSettingsGet(state=LedSettingsGet.LED_ON)
         httpx_mock.add_response(content=led_setting_get.SerializeToString())
         led_setting = device_api.get_led_setting()
-        assert led_setting == MessageToDict(
-            led_setting_get, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert led_setting
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["led"])
@@ -72,24 +71,22 @@ class TestDeviceApi:
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["repeater0"])
-    async def test_async_get_wifi_repeated_access_points(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+    async def test_async_get_wifi_repeated_access_points(
+        self, device_api: DeviceApi, httpx_mock: HTTPXMock, repeated_ap: RepeatedAPInfo
+    ):
         """Test getting AP settings asynchronously."""
-        wifi_repeated_accesspoints_get = WifiRepeatedAPsGet()
+        wifi_repeated_accesspoints_get = WifiRepeatedAPsGet(repeated_aps=[repeated_ap])
         httpx_mock.add_response(content=wifi_repeated_accesspoints_get.SerializeToString())
         wifi_repeated_access_points = await device_api.async_get_wifi_repeated_access_points()
-        assert wifi_repeated_access_points == MessageToDict(
-            wifi_repeated_accesspoints_get, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert wifi_repeated_access_points == [repeated_ap]
 
     @pytest.mark.parametrize("feature", ["repeater0"])
-    def test_get_wifi_repeated_access_points(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+    def test_get_wifi_repeated_access_points(self, device_api: DeviceApi, httpx_mock: HTTPXMock, repeated_ap: RepeatedAPInfo):
         """Test getting AP settings synchronously."""
-        wifi_repeated_accesspoints_get = WifiRepeatedAPsGet()
+        wifi_repeated_accesspoints_get = WifiRepeatedAPsGet(repeated_aps=[repeated_ap])
         httpx_mock.add_response(content=wifi_repeated_accesspoints_get.SerializeToString())
         wifi_repeated_access_points = device_api.get_wifi_repeated_access_points()
-        assert wifi_repeated_access_points == MessageToDict(
-            wifi_repeated_accesspoints_get, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert wifi_repeated_access_points == [repeated_ap]
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["repeater0"])
@@ -137,144 +134,136 @@ class TestDeviceApi:
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["restart"])
-    async def test_async_uptime(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+    async def test_async_uptime(self, device_api: DeviceApi, httpx_mock: HTTPXMock, runtime: int):
         """Test getting a device's update asynchronously."""
-        uptime = UptimeGetResponse()
+        uptime = UptimeGetResponse(uptime=runtime)
         httpx_mock.add_response(content=uptime.SerializeToString())
-        assert await device_api.async_uptime() == 0
+        assert await device_api.async_uptime() == runtime
 
     @pytest.mark.parametrize("feature", ["restart"])
-    def test_uptime(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+    def test_uptime(self, device_api: DeviceApi, httpx_mock: HTTPXMock, runtime: int):
         """Test getting a device's update synchronously."""
-        uptime = UptimeGetResponse()
+        uptime = UptimeGetResponse(uptime=runtime)
         httpx_mock.add_response(content=uptime.SerializeToString())
-        assert device_api.uptime() == 0
+        assert device_api.uptime() == runtime
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["update"])
-    async def test_async_check_firmware_available(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+    async def test_async_check_firmware_available(
+        self, device_api: DeviceApi, httpx_mock: HTTPXMock, firmware_update: UpdateFirmwareCheck
+    ):
         """Test checking for firmware updates asynchronously."""
-        firmware_available = UpdateFirmwareCheck()
-        httpx_mock.add_response(content=firmware_available.SerializeToString())
+        httpx_mock.add_response(content=firmware_update.SerializeToString())
         firmware = await device_api.async_check_firmware_available()
-        assert firmware == MessageToDict(
-            firmware_available, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert firmware == firmware_update
 
     @pytest.mark.parametrize("feature", ["update"])
-    def test_check_firmware_available(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+    def test_check_firmware_available(
+        self, device_api: DeviceApi, httpx_mock: HTTPXMock, firmware_update: UpdateFirmwareCheck
+    ):
         """Test checking for firmware updates synchronously."""
-        firmware_available = UpdateFirmwareCheck()
-        httpx_mock.add_response(content=firmware_available.SerializeToString())
+        httpx_mock.add_response(content=firmware_update.SerializeToString())
         firmware = device_api.check_firmware_available()
-        assert firmware == MessageToDict(
-            firmware_available, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert firmware == firmware_update
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["update"])
     async def test_async_start_firmware_update(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test firmware update asynchronously."""
-        firmware_update = UpdateFirmwareStart()
+        firmware_update = UpdateFirmwareStart(result=UpdateFirmwareStart.UPDATE_STARTED)
         httpx_mock.add_response(content=firmware_update.SerializeToString())
         assert await device_api.async_start_firmware_update()
 
     @pytest.mark.parametrize("feature", ["update"])
     def test_start_firmware_update(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test firmware update synchronously."""
-        firmware_update = UpdateFirmwareStart()
+        firmware_update = UpdateFirmwareStart(result=UpdateFirmwareStart.UPDATE_STARTED)
         httpx_mock.add_response(content=firmware_update.SerializeToString())
         assert device_api.start_firmware_update()
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["wifi1"])
-    async def test_async_get_wifi_connected_station(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+    async def test_async_get_wifi_connected_station(
+        self, device_api: DeviceApi, httpx_mock: HTTPXMock, connected_station: ConnectedStationInfo
+    ):
         """Test getting connected wifi clients asynchronously."""
-        wifi_connected_stations_get = WifiConnectedStationsGet()
+        wifi_connected_stations_get = WifiConnectedStationsGet(connected_stations=[connected_station])
         httpx_mock.add_response(content=wifi_connected_stations_get.SerializeToString())
         connected_stations = await device_api.async_get_wifi_connected_station()
-        assert connected_stations == MessageToDict(
-            wifi_connected_stations_get, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert connected_stations == [connected_station]
 
     @pytest.mark.parametrize("feature", ["wifi1"])
-    def test_get_wifi_connected_station(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+    def test_get_wifi_connected_station(
+        self, device_api: DeviceApi, httpx_mock: HTTPXMock, connected_station: ConnectedStationInfo
+    ):
         """Test getting connected wifi clients synchronously."""
-        wifi_connected_stations_get = WifiConnectedStationsGet()
+        wifi_connected_stations_get = WifiConnectedStationsGet(connected_stations=[connected_station])
         httpx_mock.add_response(content=wifi_connected_stations_get.SerializeToString())
         connected_stations = device_api.get_wifi_connected_station()
-        assert connected_stations == MessageToDict(
-            wifi_connected_stations_get, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert connected_stations == [connected_station]
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["wifi1"])
     async def test_async_get_wifi_guest_access(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test getting wifi guest access status asynchronously."""
-        wifi_guest_access_get = WifiGuestAccessGet()
+        wifi_guest_access_get = WifiGuestAccessGet(enabled=True)
         httpx_mock.add_response(content=wifi_guest_access_get.SerializeToString())
         wifi_guest_access = await device_api.async_get_wifi_guest_access()
-        assert wifi_guest_access == MessageToDict(
-            wifi_guest_access_get, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert wifi_guest_access == wifi_guest_access_get
 
     @pytest.mark.parametrize("feature", ["wifi1"])
     def test_get_wifi_guest_access(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test getting wifi guest access status synchronously."""
-        wifi_guest_access_get = WifiGuestAccessGet()
+        wifi_guest_access_get = WifiGuestAccessGet(enabled=True)
         httpx_mock.add_response(content=wifi_guest_access_get.SerializeToString())
         wifi_guest_access = device_api.get_wifi_guest_access()
-        assert wifi_guest_access == MessageToDict(
-            wifi_guest_access_get, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert wifi_guest_access == wifi_guest_access_get
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["wifi1"])
     async def test_async_set_wifi_guest_access(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test setting wifi guest access status asynchronously."""
-        wifi_guest_access_set = WifiGuestAccessSetResponse()
+        wifi_guest_access_set = WifiGuestAccessSetResponse(result=WifiResult.WIFI_SUCCESS)
         httpx_mock.add_response(content=wifi_guest_access_set.SerializeToString())
         assert await device_api.async_set_wifi_guest_access(True)
 
     @pytest.mark.parametrize("feature", ["wifi1"])
     def test_set_wifi_guest_access(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test setting wifi guest access status synchronously."""
-        wifi_guest_access_set = WifiGuestAccessSetResponse()
+        wifi_guest_access_set = WifiGuestAccessSetResponse(result=WifiResult.WIFI_SUCCESS)
         httpx_mock.add_response(content=wifi_guest_access_set.SerializeToString())
         assert device_api.set_wifi_guest_access(True)
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["wifi1"])
-    async def test_async_get_wifi_neighbor_access_points(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+    async def test_async_get_wifi_neighbor_access_points(
+        self, device_api: DeviceApi, httpx_mock: HTTPXMock, neighbor_ap: NeighborAPInfo
+    ):
         """Test getting neighboring wifi access points asynchronously."""
-        wifi_neighbor_accesspoints_get = WifiNeighborAPsGet()
+        wifi_neighbor_accesspoints_get = WifiNeighborAPsGet(neighbor_aps=[neighbor_ap])
         httpx_mock.add_response(content=wifi_neighbor_accesspoints_get.SerializeToString())
         wifi_neighbor_access_points = await device_api.async_get_wifi_neighbor_access_points()
-        assert wifi_neighbor_access_points == MessageToDict(
-            wifi_neighbor_accesspoints_get, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert wifi_neighbor_access_points == [neighbor_ap]
 
     @pytest.mark.parametrize("feature", ["wifi1"])
-    def test_get_wifi_neighbor_access_points(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+    def test_get_wifi_neighbor_access_points(self, device_api: DeviceApi, httpx_mock: HTTPXMock, neighbor_ap: NeighborAPInfo):
         """Test getting neighboring wifi access points synchronously."""
-        wifi_neighbor_accesspoints_get = WifiNeighborAPsGet()
+        wifi_neighbor_accesspoints_get = WifiNeighborAPsGet(neighbor_aps=[neighbor_ap])
         httpx_mock.add_response(content=wifi_neighbor_accesspoints_get.SerializeToString())
         wifi_neighbor_access_points = device_api.get_wifi_neighbor_access_points()
-        assert wifi_neighbor_access_points == MessageToDict(
-            wifi_neighbor_accesspoints_get, including_default_value_fields=True, preserving_proto_field_name=True
-        )
+        assert wifi_neighbor_access_points == [neighbor_ap]
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["wifi1"])
     async def test_async_start_wps(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test starting WPS asynchronously."""
-        wps = WifiWpsPbcStart()
+        wps = WifiWpsPbcStart(result=WifiResult.WIFI_SUCCESS)
         httpx_mock.add_response(content=wps.SerializeToString())
         assert await device_api.async_start_wps()
 
     @pytest.mark.parametrize("feature", ["wifi1"])
     def test_start_wps(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test starting WPS synchronously."""
-        wps = WifiWpsPbcStart()
+        wps = WifiWpsPbcStart(result=WifiResult.WIFI_SUCCESS)
         httpx_mock.add_response(content=wps.SerializeToString())
         assert device_api.start_wps()

@@ -209,6 +209,7 @@ class TestDevice:
         ), patch("devolo_plc_api.device.AsyncServiceInfo.async_request") as ar:
             mock_device = Device(ip=test_data.ip, plcnetapi=None, deviceapi=test_data.device_info[DEVICEAPI])
             await mock_device.async_connect()
+            assert mock_device.hostname == test_data.hostname
             assert ar.call_count == 2
             assert mock_device.mac == test_data.device_info[PLCNETAPI]["properties"]["PlcMacAddress"]
 

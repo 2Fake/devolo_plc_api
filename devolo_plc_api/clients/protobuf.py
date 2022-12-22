@@ -99,8 +99,3 @@ class Protobuf(ABC):
             raise e
         except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
             raise DeviceUnavailable("The device is currently not available. Maybe on standby?") from None
-
-    @staticmethod
-    def _message_to_dict(message: Message) -> dict[str, Any]:
-        """Convert message to dict with certain settings."""
-        return MessageToDict(message=message, including_default_value_fields=True, preserving_proto_field_name=True)
