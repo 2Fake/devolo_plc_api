@@ -23,5 +23,6 @@
             }
         }
     },
+    "hostname": "device.local",
     "ip": "192.168.0.10"
 }
