@@ -94,12 +94,14 @@ class Device:  # pylint: disable=too-many-instance-attributes
 
     @property
     def firmware_version(self) -> str:
+        """Firmware version currently installed."""
         if DEVICEAPI in self._info:
             return self._info[DEVICEAPI]["properties"].get("FirmwareVersion", "")
         return ""
 
     @property
     def hostname(self) -> str:
+        """mDNS hostname of the device."""
         return self._info[DEVICEAPI]["hostname"] if DEVICEAPI in self._info else ""
 
     @property
