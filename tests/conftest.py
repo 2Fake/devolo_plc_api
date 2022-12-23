@@ -33,6 +33,8 @@ def block_communication() -> Generator[None, None, None]:
         "devolo_plc_api.device.AsyncServiceInfo"
     ), patch(
         "devolo_plc_api.network.Zeroconf"
+    ), patch(
+        "devolo_plc_api.network.ServiceBrowser", MockServiceBrowser
     ):
         yield
 

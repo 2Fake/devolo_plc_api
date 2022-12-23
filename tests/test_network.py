@@ -19,7 +19,7 @@ class TestNetwork:
     async def test_async_discover_network(self, test_data: TestData):
         """Test discovering the network asynchronously."""
         serial_number = test_data.device_info[SERVICE_TYPE]["properties"]["SN"]
-        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
+        with patch(
             "devolo_plc_api.device.Device.info_from_service",
             return_value={"address": test_data.ip, "properties": test_data.device_info[SERVICE_TYPE]["properties"]},
         ), patch("asyncio.sleep"):
@@ -31,7 +31,7 @@ class TestNetwork:
     def test_discover_network(self, test_data: TestData):
         """Test discovering the network synchronously."""
         serial_number = test_data.device_info[SERVICE_TYPE]["properties"]["SN"]
-        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
+        with patch(
             "devolo_plc_api.device.Device.info_from_service",
             return_value={"address": test_data.ip, "properties": test_data.device_info[SERVICE_TYPE]["properties"]},
         ), patch("time.sleep"):
@@ -55,18 +55,12 @@ class TestNetwork:
             assert not discovered
 
     @pytest.mark.usefixtures("block_communication")
-    def test_hcu(self, test_data: TestData):
+    @pytest.mark.parametrize("mt", ["2600", "2601"])
+    def test_hcu(self, test_data: TestData, mt: str):
         """Test ignoring Home Control Central Units."""
-        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
+        with patch(
             "devolo_plc_api.device.Device.info_from_service",
-            return_value={"address": test_data.ip, "properties": {"MT": "2600"}},
-        ), patch("time.sleep"):
-            discovered = network.discover_network()
-            assert not discovered
-
-        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
-            "devolo_plc_api.device.Device.info_from_service",
-            return_value={"address": test_data.ip, "properties": {"MT": "2601"}},
+            return_value={"address": test_data.ip, "properties": {"MT": mt}},
         ), patch("time.sleep"):
             discovered = network.discover_network()
             assert not discovered
