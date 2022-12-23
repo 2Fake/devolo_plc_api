@@ -9,7 +9,21 @@ from httpx import AsyncClient
 from ..clients import Protobuf
 from ..exceptions.feature import FeatureNotSupported
 from ..zeroconf import ZeroconfServiceInfo
-from . import factoryreset_pb2, ledsettings_pb2, restart_pb2, updatefirmware_pb2, wifinetwork_pb2
+from .factoryreset_pb2 import FactoryResetStart
+from .ledsettings_pb2 import LedSettingsGet, LedSettingsSet, LedSettingsSetResponse
+from .restart_pb2 import RestartResponse, UptimeGetResponse
+from .updatefirmware_pb2 import UpdateFirmwareCheck, UpdateFirmwareStart
+from .wifinetwork_pb2 import (
+    WifiConnectedStationsGet,
+    WifiGuestAccessGet,
+    WifiGuestAccessSet,
+    WifiGuestAccessSetResponse,
+    WifiNeighborAPsGet,
+    WifiRepeatedAPsGet,
+    WifiRepeaterWpsClonePbcStart,
+    WifiResult,
+    WifiWpsPbcStart,
+)
 
 if TYPE_CHECKING:
     from typing_extensions import Concatenate, ParamSpec
@@ -68,7 +82,7 @@ class DeviceApi(Protobuf):
         return: LED settings
         """
         self._logger.debug("Getting LED settings.")
-        led_setting = ledsettings_pb2.LedSettingsGet()
+        led_setting = LedSettingsGet()
         response = await self._async_get("LedSettingsGet")
         led_setting.ParseFromString(await response.aread())
         return led_setting.state == led_setting.LED_ON
@@ -82,15 +96,15 @@ class DeviceApi(Protobuf):
         :return: True, if LED state was successfully changed, otherwise False
         """
         self._logger.debug("Setting LED settings.")
-        led_setting = ledsettings_pb2.LedSettingsSet()
+        led_setting = LedSettingsSet()
         led_setting.state = led_setting.LED_ON if enable else led_setting.LED_OFF
         query = await self._async_post("LedSettingsSet", content=led_setting.SerializeToString())
-        response = ledsettings_pb2.LedSettingsSetResponse()
+        response = LedSettingsSetResponse()
         response.ParseFromString(await query.aread())
         return response.result == response.SUCCESS
 
     @_feature("repeater0")
-    async def async_get_wifi_repeated_access_points(self) -> list[wifinetwork_pb2.WifiRepeatedAPsGet.RepeatedAPInfo]:
+    async def async_get_wifi_repeated_access_points(self) -> list[WifiRepeatedAPsGet.RepeatedAPInfo]:
         """
         Get repeated wifi access point asynchronously. This feature only works on repeater devices, that announce the
         repeater0 feature.
@@ -98,7 +112,7 @@ class DeviceApi(Protobuf):
         :return: Repeated access points in the neighborhood including connection rate data
         """
         self._logger.debug("Getting repeated access points.")
-        repeated_aps = wifinetwork_pb2.WifiRepeatedAPsGet()
+        repeated_aps = WifiRepeatedAPsGet()
         response = await self._async_get("WifiRepeatedAPsGet")
         repeated_aps.ParseFromString(await response.aread())
         return list(repeated_aps.repeated_aps)
@@ -111,10 +125,10 @@ class DeviceApi(Protobuf):
         :return: True, if the wifi settings were successfully cloned, otherwise False
         """
         self._logger.debug("Starting WPS clone.")
-        wps_clone = wifinetwork_pb2.WifiRepeaterWpsClonePbcStart()
+        wps_clone = WifiRepeaterWpsClonePbcStart()
         response = await self._async_get("WifiRepeaterWpsClonePbcStart")
         wps_clone.ParseFromString(await response.aread())
-        return wps_clone.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS
+        return wps_clone.result == WifiResult.WIFI_SUCCESS
 
     @_feature("reset")
     async def async_factory_reset(self) -> bool:
@@ -124,7 +138,7 @@ class DeviceApi(Protobuf):
         :return: True if reset is started, otherwise False
         """
         self._logger.debug("Resetting the device.")
-        reset = factoryreset_pb2.FactoryResetStart()
+        reset = FactoryResetStart()
         response = await self._async_get("FactoryResetStart")
         reset.ParseFromString(await response.aread())
         return reset.result == reset.SUCCESS
@@ -138,7 +152,7 @@ class DeviceApi(Protobuf):
         """
         self._logger.debug("Restarting the device.")
         query = await self._async_post("Restart", content=b"")
-        response = restart_pb2.RestartResponse()
+        response = RestartResponse()
         response.ParseFromString(await query.aread())
         return response.result == response.SUCCESS
 
@@ -151,20 +165,20 @@ class DeviceApi(Protobuf):
         :return: The uptime without unit
         """
         self._logger.debug("Get uptime.")
-        uptime = restart_pb2.UptimeGetResponse()
+        uptime = UptimeGetResponse()
         response = await self._async_get("UptimeGet")
         uptime.ParseFromString(await response.aread())
         return uptime.uptime
 
     @_feature("update")
-    async def async_check_firmware_available(self) -> updatefirmware_pb2.UpdateFirmwareCheck:
+    async def async_check_firmware_available(self) -> UpdateFirmwareCheck:
         """
         Check asynchronously, if a firmware update is available for the device.
 
         :return: Result and new firmware version, if newer one is available
         """
         self._logger.debug("Checking for new firmware.")
-        update_firmware_check = updatefirmware_pb2.UpdateFirmwareCheck()
+        update_firmware_check = UpdateFirmwareCheck()
         response = await self._async_get("UpdateFirmwareCheck")
         update_firmware_check.ParseFromString(await response.aread())
         return update_firmware_check
@@ -178,13 +192,13 @@ class DeviceApi(Protobuf):
         :return: True, if the firmware update was started, False if there is no update
         """
         self._logger.debug("Updating firmware.")
-        update_firmware = updatefirmware_pb2.UpdateFirmwareStart()
+        update_firmware = UpdateFirmwareStart()
         query = await self._async_get("UpdateFirmwareStart")
         update_firmware.ParseFromString(await query.aread())
         return update_firmware.result == update_firmware.UPDATE_STARTED
 
     @_feature("wifi1")
-    async def async_get_wifi_connected_station(self) -> list[wifinetwork_pb2.WifiConnectedStationsGet.ConnectedStationInfo]:
+    async def async_get_wifi_connected_station(self) -> list[WifiConnectedStationsGet.ConnectedStationInfo]:
         """
         Get wifi stations connected to the device asynchronously. This feature only works on devices, that announce the wifi1
         feature.
@@ -192,13 +206,13 @@ class DeviceApi(Protobuf):
         :return: All connected wifi stations including connection rate data
         """
         self._logger.debug("Getting connected wifi stations.")
-        wifi_connected = wifinetwork_pb2.WifiConnectedStationsGet()
+        wifi_connected = WifiConnectedStationsGet()
         response = await self._async_get("WifiConnectedStationsGet")
         wifi_connected.ParseFromString(await response.aread())
         return list(wifi_connected.connected_stations)
 
     @_feature("wifi1")
-    async def async_get_wifi_guest_access(self) -> wifinetwork_pb2.WifiGuestAccessGet:
+    async def async_get_wifi_guest_access(self) -> WifiGuestAccessGet:
         """
         Get details about wifi guest access asynchronously. This feature only works on devices, that announce the wifi1
         feature.
@@ -206,7 +220,7 @@ class DeviceApi(Protobuf):
         :return: Details about the wifi guest access
         """
         self._logger.debug("Getting wifi guest access status.")
-        wifi_guest = wifinetwork_pb2.WifiGuestAccessGet()
+        wifi_guest = WifiGuestAccessGet()
         response = await self._async_get("WifiGuestAccessGet")
         wifi_guest.ParseFromString(await response.aread())
         return wifi_guest
@@ -221,16 +235,16 @@ class DeviceApi(Protobuf):
         :return: True, if the state of the wifi guest access was successfully changed, otherwise False
         """
         self._logger.debug("Setting wifi guest access status.")
-        wifi_guest = wifinetwork_pb2.WifiGuestAccessSet()
+        wifi_guest = WifiGuestAccessSet()
         wifi_guest.enable = enable
         wifi_guest.duration = duration
         query = await self._async_post("WifiGuestAccessSet", content=wifi_guest.SerializeToString())
-        response = wifinetwork_pb2.WifiGuestAccessSetResponse()
+        response = WifiGuestAccessSetResponse()
         response.ParseFromString(await query.aread())
-        return response.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS
+        return response.result == WifiResult.WIFI_SUCCESS
 
     @_feature("wifi1")
-    async def async_get_wifi_neighbor_access_points(self) -> list[wifinetwork_pb2.WifiNeighborAPsGet.NeighborAPInfo]:
+    async def async_get_wifi_neighbor_access_points(self) -> list[WifiNeighborAPsGet.NeighborAPInfo]:
         """
         Get wifi access point in the neighborhood asynchronously. This feature only works on devices, that announce the wifi1
         feature.
@@ -238,7 +252,7 @@ class DeviceApi(Protobuf):
         :return: Visible access points in the neighborhood including connection rate data
         """
         self._logger.debug("Getting neighbored access points.")
-        wifi_neighbor_aps = wifinetwork_pb2.WifiNeighborAPsGet()
+        wifi_neighbor_aps = WifiNeighborAPsGet()
         response = await self._async_get("WifiNeighborAPsGet", timeout=30.0)
         wifi_neighbor_aps.ParseFromString(await response.aread())
         return list(wifi_neighbor_aps.neighbor_aps)
@@ -251,7 +265,7 @@ class DeviceApi(Protobuf):
         :return: True, if the WPS was successfully started, otherwise False
         """
         self._logger.debug("Starting WPS.")
-        wps = wifinetwork_pb2.WifiWpsPbcStart()
+        wps = WifiWpsPbcStart()
         response = await self._async_get("WifiWpsPbcStart")
         wps.ParseFromString(await response.aread())
-        return wps.result == wifinetwork_pb2.WifiResult.WIFI_SUCCESS
+        return wps.result == WifiResult.WIFI_SUCCESS
