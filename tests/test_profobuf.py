@@ -24,8 +24,8 @@ class TestProtobuf:
     def test_url(self, test_data: TestData, mock_protobuf: StubProtobuf):
         """Test generating the url to use for device communication."""
         ip = test_data.ip
-        path = test_data.device_info[SERVICE_TYPE]["properties"]["Path"]
-        version = test_data.device_info[SERVICE_TYPE]["properties"]["Version"]
+        path = test_data.device_info[SERVICE_TYPE].properties["Path"]
+        version = test_data.device_info[SERVICE_TYPE].properties["Version"]
         assert mock_protobuf.url == f"http://{ip}:14791/{path}/{version}/"
 
     @pytest.mark.asyncio

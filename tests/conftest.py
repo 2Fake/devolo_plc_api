@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from . import TestData, load_test_data
+from .mocks.mock_zeroconf import MockServiceBrowser
 
 pytest_plugins = [
     "tests.fixtures.device",
@@ -17,18 +18,39 @@ pytest_plugins = [
 ]
 
 
+def pytest_configure(config: pytest.Config):
+    """Configure pytest."""
+    config.addinivalue_line("markers", "allow_sleep: mark tests that are allowed to sleep")
+
+
 @pytest.fixture(scope="session")
 def test_data() -> TestData:
     """Load test data."""
     return load_test_data()
 
 
+@pytest.fixture(name="sleep", autouse=True)
+def patch_sleep(request: pytest.FixtureRequest) -> Generator[AsyncMock | None, None, None]:
+    """Don't sleep anywhere except if marked as allowed."""
+    if "allow_sleep" not in request.keywords:
+        with patch("time.sleep"), patch("asyncio.sleep") as sleep:
+            yield sleep
+    else:
+        yield None
+
+
 @pytest.fixture()
 def block_communication() -> Generator[None, None, None]:
     """Block external communication."""
-    with patch("devolo_plc_api.device.AsyncZeroconf", new=AsyncMock), patch(
-        "devolo_plc_api.device.httpx.AsyncClient", new=AsyncMock
-    ), patch("devolo_plc_api.network.Zeroconf"):
+    with patch("devolo_plc_api.device.AsyncZeroconf", AsyncMock), patch(
+        "devolo_plc_api.device.httpx.AsyncClient", AsyncMock
+    ), patch("devolo_plc_api.device.AsyncServiceBrowser", MockServiceBrowser), patch(
+        "devolo_plc_api.device.AsyncServiceInfo"
+    ), patch(
+        "devolo_plc_api.network.Zeroconf"
+    ), patch(
+        "devolo_plc_api.network.ServiceBrowser", MockServiceBrowser
+    ):
         yield
 
 

@@ -1,21 +1,49 @@
 """Fixtures to properly mock a devolo device."""
 from typing import Generator, Type
-from unittest.mock import patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
 from devolo_plc_api import Device
-from devolo_plc_api.device_api import SERVICE_TYPE as DEVICEAPI
-from devolo_plc_api.plcnet_api import SERVICE_TYPE as PLCNETAPI
 
 from .. import TestData
 from ..mocks.mock_zeroconf import MockServiceBrowser
 
 
 @pytest.fixture()
+def mock_async_request() -> Generator[AsyncMock, None, None]:
+    """Patch requesting mDNS data."""
+    with patch("devolo_plc_api.device.AsyncServiceInfo.async_request") as ar:
+        yield ar
+
+
+@pytest.fixture()
 def mock_device(test_data: TestData) -> Generator[Device, None, None]:
     """Generate device from test data."""
-    yield Device(ip=test_data.ip, plcnetapi=test_data.device_info[PLCNETAPI], deviceapi=test_data.device_info[DEVICEAPI])
+    device = Device(ip=test_data.ip)
+    device._info = test_data.device_info  # pylint: disable=protected-access
+    yield device
+
+
+@pytest.fixture()
+def mock_get_device_info() -> Generator[AsyncMock, None, None]:
+    """Patch getting device info."""
+    with patch("devolo_plc_api.device.Device._get_device_info") as gdi:
+        yield gdi
+
+
+@pytest.fixture()
+def mock_get_zeroconf_info() -> Generator[AsyncMock, None, None]:
+    """Patch getting device info."""
+    with patch("devolo_plc_api.device.Device._get_zeroconf_info") as gzi:
+        yield gzi
+
+
+@pytest.fixture()
+def mock_info_from_service() -> Generator[Mock, None, None]:
+    """Patch reading info from mDNS entries."""
+    with patch("devolo_plc_api.device.Device.info_from_service") as ifs:
+        yield ifs
 
 
 @pytest.fixture()

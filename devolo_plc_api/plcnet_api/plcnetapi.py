@@ -1,12 +1,14 @@
 """Implementation of the devolo plcnet API."""
 from __future__ import annotations
 
-from typing import Any
-
 from httpx import AsyncClient
 
-from ..clients.protobuf import Protobuf
-from . import getnetworkoverview_pb2, identifydevice_pb2, pairdevice_pb2, setuserdevicename_pb2
+from ..clients import Protobuf
+from ..zeroconf import ZeroconfServiceInfo
+from .getnetworkoverview_pb2 import GetNetworkOverview
+from .identifydevice_pb2 import IdentifyDeviceResponse, IdentifyDeviceStart, IdentifyDeviceStop
+from .pairdevice_pb2 import PairDeviceResponse, PairDeviceStart
+from .setuserdevicename_pb2 import SetUserDeviceName, SetUserDeviceNameResponse
 
 
 # Issue: https://github.com/PyCQA/pylint/issues/4987
@@ -19,27 +21,27 @@ class PlcNetApi(Protobuf):
     :param info: Information collected from the mDNS query
     """
 
-    def __init__(self, ip: str, session: AsyncClient, info: dict[str, Any]) -> None:
+    def __init__(self, ip: str, session: AsyncClient, info: ZeroconfServiceInfo) -> None:
         super().__init__()
 
         self._ip = ip
-        self._mac = info["properties"]["PlcMacAddress"]
-        self._path = info["properties"]["Path"]
-        self._port = info["port"]
+        self._mac = info.properties["PlcMacAddress"]
+        self._path = info.properties["Path"]
+        self._port = info.port
         self._session = session
         self._user = ""  # PLC API is not password protected.
-        self._version = info["properties"]["Version"]
+        self._version = info.properties["Version"]
 
         self.password = ""  # PLC API is not password protected.
 
-    async def async_get_network_overview(self) -> getnetworkoverview_pb2.GetNetworkOverview.LogicalNetwork:
+    async def async_get_network_overview(self) -> GetNetworkOverview.LogicalNetwork:
         """
         Get a PLC network overview.
 
         :return: Network overview
         """
         self._logger.debug("Getting network overview.")
-        network_overview = getnetworkoverview_pb2.GetNetworkOverview()
+        network_overview = GetNetworkOverview()
         response = await self._async_get("GetNetworkOverview")
         network_overview.ParseFromString(await response.aread())
         return network_overview.network
@@ -51,10 +53,10 @@ class PlcNetApi(Protobuf):
         :return: True, if identifying was successfully started, otherwise False
         """
         self._logger.debug("Starting LED blinking.")
-        identify_device = identifydevice_pb2.IdentifyDeviceStart()
+        identify_device = IdentifyDeviceStart()
         identify_device.mac_address = self._mac
         query = await self._async_post("IdentifyDeviceStart", content=identify_device.SerializeToString())
-        response = identifydevice_pb2.IdentifyDeviceResponse()
+        response = IdentifyDeviceResponse()
         response.ParseFromString(await query.aread())
         return response.result == response.SUCCESS
 
@@ -65,10 +67,10 @@ class PlcNetApi(Protobuf):
         :return: True, if identifying was successfully stopped, otherwise False
         """
         self._logger.debug("Stopping LED blinking.")
-        identify_device = identifydevice_pb2.IdentifyDeviceStop()
+        identify_device = IdentifyDeviceStop()
         identify_device.mac_address = self._mac
         query = await self._async_post("IdentifyDeviceStop", content=identify_device.SerializeToString())
-        response = identifydevice_pb2.IdentifyDeviceResponse()
+        response = IdentifyDeviceResponse()
         response.ParseFromString(await query.aread())
         return response.result == response.SUCCESS
 
@@ -79,10 +81,10 @@ class PlcNetApi(Protobuf):
         :return: True, if pairing was started successfully, otherwise False
         """
         self._logger.debug("Pairing.")
-        pair_device = pairdevice_pb2.PairDeviceStart()
+        pair_device = PairDeviceStart()
         pair_device.mac_address = self._mac
         query = await self._async_post("PairDeviceStart", content=pair_device.SerializeToString())
-        response = pairdevice_pb2.PairDeviceResponse()
+        response = PairDeviceResponse()
         response.ParseFromString(await query.aread())
         return response.result == response.SUCCESS
 
@@ -94,10 +96,10 @@ class PlcNetApi(Protobuf):
         :return: True, if the device was successfully renamed, otherwise False
         """
         self._logger.debug("Setting device name.")
-        set_user_name = setuserdevicename_pb2.SetUserDeviceName()
+        set_user_name = SetUserDeviceName()
         set_user_name.mac_address = self._mac
         set_user_name.user_device_name = name
         query = await self._async_post("SetUserDeviceName", content=set_user_name.SerializeToString())
-        response = setuserdevicename_pb2.SetUserDeviceNameResponse()
+        response = SetUserDeviceNameResponse()
         response.ParseFromString(await query.aread())
         return response.result == response.SUCCESS

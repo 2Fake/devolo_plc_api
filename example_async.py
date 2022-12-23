@@ -33,7 +33,7 @@ async def run():
 
         # Check for new firmware versions
         firmware = await dpa.device.async_check_firmware_available()
-        print(firmware.result)  # "UPDATE_NOT_AVAILABLE"
+        print(firmware.result)  # UpdateFirmwareCheck.UPDATE_NOT_AVAILABLE
         print(firmware.new_firmware_version)  # ""
 
         # Start firmware update, if new version is available. Important: The response does not tell you anything about the

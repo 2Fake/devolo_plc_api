@@ -8,7 +8,6 @@ import struct
 from contextlib import suppress
 from datetime import date
 from types import TracebackType
-from typing import Any
 
 import httpx
 from zeroconf import DNSQuestionType, ServiceInfo, ServiceStateChange, Zeroconf
@@ -20,8 +19,7 @@ from .exceptions.device import DeviceNotFound
 from .plcnet_api import DEVICES_WITHOUT_PLCNET
 from .plcnet_api import SERVICE_TYPE as PLCNETAPI
 from .plcnet_api import PlcNetApi
-
-EMPTY_INFO: dict[str, Any] = {"properties": {}}
+from .zeroconf import ZeroconfServiceInfo
 
 
 class Device:  # pylint: disable=too-many-instance-attributes
@@ -37,26 +35,21 @@ class Device:  # pylint: disable=too-many-instance-attributes
     def __init__(
         self,
         ip: str,
-        plcnetapi: dict[str, Any] | None = None,
-        deviceapi: dict[str, Any] | None = None,
         zeroconf_instance: AsyncZeroconf | Zeroconf | None = None,
     ) -> None:
         self.ip = ip
         self.mac = ""
-        self.mt_number = 0
+        self.mt_number = "0"
         self.product = ""
         self.technology = ""
-        self.serial_number = 0
+        self.serial_number = "0"
 
         self.device: DeviceApi | None = None
         self.plcnet: PlcNetApi | None = None
 
         self._browser: dict[str, AsyncServiceBrowser] = {}
         self._connected = False
-        self._info: dict[str, dict[str, Any]] = {
-            PLCNETAPI: plcnetapi or EMPTY_INFO,
-            DEVICEAPI: deviceapi or EMPTY_INFO,
-        }
+        self._info: dict[str, ZeroconfServiceInfo] = {PLCNETAPI: ZeroconfServiceInfo(), DEVICEAPI: ZeroconfServiceInfo()}
         self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
         self._multicast = False
         self._password = ""
@@ -88,19 +81,17 @@ class Device:  # pylint: disable=too-many-instance-attributes
     @property
     def firmware_date(self) -> date:
         """Date the firmware was built."""
-        if DEVICEAPI in self._info:
-            return date.fromisoformat(self._info[DEVICEAPI]["properties"].get("FirmwareDate", "1970-01-01")[:10])
-        return date.fromtimestamp(0)
+        return date.fromisoformat(self._info[DEVICEAPI].properties.get("FirmwareDate", "1970-01-01")[:10])
 
     @property
     def firmware_version(self) -> str:
-        if DEVICEAPI in self._info:
-            return self._info[DEVICEAPI]["properties"].get("FirmwareVersion", "")
-        return ""
+        """Firmware version currently installed."""
+        return self._info[DEVICEAPI].properties.get("FirmwareVersion", "")
 
     @property
     def hostname(self) -> str:
-        return self._info[DEVICEAPI]["hostname"] if DEVICEAPI in self._info else ""
+        """mDNS hostname of the device."""
+        return self._info[DEVICEAPI].hostname
 
     @property
     def password(self) -> str:
@@ -156,12 +147,12 @@ class Device:  # pylint: disable=too-many-instance-attributes
         """Get information from the devolo Device API."""
         service_type = DEVICEAPI
         await self._get_zeroconf_info(service_type=service_type)
-        if not self._info[service_type]["properties"]:
+        if not self._info[service_type].properties:
             await self._retry_zeroconf_info(service_type=service_type)
-        if self._info[service_type]["properties"]:
-            self.mt_number = self._info[service_type]["properties"].get("MT", 0)
-            self.product = self._info[service_type]["properties"].get("Product", "")
-            self.serial_number = self._info[service_type]["properties"]["SN"]
+        if self._info[service_type].properties:
+            self.mt_number = self._info[service_type].properties.get("MT", "0")
+            self.product = self._info[service_type].properties.get("Product", "")
+            self.serial_number = self._info[service_type].properties["SN"]
             self.device = DeviceApi(ip=self.ip, session=self._session, info=self._info[service_type])
             self.device.password = self.password
 
@@ -171,11 +162,11 @@ class Device:  # pylint: disable=too-many-instance-attributes
         if self.mt_number in DEVICES_WITHOUT_PLCNET:
             return
         await self._get_zeroconf_info(service_type=service_type)
-        if not self._info[service_type]["properties"] and self.mt_number not in DEVICES_WITHOUT_PLCNET:
+        if not self._info[service_type].properties and self.mt_number not in DEVICES_WITHOUT_PLCNET:
             await self._retry_zeroconf_info(service_type=service_type)
-        if self._info[service_type]["properties"]:
-            self.mac = self._info[service_type]["properties"]["PlcMacAddress"]
-            self.technology = self._info[service_type]["properties"].get("PlcTechnology", "")
+        if self._info[service_type].properties:
+            self.mac = self._info[service_type].properties["PlcMacAddress"]
+            self.technology = self._info[service_type].properties.get("PlcTechnology", "")
             self.plcnet = PlcNetApi(ip=self.ip, session=self._session, info=self._info[service_type])
 
     async def _get_zeroconf_info(self, service_type: str) -> None:
@@ -191,7 +182,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
             addr=addr,
             question_type=question_type,
         )
-        while not self._info[service_type]["properties"] and counter < 300:
+        while not self._info[service_type].properties and counter < 300:
             counter += 1
             await asyncio.sleep(0.01)
 
@@ -216,22 +207,19 @@ class Device:  # pylint: disable=too-many-instance-attributes
         with suppress(RuntimeError):
             await service_info.async_request(zeroconf, timeout=1000, question_type=question_type)
 
-        if (
-            service_info is None
-            or not service_info.addresses
-            or str(ipaddress.ip_address(service_info.addresses[0])) != self.ip
-        ):
+        if not service_info.addresses or str(ipaddress.ip_address(service_info.addresses[0])) != self.ip:
             return  # No need to continue, if there are no relevant service information
 
         self._logger.debug("Updating service info of %s for %s", service_type, service_info.server_key)
-        self._info[service_type] = self.info_from_service(service_info)
+        if info := self.info_from_service(service_info):
+            self._info[service_type] = info
 
     @staticmethod
-    def info_from_service(service_info: ServiceInfo) -> dict[str, Any]:
+    def info_from_service(service_info: ServiceInfo) -> ZeroconfServiceInfo | None:
         """Return prepared info from mDNS entries."""
         properties = {}
         if not service_info.addresses:
-            return {}  # No need to continue, if there is no IP address to contact the device
+            return None  # No need to continue, if there is no IP address to contact the device
 
         total_length = len(service_info.text)
         offset = 0
@@ -241,11 +229,9 @@ class Device:  # pylint: disable=too-many-instance-attributes
             properties[key_value[0]] = key_value[1]
             offset += parsed_length + 1
 
-        address = service_info.addresses[0]
-
-        return {
-            "address": str(ipaddress.ip_address(address)),
-            "hostname": service_info.server,
-            "port": service_info.port,
-            "properties": properties,
-        }
+        return ZeroconfServiceInfo(
+            address=service_info.addresses[0],
+            hostname=service_info.server,
+            port=service_info.port,
+            properties=properties,
+        )

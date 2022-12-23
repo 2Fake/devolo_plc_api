@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from secrets import randbelow
-from typing import Any, AsyncGenerator, Generator
+from typing import AsyncGenerator, Generator
 from unittest.mock import patch
 
 import pytest
@@ -24,7 +24,7 @@ from .. import TestData
 @pytest_asyncio.fixture()
 async def device_api(test_data: TestData, feature: str) -> AsyncGenerator[DeviceApi, None]:
     """Yield prepared DeviceApi object."""
-    test_data.device_info[SERVICE_TYPE]["properties"]["Features"] = feature
+    test_data.device_info[SERVICE_TYPE].properties["Features"] = feature
     async with AsyncClient() as client:
         yield DeviceApi(test_data.ip, client, test_data.device_info[SERVICE_TYPE])
 
@@ -48,7 +48,7 @@ def connected_station() -> ConnectedStationInfo:
 def firmware_update() -> UpdateFirmwareCheck:
     """Generate mocked firmware update message."""
     update = UpdateFirmwareCheck()
-    update.result = "UPDATE_NOT_AVAILABLE"
+    update.result = UpdateFirmwareCheck.UPDATE_NOT_AVAILABLE
     update.new_firmware_version = ""
     return update
 

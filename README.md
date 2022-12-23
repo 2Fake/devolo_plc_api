@@ -1,6 +1,6 @@
 # devolo PLC API
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/2Fake/devolo_plc_api/Python%20package)](https://github.com/2Fake/devolo_plc_api/actions?query=workflow%3A%22Python+package%22)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/2Fake/devolo_plc_api/pythonpackage.yml?branch=main)](https://github.com/2Fake/devolo_plc_api/actions?query=workflow%3A%22Python+package%22)
 [![PyPI - Downloads](https://img.shields.io/pypi/dd/devolo-plc-api)](https://pypi.org/project/devolo-plc-api/)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/2Fake/devolo_plc_api)](https://codeclimate.com/github/2Fake/devolo_plc_api)
 [![Coverage Status](https://coveralls.io/repos/github/2Fake/devolo_plc_api/badge.svg?branch=development)](https://coveralls.io/github/2Fake/devolo_plc_api?branch=development)
@@ -97,6 +97,11 @@ The following devolo devices were queried with at least one call to verify funct
 * Magic 1 WiFi mini
 * Magic 1 WiFi 2-1
 * Magic 1 LAN 1-1
+* Repeater 5400
+* Repeater 3000
+* Repeater 1200
+* Repeater ac+
+* Repeater ac
 * dLAN 1200+ WiFi ac
 * dLAN 550+ Wifi
 * dLAN 550 WiFi
