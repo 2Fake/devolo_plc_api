@@ -58,7 +58,7 @@ def _add(
         return
 
     info = Device.info_from_service(service_info)
-    if not info or info.properties["MT"] in ("2600", "2601"):
+    if info is None or info.properties["MT"] in ("2600", "2601"):
         return  # Don't react on devolo Home Control central units
 
     devices[info.properties["SN"]] = Device(ip=str(ip_address(info.address)), zeroconf_instance=zeroconf)
