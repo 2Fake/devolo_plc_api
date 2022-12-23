@@ -3,7 +3,6 @@ from importlib.metadata import PackageNotFoundError, version
 
 from .device import Device
 
-
 try:
     __version__ = version("devolo_plc_api")
 except PackageNotFoundError:
