@@ -24,7 +24,7 @@ from .. import TestData
 @pytest_asyncio.fixture()
 async def device_api(test_data: TestData, feature: str) -> AsyncGenerator[DeviceApi, None]:
     """Yield prepared DeviceApi object."""
-    test_data.device_info[SERVICE_TYPE]["properties"]["Features"] = feature
+    test_data.device_info[SERVICE_TYPE].properties["Features"] = feature
     async with AsyncClient() as client:
         yield DeviceApi(test_data.ip, client, test_data.device_info[SERVICE_TYPE])
 

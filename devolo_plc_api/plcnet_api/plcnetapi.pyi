@@ -4,13 +4,13 @@ isort:skip_file
 """
 from __future__ import annotations
 from . import getnetworkoverview_pb2
-from ..clients.protobuf import Protobuf
+from ..clients import Protobuf
+from ..zeroconf import ZeroconfServiceInfo as ZeroconfServiceInfo
 from httpx import AsyncClient as AsyncClient
-from typing import Any
 
 class PlcNetApi(Protobuf):
     password: str
-    def __init__(self, ip: str, session: AsyncClient, info: dict[str, Any]) -> None: ...
+    def __init__(self, ip: str, session: AsyncClient, info: ZeroconfServiceInfo) -> None: ...
     async def async_get_network_overview(self) -> getnetworkoverview_pb2.GetNetworkOverview.LogicalNetwork: ...
     async def async_identify_device_start(self) -> bool: ...
     async def async_identify_device_stop(self) -> bool: ...

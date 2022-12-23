@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 import functools
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import TYPE_CHECKING, Callable, TypeVar
 
 from httpx import AsyncClient
 
-from ..clients.protobuf import Protobuf
+from ..clients import Protobuf
 from ..exceptions.feature import FeatureNotSupported
+from ..zeroconf import ZeroconfServiceInfo
 from . import factoryreset_pb2, ledsettings_pb2, restart_pb2, updatefirmware_pb2, wifinetwork_pb2
 
 if TYPE_CHECKING:
@@ -44,18 +45,18 @@ class DeviceApi(Protobuf):
     :param info: Information collected from the mDNS query
     """
 
-    def __init__(self, ip: str, session: AsyncClient, info: dict[str, Any]) -> None:
+    def __init__(self, ip: str, session: AsyncClient, info: ZeroconfServiceInfo) -> None:
         super().__init__()
 
         self._ip = ip
         # HC gateway has no Path, it has a path.
-        self._path = info["properties"].get("Path") or info["properties"].get("path")
-        self._port = info["port"]
+        self._path = info.properties.get("Path") or info.properties.get("path")
+        self._port = info.port
         self._session = session
         self._user = "devolo"
-        self._version = info["properties"]["Version"]
+        self._version = info.properties["Version"]
 
-        features: str = info["properties"].get("Features", "")
+        features: str = info.properties.get("Features", "")
         self.features = features.split(",") if features else ["reset", "update", "led", "intmtg"]
         self.password = ""
 

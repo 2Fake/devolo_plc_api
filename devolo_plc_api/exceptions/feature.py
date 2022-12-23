@@ -1,4 +1,4 @@
-"""Exceptions that can occur when determing features."""
+"""Exceptions that can occur when determining features."""
 
 
 class FeatureNotSupported(Exception):

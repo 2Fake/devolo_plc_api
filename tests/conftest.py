@@ -18,10 +18,25 @@ pytest_plugins = [
 ]
 
 
+def pytest_configure(config: pytest.Config):
+    """Configure pytest."""
+    config.addinivalue_line("markers", "allow_sleep: mark tests that are allowed to sleep")
+
+
 @pytest.fixture(scope="session")
 def test_data() -> TestData:
     """Load test data."""
     return load_test_data()
+
+
+@pytest.fixture(name="sleep", autouse=True)
+def patch_sleep(request: pytest.FixtureRequest) -> Generator[AsyncMock | None, None, None]:
+    """Don't sleep anywhere except if marked as allowed."""
+    if "allow_sleep" not in request.keywords:
+        with patch("time.sleep"), patch("asyncio.sleep") as sleep:
+            yield sleep
+    else:
+        yield None
 
 
 @pytest.fixture()

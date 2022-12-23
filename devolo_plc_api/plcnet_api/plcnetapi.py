@@ -1,11 +1,10 @@
 """Implementation of the devolo plcnet API."""
 from __future__ import annotations
 
-from typing import Any
-
 from httpx import AsyncClient
 
-from ..clients.protobuf import Protobuf
+from ..clients import Protobuf
+from ..zeroconf import ZeroconfServiceInfo
 from . import getnetworkoverview_pb2, identifydevice_pb2, pairdevice_pb2, setuserdevicename_pb2
 
 
@@ -19,16 +18,16 @@ class PlcNetApi(Protobuf):
     :param info: Information collected from the mDNS query
     """
 
-    def __init__(self, ip: str, session: AsyncClient, info: dict[str, Any]) -> None:
+    def __init__(self, ip: str, session: AsyncClient, info: ZeroconfServiceInfo) -> None:
         super().__init__()
 
         self._ip = ip
-        self._mac = info["properties"]["PlcMacAddress"]
-        self._path = info["properties"]["Path"]
-        self._port = info["port"]
+        self._mac = info.properties["PlcMacAddress"]
+        self._path = info.properties["Path"]
+        self._port = info.port
         self._session = session
         self._user = ""  # PLC API is not password protected.
-        self._version = info["properties"]["Version"]
+        self._version = info.properties["Version"]
 
         self.password = ""  # PLC API is not password protected.
 

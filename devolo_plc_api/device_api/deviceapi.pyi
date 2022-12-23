@@ -4,14 +4,14 @@ isort:skip_file
 """
 from __future__ import annotations
 from . import updatefirmware_pb2, wifinetwork_pb2
-from ..clients.protobuf import Protobuf
+from ..clients import Protobuf
+from ..zeroconf import ZeroconfServiceInfo as ZeroconfServiceInfo
 from httpx import AsyncClient as AsyncClient
-from typing import Any
 
 class DeviceApi(Protobuf):
     features: list[str]
     password: str
-    def __init__(self, ip: str, session: AsyncClient, info: dict[str, Any]) -> None: ...
+    def __init__(self, ip: str, session: AsyncClient, info: ZeroconfServiceInfo) -> None: ...
     async def async_get_led_setting(self) -> bool: ...
     async def async_set_led_setting(self, enable: bool) -> bool: ...
     async def async_get_wifi_repeated_access_points(self) -> list[wifinetwork_pb2.WifiRepeatedAPsGet.RepeatedAPInfo]: ...
