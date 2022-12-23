@@ -8,8 +8,6 @@ from abc import ABC, abstractmethod
 from http import HTTPStatus
 from typing import Any, Callable
 
-from google.protobuf.json_format import MessageToDict
-from google.protobuf.message import Message
 from httpx import (
     AsyncClient,
     ConnectError,

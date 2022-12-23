@@ -10,6 +10,8 @@ from zeroconf import ServiceStateChange, Zeroconf
 class MockServiceBrowser:
     """Mock of the ServiceBrowser."""
 
+    _async_start = AsyncMock()
+    _async_cancel = AsyncMock()
     async_cancel = AsyncMock()
     cancel = Mock()
 

@@ -167,9 +167,7 @@ class TestDevice:
         """Test that the mDNS service browser times out after 3 seconds."""
         mock_device._info["_http._tcp.local."] = EMPTY_INFO
         await mock_device.async_connect()
-        with patch("devolo_plc_api.device.AsyncServiceBrowser._async_start"), patch(
-            "devolo_plc_api.device.AsyncServiceBrowser._async_cancel"
-        ), patch("asyncio.sleep") as sleep:
+        with patch("asyncio.sleep") as sleep:
             await mock_device._get_zeroconf_info("_http._tcp.local.")
             assert sleep.call_count == 300
 

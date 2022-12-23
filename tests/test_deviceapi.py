@@ -1,6 +1,5 @@
 """Test communicating with a the device API."""
 from __future__ import annotations
-from typing import Any
 
 import pytest
 from pytest_httpx import HTTPXMock

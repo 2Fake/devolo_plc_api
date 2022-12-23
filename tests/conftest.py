@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from . import TestData, load_test_data
+from .mocks.mock_zeroconf import MockServiceBrowser
 
 pytest_plugins = [
     "tests.fixtures.device",
@@ -26,9 +27,13 @@ def test_data() -> TestData:
 @pytest.fixture()
 def block_communication() -> Generator[None, None, None]:
     """Block external communication."""
-    with patch("devolo_plc_api.device.AsyncZeroconf", new=AsyncMock), patch(
-        "devolo_plc_api.device.httpx.AsyncClient", new=AsyncMock
-    ), patch("devolo_plc_api.network.Zeroconf"):
+    with patch("devolo_plc_api.device.AsyncZeroconf", AsyncMock), patch(
+        "devolo_plc_api.device.httpx.AsyncClient", AsyncMock
+    ), patch("devolo_plc_api.device.AsyncServiceBrowser", MockServiceBrowser), patch(
+        "devolo_plc_api.device.AsyncServiceInfo"
+    ), patch(
+        "devolo_plc_api.network.Zeroconf"
+    ):
         yield
 
 

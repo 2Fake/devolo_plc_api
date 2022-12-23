@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from secrets import randbelow
-from typing import Any, AsyncGenerator, Generator
+from typing import AsyncGenerator, Generator
 from unittest.mock import patch
 
 import pytest
@@ -48,7 +48,7 @@ def connected_station() -> ConnectedStationInfo:
 def firmware_update() -> UpdateFirmwareCheck:
     """Generate mocked firmware update message."""
     update = UpdateFirmwareCheck()
-    update.result = "UPDATE_NOT_AVAILABLE"
+    update.result = UpdateFirmwareCheck.UPDATE_NOT_AVAILABLE
     update.new_firmware_version = ""
     return update
 
