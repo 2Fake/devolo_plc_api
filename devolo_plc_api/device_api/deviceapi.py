@@ -49,7 +49,6 @@ def _feature(
     return feature_decorator
 
 
-# Issue: https://github.com/PyCQA/pylint/issues/4987
 class DeviceApi(Protobuf):
     """
     Implementation of the devolo device API.
