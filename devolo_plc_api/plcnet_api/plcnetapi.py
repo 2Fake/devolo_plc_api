@@ -11,7 +11,6 @@ from .pairdevice_pb2 import PairDeviceResponse, PairDeviceStart
 from .setuserdevicename_pb2 import SetUserDeviceName, SetUserDeviceNameResponse
 
 
-# Issue: https://github.com/PyCQA/pylint/issues/4987
 class PlcNetApi(Protobuf):
     """
     Implementation of the devolo plcnet API.
