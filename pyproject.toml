@@ -70,6 +70,6 @@ good-names = "e,ip"
 asyncio_mode = "auto"
 
 [tool.setuptools]
-packages = { find = {exclude=["docs*", "tests*"]} }
+packages = { find = {exclude=["docs*", "script*", "tests*"]} }
 
 [tool.setuptools_scm]

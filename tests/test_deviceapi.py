@@ -42,16 +42,14 @@ class TestDeviceApi:
         """Test getting LED settings asynchronously."""
         led_setting_get = LedSettingsGet(state=LedSettingsGet.LED_ON)
         httpx_mock.add_response(content=led_setting_get.SerializeToString())
-        led_setting = await device_api.async_get_led_setting()
-        assert led_setting
+        assert await device_api.async_get_led_setting()
 
     @pytest.mark.parametrize("feature", ["led"])
     def test_get_led_setting(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test getting LED settings synchronously."""
         led_setting_get = LedSettingsGet(state=LedSettingsGet.LED_ON)
         httpx_mock.add_response(content=led_setting_get.SerializeToString())
-        led_setting = device_api.get_led_setting()
-        assert led_setting
+        assert device_api.get_led_setting()
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["led"])

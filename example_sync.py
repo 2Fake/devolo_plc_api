@@ -31,7 +31,7 @@ def run():
 
         # Check for new firmware versions
         firmware = dpa.device.check_firmware_available()
-        print(firmware.result)  # UpdateFirmwareCheck.UPDATE_NOT_AVAILABLE
+        print(firmware.result)  # devolo_plc_api.device_api.UPDATE_NOT_AVAILABLE
         print(firmware.new_firmware_version)  # ""
 
         # Start firmware update, if new version is available. Important: The response does not tell you anything about the
@@ -42,8 +42,8 @@ def run():
         # connection rates.
         connected_stations = dpa.device.get_wifi_connected_station()
         print(connected_stations[0].mac_address)  # "AA:BB:CC:DD:EE:FF"
-        print(connected_stations[0].vap_type)  # "WIFI_VAP_MAIN_AP"
-        print(connected_stations[0].band)  # "WIFI_BAND_5G"
+        print(connected_stations[0].vap_type)  # devolo_plc_api.device_api.WIFI_VAP_MAIN_AP
+        print(connected_stations[0].band)  # devolo_plc_api.device_api.WIFI_BAND_5G
         print(connected_stations[0].rx_rate)  # 87800
         print(connected_stations[0].tx_rate)  # 87800
 
@@ -65,7 +65,7 @@ def run():
         neighbor_aps = dpa.device.get_wifi_neighbor_access_points()
         print(neighbor_aps[0].mac_address)  # "AA:BB:CC:DD:EE:FF"
         print(neighbor_aps[0].ssid)  # "wifi"
-        print(neighbor_aps[0].band)  # "WIFI_BAND_2G"
+        print(neighbor_aps[0].band)  # devolo_plc_api.device_api.WIFI_BAND_2G
         print(neighbor_aps[0].channel)  # 1
         print(neighbor_aps[0].signal)  # -73
         print(neighbor_aps[0].signal_bars)  # 1
@@ -85,8 +85,8 @@ def run():
         print(network.devices[0].full_version)  # "magic-2-wifi-next 7.12.5.124_2022-08-29"
         print(network.devices[0].user_device_name)  # "Living Room"
         print(network.devices[0].mac_address)  # "AABBCCDDEEFF"
-        print(network.devices[0].topology)  # devolo_plc_api.plcnet_api.Device.LOCAL
-        print(network.devices[0].technology)  # devolo_plc_api.plcnet_api.Device.GHN_SPIRIT
+        print(network.devices[0].topology)  # devolo_plc_api.plcnet_api.LOCAL
+        print(network.devices[0].technology)  # devolo_plc_api.plcnet_api.GHN_SPIRIT
         print(network.devices[0].bridged_devices)  # []
         print(network.devices[0].attached_to_router)  # True
         print(network.devices[0].user_network_name)  # ""
