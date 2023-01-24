@@ -4,10 +4,11 @@ from __future__ import annotations
 import pytest
 from pytest_httpx import HTTPXMock
 
-from devolo_plc_api.device_api import ConnectedStationInfo, DeviceApi, NeighborAPInfo, RepeatedAPInfo
+from devolo_plc_api.device_api import ConnectedStationInfo, DeviceApi, NeighborAPInfo, RepeatedAPInfo, SupportInfoItem
 from devolo_plc_api.device_api.factoryreset_pb2 import FactoryResetStart
 from devolo_plc_api.device_api.ledsettings_pb2 import LedSettingsGet, LedSettingsSetResponse
 from devolo_plc_api.device_api.restart_pb2 import RestartResponse, UptimeGetResponse
+from devolo_plc_api.device_api.support_pb2 import SupportInfoDump, SupportInfoDumpResponse
 from devolo_plc_api.device_api.updatefirmware_pb2 import UpdateFirmwareCheck, UpdateFirmwareStart
 from devolo_plc_api.device_api.wifinetwork_pb2 import (
     WifiConnectedStationsGet,
@@ -143,6 +144,21 @@ class TestDeviceApi:
         uptime = UptimeGetResponse(uptime=runtime)
         httpx_mock.add_response(content=uptime.SerializeToString())
         assert device_api.uptime() == runtime
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("feature", ["support"])
+    async def test_async_get_support_info(self, device_api: DeviceApi, httpx_mock: HTTPXMock, support_item: SupportInfoItem):
+        """Test getting a device's support information asynchronously."""
+        support_info = SupportInfoDumpResponse(info=SupportInfoDump(items=[support_item]))
+        httpx_mock.add_response(content=support_info.SerializeToString())
+        assert await device_api.async_get_support_info() == support_info.info
+
+    @pytest.mark.parametrize("feature", ["support"])
+    def test_get_support_info(self, device_api: DeviceApi, httpx_mock: HTTPXMock, support_item: SupportInfoItem):
+        """Test getting a device's support information synchronously."""
+        support_info = SupportInfoDumpResponse(info=SupportInfoDump(items=[support_item]))
+        httpx_mock.add_response(content=support_info.SerializeToString())
+        assert device_api.get_support_info() == support_info.info
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["update"])

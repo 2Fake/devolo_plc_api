@@ -2,6 +2,7 @@
 import re
 
 from .deviceapi import DeviceApi
+from .support_pb2 import SupportInfoDump
 from .updatefirmware_pb2 import UpdateFirmwareCheck
 from .wifinetwork_pb2 import (
     WIFI_BAND_2G,
@@ -23,12 +24,14 @@ UPDATE_NOT_AVAILABLE = UpdateFirmwareCheck.UPDATE_NOT_AVAILABLE
 RepeatedAPInfo = WifiRepeatedAPsGet.RepeatedAPInfo
 ConnectedStationInfo = WifiConnectedStationsGet.ConnectedStationInfo
 NeighborAPInfo = WifiNeighborAPsGet.NeighborAPInfo
+SupportInfoItem = SupportInfoDump.SupportInfoItem
 
 __all__ = [
     "ConnectedStationInfo",
     "DeviceApi",
     "NeighborAPInfo",
     "RepeatedAPInfo",
+    "SupportInfoItem",
     "WifiGuestAccessGet",
     "CONFIGLAYER_FORMAT",
     "SERVICE_TYPE",

@@ -15,6 +15,7 @@ from devolo_plc_api.device_api import (
     DeviceApi,
     NeighborAPInfo,
     RepeatedAPInfo,
+    SupportInfoItem,
     UpdateFirmwareCheck,
 )
 
@@ -73,3 +74,9 @@ def repeated_ap() -> RepeatedAPInfo:
 def runtime() -> int:
     """Generate mocked runtime of a device."""
     return randbelow(65536)
+
+
+@pytest.fixture(scope="session")
+def support_item() -> SupportInfoItem:
+    """Generate mocked support information."""
+    return SupportInfoItem(label="test", content=b"test")
