@@ -10,10 +10,12 @@ LOCAL = GetNetworkOverview.Device.LOCAL
 REMOTE = GetNetworkOverview.Device.REMOTE
 SERVICE_TYPE = "_dvl-plcnetapi._tcp.local."
 
+DataRate = GetNetworkOverview.DataRate
 Device = GetNetworkOverview.Device
 LogicalNetwork = GetNetworkOverview.LogicalNetwork
 
 __all__ = [
+    "DataRate",
     "Device",
     "LogicalNetwork",
     "PlcNetApi",
