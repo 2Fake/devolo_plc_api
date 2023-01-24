@@ -31,6 +31,9 @@ async def run():
         # Get uptime of the device. This value can only be used as a strict monotonically increasing number and therefore has no unit.
         print(await dpa.device.async_uptime())
 
+        # Get support information from the device.
+        print(await dpa.device.async_get_support_info())
+
         # Check for new firmware versions
         firmware = await dpa.device.async_check_firmware_available()
         print(firmware.result)  # devolo_plc_api.device_api.UPDATE_NOT_AVAILABLE
@@ -83,7 +86,6 @@ async def run():
         print(network.devices[0].product_name)  # "devolo Magic 2 WiFi next"
         print(network.devices[0].product_id)  # "MT3056"
         print(network.devices[0].friendly_version)  # "7.12.5.124"
-        print(network.devices[0].full_version)  # "magic-2-wifi-next 7.12.5.124_2022-08-29"
         print(network.devices[0].full_version)  # "magic-2-wifi-next 7.12.5.124_2022-08-29"
         print(network.devices[0].user_device_name)  # "Living Room"
         print(network.devices[0].mac_address)  # "AABBCCDDEEFF"

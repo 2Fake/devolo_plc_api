@@ -12,6 +12,7 @@ from ..zeroconf import ZeroconfServiceInfo
 from .factoryreset_pb2 import FactoryResetStart
 from .ledsettings_pb2 import LedSettingsGet, LedSettingsSet, LedSettingsSetResponse
 from .restart_pb2 import RestartResponse, UptimeGetResponse
+from .support_pb2 import SupportInfoDump, SupportInfoDumpResponse
 from .updatefirmware_pb2 import UpdateFirmwareCheck, UpdateFirmwareStart
 from .wifinetwork_pb2 import (
     WifiConnectedStationsGet,
@@ -168,6 +169,19 @@ class DeviceApi(Protobuf):
         response = await self._async_get("UptimeGet")
         uptime.ParseFromString(await response.aread())
         return uptime.uptime
+
+    @_feature("support")
+    async def async_get_support_info(self) -> SupportInfoDump:
+        """
+        Get support info from the device. This feature only works on devices, that announce the support feature.
+
+        :return: The support info
+        """
+        self._logger.debug("Get uptime.")
+        support_info = SupportInfoDumpResponse()
+        response = await self._async_get("SupportInfoDump")
+        support_info.ParseFromString(await response.aread())
+        return support_info.info
 
     @_feature("update")
     async def async_check_firmware_available(self) -> UpdateFirmwareCheck:

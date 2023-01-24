@@ -1,4 +1,6 @@
 """The devolo device API."""
+import re
+
 from .deviceapi import DeviceApi
 from .updatefirmware_pb2 import UpdateFirmwareCheck
 from .wifinetwork_pb2 import (
@@ -13,6 +15,7 @@ from .wifinetwork_pb2 import (
     WifiRepeatedAPsGet,
 )
 
+CONFIGLAYER_FORMAT = re.compile(rb"(([A-Z][A-Z0-9._]+)=(.+?))(?=(([A-Z][A-Z0-9._]+)=(.+))|$)", re.DOTALL)
 SERVICE_TYPE = "_dvl-deviceapi._tcp.local."
 UPDATE_AVAILABLE = UpdateFirmwareCheck.UPDATE_AVAILABLE
 UPDATE_NOT_AVAILABLE = UpdateFirmwareCheck.UPDATE_NOT_AVAILABLE
@@ -27,6 +30,7 @@ __all__ = [
     "NeighborAPInfo",
     "RepeatedAPInfo",
     "WifiGuestAccessGet",
+    "CONFIGLAYER_FORMAT",
     "SERVICE_TYPE",
     "UPDATE_AVAILABLE",
     "UPDATE_NOT_AVAILABLE",
