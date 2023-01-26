@@ -10,10 +10,10 @@ from devolo_plc_api.device_api import SERVICE_TYPE as DEVICEAPI, DeviceApi
 from devolo_plc_api.exceptions.device import DeviceNotFound
 from devolo_plc_api.plcnet_api import DEVICES_WITHOUT_PLCNET, SERVICE_TYPE as PLCNETAPI, PlcNetApi
 from devolo_plc_api.zeroconf import ZeroconfServiceInfo
-from tests.mocks.mock_zeroconf import MockServiceBrowser
 
 from . import TestData
 from .mocks.mock_device import state_change
+from .mocks.mock_zeroconf import MockServiceBrowser
 from .stubs.zeroconf import StubAsyncServiceInfo
 
 
