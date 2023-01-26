@@ -6,9 +6,10 @@ from typing import TYPE_CHECKING, Callable, TypeVar
 
 from httpx import AsyncClient
 
-from ..clients import Protobuf
-from ..exceptions.feature import FeatureNotSupported
-from ..zeroconf import ZeroconfServiceInfo
+from devolo_plc_api.clients import Protobuf
+from devolo_plc_api.exceptions.feature import FeatureNotSupported
+from devolo_plc_api.zeroconf import ZeroconfServiceInfo
+
 from .factoryreset_pb2 import FactoryResetStart
 from .ledsettings_pb2 import LedSettingsGet, LedSettingsSet, LedSettingsSetResponse
 from .restart_pb2 import RestartResponse, UptimeGetResponse

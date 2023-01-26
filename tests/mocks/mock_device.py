@@ -1,7 +1,7 @@
 """Mock methods from the Device class."""
 from typing import Any
 
-from .. import load_test_data
+from tests import load_test_data
 
 
 # pylint: disable=protected-access, unused-argument

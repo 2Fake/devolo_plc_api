@@ -3,9 +3,9 @@
 isort:skip_file
 """
 from __future__ import annotations
-from ..clients import Protobuf
-from ..zeroconf import ZeroconfServiceInfo as ZeroconfServiceInfo
 from .getnetworkoverview_pb2 import GetNetworkOverview
+from devolo_plc_api.clients import Protobuf
+from devolo_plc_api.zeroconf import ZeroconfServiceInfo as ZeroconfServiceInfo
 from httpx import AsyncClient as AsyncClient
 
 class PlcNetApi(Protobuf):

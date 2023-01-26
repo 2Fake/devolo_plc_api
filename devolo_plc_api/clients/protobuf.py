@@ -19,7 +19,7 @@ from httpx import (
     Response,
 )
 
-from ..exceptions.device import DevicePasswordProtected, DeviceUnavailable
+from devolo_plc_api.exceptions.device import DevicePasswordProtected, DeviceUnavailable
 
 TIMEOUT = 10.0
 

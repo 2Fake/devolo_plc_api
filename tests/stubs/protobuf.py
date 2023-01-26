@@ -4,7 +4,7 @@ from httpx import AsyncClient
 from devolo_plc_api.clients import Protobuf
 from devolo_plc_api.plcnet_api import SERVICE_TYPE
 
-from .. import load_test_data
+from tests import load_test_data
 
 
 class StubProtobuf(Protobuf):
