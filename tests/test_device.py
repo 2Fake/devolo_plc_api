@@ -25,11 +25,13 @@ class TestDevice:
     """Test devolo_plc_api.device.Device class."""
 
     @pytest.mark.parametrize("feature", [""])
-    def test_set_password(self, mock_device: Device, device_api: DeviceApi):
+    def test_set_password(self, mock_device: Device, device_api: DeviceApi, plcnet_api: PlcNetApi):
         """Test setting a device password is also reflected in the device API."""
         mock_device.device = device_api
+        mock_device.plcnet = plcnet_api
         mock_device.password = "super_secret"
         assert mock_device.device.password == "super_secret"
+        assert mock_device.plcnet.password == "super_secret"
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", [""])

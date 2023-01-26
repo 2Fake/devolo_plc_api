@@ -104,6 +104,8 @@ class Device:  # pylint: disable=too-many-instance-attributes
         self._password = password
         if self.device:
             self.device.password = password
+        if self.plcnet:
+            self.plcnet.password = password
 
     async def async_connect(self, session_instance: httpx.AsyncClient | None = None) -> None:
         """
@@ -168,6 +170,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
             self.mac = self._info[service_type].properties["PlcMacAddress"]
             self.technology = self._info[service_type].properties.get("PlcTechnology", "")
             self.plcnet = PlcNetApi(ip=self.ip, session=self._session, info=self._info[service_type])
+            self.plcnet.password = self.password
 
     async def _get_zeroconf_info(self, service_type: str) -> None:
         """Browse for the desired mDNS service types and query them."""
