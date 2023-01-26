@@ -67,21 +67,21 @@ class Device:  # pylint: disable=too-many-instance-attributes
             self._logger.warning("Please disconnect properly from the device.")
 
     async def __aenter__(self) -> Device:
-        """Connect to a device asynchronously."""
+        """Connect to a device asynchronously when entering a context manager."""
         await self.async_connect()
         return self
 
     async def __aexit__(self, exc_type: type | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
-        """Disconnect to a device asynchronously."""
+        """Disconnect to a device asynchronously when entering a context manager."""
         await self.async_disconnect()
 
     def __enter__(self) -> Device:
-        """Connect to a device synchronously."""
+        """Connect to a device synchronously when leaving a context manager."""
         self.connect()
         return self
 
     def __exit__(self, exc_type: type | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
-        """Disconnect to a device synchronously."""
+        """Disconnect to a device synchronously when leaving a context manager."""
         self.disconnect()
 
     @property
