@@ -13,12 +13,9 @@ import httpx
 from zeroconf import DNSQuestionType, ServiceInfo, ServiceStateChange, Zeroconf
 from zeroconf.asyncio import AsyncServiceBrowser, AsyncServiceInfo, AsyncZeroconf
 
-from .device_api import SERVICE_TYPE as DEVICEAPI
-from .device_api import DeviceApi
+from .device_api import SERVICE_TYPE as DEVICEAPI, DeviceApi
 from .exceptions.device import DeviceNotFound
-from .plcnet_api import DEVICES_WITHOUT_PLCNET
-from .plcnet_api import SERVICE_TYPE as PLCNETAPI
-from .plcnet_api import PlcNetApi
+from .plcnet_api import DEVICES_WITHOUT_PLCNET, SERVICE_TYPE as PLCNETAPI, PlcNetApi
 from .zeroconf import ZeroconfServiceInfo
 
 
