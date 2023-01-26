@@ -62,7 +62,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
         self._zeroconf: AsyncZeroconf
 
     def __del__(self) -> None:
-        """Warn user, it the connection was not properly closed."""
+        """Warn user, if the connection was not properly closed."""
         if self._connected and self._session_instance is None:
             self._logger.warning("Please disconnect properly from the device.")
 
