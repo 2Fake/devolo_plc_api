@@ -28,10 +28,10 @@ class PlcNetApi(Protobuf):
         self._path = info.properties["Path"]
         self._port = info.port
         self._session = session
-        self._user = ""  # PLC API is not password protected.
+        self._user = "devolo"
         self._version = info.properties["Version"]
 
-        self.password = ""  # PLC API is not password protected.
+        self.password = ""
 
     async def async_get_network_overview(self) -> GetNetworkOverview.LogicalNetwork:
         """

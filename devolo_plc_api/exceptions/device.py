@@ -10,4 +10,4 @@ class DeviceUnavailable(Exception):
 
 
 class DevicePasswordProtected(Exception):
-    """The device is passwort protected."""
+    """The device is password protected."""
