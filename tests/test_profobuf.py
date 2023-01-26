@@ -85,7 +85,7 @@ class TestProtobuf:
         await mock_device.async_connect()
         assert mock_device.device
         with pytest.raises(HTTPStatusError):
-            await mock_device.device.async_get_wifi_connected_station()
+            await mock_device.device.async_set_wifi_guest_access(True)
         await mock_device.async_disconnect()
 
     @pytest.mark.asyncio

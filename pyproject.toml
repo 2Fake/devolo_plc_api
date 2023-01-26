@@ -45,6 +45,7 @@ line-length = 127
 force-exclude = '.*_pb2\.py|.*\.pyi'
 
 [tool.isort]
+combine_as_imports = true
 filter_files = true
 ignore_whitespace = true
 line_length = 127
