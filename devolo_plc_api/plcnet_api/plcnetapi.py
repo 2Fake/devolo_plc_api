@@ -21,6 +21,7 @@ class PlcNetApi(Protobuf):
     """
 
     def __init__(self, ip: str, session: AsyncClient, info: ZeroconfServiceInfo) -> None:
+        """Initialize the plcnet API."""
         super().__init__()
 
         self._ip = ip

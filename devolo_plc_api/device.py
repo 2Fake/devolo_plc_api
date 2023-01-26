@@ -34,6 +34,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
         ip: str,
         zeroconf_instance: AsyncZeroconf | Zeroconf | None = None,
     ) -> None:
+        """Initialize the device."""
         self.ip = ip
         self.mac = ""
         self.mt_number = "0"
@@ -58,21 +59,26 @@ class Device:  # pylint: disable=too-many-instance-attributes
         self._zeroconf: AsyncZeroconf
 
     def __del__(self) -> None:
+        """Warn user, if the connection was not properly closed."""
         if self._connected and self._session_instance is None:
             self._logger.warning("Please disconnect properly from the device.")
 
     async def __aenter__(self) -> Device:
+        """Connect to a device asynchronously when entering a context manager."""
         await self.async_connect()
         return self
 
     async def __aexit__(self, exc_type: type | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
+        """Disconnect to a device asynchronously when entering a context manager."""
         await self.async_disconnect()
 
     def __enter__(self) -> Device:
+        """Connect to a device synchronously when leaving a context manager."""
         self.connect()
         return self
 
     def __exit__(self, exc_type: type | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
+        """Disconnect to a device synchronously when leaving a context manager."""
         self.disconnect()
 
     @property

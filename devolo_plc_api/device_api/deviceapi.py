@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 def _feature(
     feature: str,
 ) -> Callable[[Callable[Concatenate[DeviceApi, _P], _ReturnT]], Callable[Concatenate[DeviceApi, _P], _ReturnT]]:
-    """Decorator to filter unsupported features before querying the device."""
+    """Filter unsupported features before querying the device."""
 
     def feature_decorator(method: Callable[Concatenate[DeviceApi, _P], _ReturnT]) -> Callable[..., _ReturnT]:
         @functools.wraps(method)
@@ -60,6 +60,7 @@ class DeviceApi(Protobuf):
     """
 
     def __init__(self, ip: str, session: AsyncClient, info: ZeroconfServiceInfo) -> None:
+        """Initialize the device API."""
         super().__init__()
 
         self._ip = ip
@@ -133,7 +134,7 @@ class DeviceApi(Protobuf):
     @_feature("reset")
     async def async_factory_reset(self) -> bool:
         """
-        Factory reset the device. This feature only works on devices, that announce the reset feature.
+        Factory-reset the device. This feature only works on devices, that announce the reset feature.
 
         :return: True if reset is started, otherwise False
         """

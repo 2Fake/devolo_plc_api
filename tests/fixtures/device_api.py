@@ -1,4 +1,4 @@
-"""Fixture for device API tests."""
+"""Fixtures for device API tests."""
 from __future__ import annotations
 
 from secrets import randbelow
@@ -24,7 +24,7 @@ from .. import TestData
 
 @pytest_asyncio.fixture()
 async def device_api(test_data: TestData, feature: str) -> AsyncGenerator[DeviceApi, None]:
-    """Yield prepared DeviceApi object."""
+    """Yield a prepared DeviceApi object."""
     test_data.device_info[SERVICE_TYPE].properties["Features"] = feature
     async with AsyncClient() as client:
         yield DeviceApi(test_data.ip, client, test_data.device_info[SERVICE_TYPE])
@@ -32,14 +32,14 @@ async def device_api(test_data: TestData, feature: str) -> AsyncGenerator[Device
 
 @pytest.fixture()
 def mock_device_api() -> Generator[None, None, None]:
-    """Mock DeviceApi object."""
+    """Mock a DeviceApi object."""
     with patch("devolo_plc_api.device_api.deviceapi.DeviceApi"):
         yield
 
 
 @pytest.fixture(scope="session")
 def connected_station() -> ConnectedStationInfo:
-    """Generate mocked answer of a connected wifi station."""
+    """Generate a mocked answer of a connected wifi station."""
     station = ConnectedStationInfo()
     station.mac_address = "aa:bb:cc:dd:ee:ff"
     return station
@@ -47,7 +47,7 @@ def connected_station() -> ConnectedStationInfo:
 
 @pytest.fixture(scope="session")
 def firmware_update() -> UpdateFirmwareCheck:
-    """Generate mocked firmware update message."""
+    """Generate a mocked firmware update message."""
     update = UpdateFirmwareCheck()
     update.result = UpdateFirmwareCheck.UPDATE_NOT_AVAILABLE
     update.new_firmware_version = ""
@@ -56,7 +56,7 @@ def firmware_update() -> UpdateFirmwareCheck:
 
 @pytest.fixture(scope="session")
 def neighbor_ap() -> NeighborAPInfo:
-    """Generate mocked answer of a neighbor access point."""
+    """Generate a mocked answer of a neighbor access point."""
     ap = NeighborAPInfo()
     ap.mac_address = "aa:bb:cc:dd:ee:ff"
     return ap
@@ -64,7 +64,7 @@ def neighbor_ap() -> NeighborAPInfo:
 
 @pytest.fixture(scope="session")
 def repeated_ap() -> RepeatedAPInfo:
-    """Generate mocked answer of a repeated access point."""
+    """Generate a mocked answer of a repeated access point."""
     ap = RepeatedAPInfo()
     ap.mac_address = "aa:bb:cc:dd:ee:ff"
     return ap
@@ -72,7 +72,7 @@ def repeated_ap() -> RepeatedAPInfo:
 
 @pytest.fixture(scope="session")
 def runtime() -> int:
-    """Generate mocked runtime of a device."""
+    """Generate a mocked runtime of a device."""
     return randbelow(65536)
 
 

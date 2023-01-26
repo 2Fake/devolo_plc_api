@@ -1,4 +1,4 @@
-"""Fixture for protobuf tests."""
+"""Fixtures for protobuf tests."""
 from typing import AsyncGenerator
 
 import pytest_asyncio
