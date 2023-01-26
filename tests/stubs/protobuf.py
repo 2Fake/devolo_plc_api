@@ -11,6 +11,7 @@ class StubProtobuf(Protobuf):
     """Protobuf object with pre-filled information."""
 
     def __init__(self) -> None:
+        """Initialize the client."""
         test_data = load_test_data()
         super().__init__()
         self._ip = test_data.ip

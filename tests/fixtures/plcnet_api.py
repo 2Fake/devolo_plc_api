@@ -1,4 +1,4 @@
-"""Fixture for plcnet API tests."""
+"""Fixtures for plcnet API tests."""
 from typing import AsyncGenerator, Generator
 from unittest.mock import patch
 
@@ -13,19 +13,19 @@ from .. import TestData
 
 @pytest_asyncio.fixture()
 async def plcnet_api(test_data: TestData) -> AsyncGenerator[PlcNetApi, None]:
-    """Yield prepared PlcNetApi object."""
+    """Yield a prepared PlcNetApi object."""
     async with AsyncClient() as client:
         yield PlcNetApi(test_data.ip, client, test_data.device_info[SERVICE_TYPE])
 
 
 @pytest.fixture()
 def mock_plcnet_api() -> Generator[None, None, None]:
-    """Mock PlcNetApi object."""
+    """Mock a PlcNetApi object."""
     with patch("devolo_plc_api.plcnet_api.plcnetapi.PlcNetApi"):
         yield
 
 
 @pytest.fixture()
 def network() -> LogicalNetwork:
-    """Mock PLC network"""
+    """Mock a PLC network."""
     return LogicalNetwork(devices=[], data_rates=[])

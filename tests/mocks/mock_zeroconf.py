@@ -17,4 +17,5 @@ class MockServiceBrowser:
 
     # pylint: disable=unused-argument
     def __init__(self, zeroconf: Zeroconf, type_: str, handlers: list[Callable], **kwargs: Any) -> None:
+        """Initialize the service browser."""
         handlers[0](zeroconf, type_, type_, ServiceStateChange.Added)

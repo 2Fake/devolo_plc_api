@@ -19,7 +19,7 @@ def mock_async_request() -> Generator[AsyncMock, None, None]:
 
 @pytest.fixture()
 def mock_device(test_data: TestData) -> Generator[Device, None, None]:
-    """Generate device from test data."""
+    """Generate a device from test data."""
     device = Device(ip=test_data.ip)
     device._info = test_data.device_info  # pylint: disable=protected-access
     yield device
@@ -34,7 +34,7 @@ def mock_get_device_info() -> Generator[AsyncMock, None, None]:
 
 @pytest.fixture()
 def mock_get_zeroconf_info() -> Generator[AsyncMock, None, None]:
-    """Patch getting device info."""
+    """Patch getting zeroconf info."""
     with patch("devolo_plc_api.device.Device._get_zeroconf_info") as gzi:
         yield gzi
 

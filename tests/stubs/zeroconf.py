@@ -15,6 +15,7 @@ class StubAsyncServiceInfo(AsyncServiceInfo):
     async_request = AsyncMock()
 
     def __init__(self, service_type: str, name: str) -> None:
+        """Initialize the service info."""
         test_data = load_test_data()
         super().__init__(service_type, name, addresses=[socket.inet_aton(test_data.ip)])
         self.server = test_data.hostname

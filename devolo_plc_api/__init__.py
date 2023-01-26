@@ -1,4 +1,4 @@
-"""devolo PLC API"""
+"""The devolo PLC API."""
 from importlib.metadata import PackageNotFoundError, version
 
 from .device import Device
