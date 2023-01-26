@@ -47,10 +47,8 @@ force-exclude = '.*_pb2\.py|.*\.pyi'
 [tool.isort]
 combine_as_imports = true
 filter_files = true
-ignore_whitespace = true
+forced_separate = ["tests"]
 line_length = 127
-multi_line_output = 1
-order_by_type = true
 profile = "black"
 skip_glob = "*_pb2.py"
 
