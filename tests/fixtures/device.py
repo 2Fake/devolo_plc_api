@@ -1,5 +1,5 @@
 """Fixtures to properly mock a devolo device."""
-from typing import Generator, Type
+from typing import Generator
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
@@ -18,11 +18,11 @@ def mock_async_request() -> Generator[AsyncMock, None, None]:
 
 
 @pytest.fixture()
-def mock_device(test_data: TestData) -> Generator[Device, None, None]:
+def mock_device(test_data: TestData) -> Device:
     """Generate a device from test data."""
     device = Device(ip=test_data.ip)
     device._info = test_data.device_info  # pylint: disable=protected-access
-    yield device
+    return device
 
 
 @pytest.fixture()
@@ -47,7 +47,7 @@ def mock_info_from_service() -> Generator[Mock, None, None]:
 
 
 @pytest.fixture()
-def mock_service_browser() -> Generator[Type[MockServiceBrowser], None, None]:
+def mock_service_browser() -> Generator[type[MockServiceBrowser], None, None]:
     """Patch zeroconf service browser."""
     with patch("devolo_plc_api.device.AsyncServiceBrowser", MockServiceBrowser) as asb:
         asb.async_cancel.reset_mock()

@@ -16,13 +16,14 @@ from .mocks.mock_zeroconf import MockServiceBrowser
 class TestNetwork:
     """Test devolo_plc_api.network functions."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     @pytest.mark.usefixtures("block_communication")
     async def test_async_discover_network(self, test_data: TestData, mock_info_from_service: Mock):
         """Test discovering the network asynchronously."""
         serial_number = test_data.device_info[SERVICE_TYPE].properties["SN"]
         mock_info_from_service.return_value = ZeroconfServiceInfo(
-            address=inet_aton(test_data.ip), properties=test_data.device_info[SERVICE_TYPE].properties
+            address=inet_aton(test_data.ip),
+            properties=test_data.device_info[SERVICE_TYPE].properties,
         )
         discovered = await network.async_discover_network()
         assert serial_number in discovered
@@ -33,7 +34,8 @@ class TestNetwork:
         """Test discovering the network synchronously."""
         serial_number = test_data.device_info[SERVICE_TYPE].properties["SN"]
         mock_info_from_service.return_value = ZeroconfServiceInfo(
-            address=inet_aton(test_data.ip), properties=test_data.device_info[SERVICE_TYPE].properties
+            address=inet_aton(test_data.ip),
+            properties=test_data.device_info[SERVICE_TYPE].properties,
         )
         discovered = network.discover_network()
         assert serial_number in discovered
