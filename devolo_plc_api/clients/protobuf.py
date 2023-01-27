@@ -69,16 +69,24 @@ class Protobuf(ABC):
         self._logger.debug("Posting to %s", url)
         return await self._async_request("POST", url, content, timeout)
 
-    async def _async_request(self, type: str, url: str, content: bytes | None, timeout: float = TIMEOUT) -> Response:
+    async def _async_request(self, method: str, url: str, content: bytes | None, timeout: float = TIMEOUT) -> Response:
         """Request data asynchronously."""
         try:
             response = await self._session.request(
-                type, url, auth=DigestAuth(self._user, self.password), content=content, timeout=timeout
+                method,
+                url,
+                auth=DigestAuth(self._user, self.password),
+                content=content,
+                timeout=timeout,
             )
             if response.status_code == HTTPStatus.UNAUTHORIZED:
                 self.password = hashlib.sha256(self.password.encode("utf-8")).hexdigest()
                 response = await self._session.request(
-                    type, url, auth=DigestAuth(self._user, self.password), content=content, timeout=timeout
+                    method,
+                    url,
+                    auth=DigestAuth(self._user, self.password),
+                    content=content,
+                    timeout=timeout,
                 )
             response.raise_for_status()
         except HTTPStatusError as e:
