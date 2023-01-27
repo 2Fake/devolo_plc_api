@@ -3,11 +3,11 @@
 isort:skip_file
 """
 from __future__ import annotations
-from ..clients import Protobuf
-from ..zeroconf import ZeroconfServiceInfo as ZeroconfServiceInfo
 from .support_pb2 import SupportInfoDump
 from .updatefirmware_pb2 import UpdateFirmwareCheck
 from .wifinetwork_pb2 import WifiConnectedStationsGet, WifiGuestAccessGet, WifiNeighborAPsGet, WifiRepeatedAPsGet
+from devolo_plc_api.clients import Protobuf
+from devolo_plc_api.zeroconf import ZeroconfServiceInfo as ZeroconfServiceInfo
 from httpx import AsyncClient as AsyncClient
 
 class DeviceApi(Protobuf):

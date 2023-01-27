@@ -6,8 +6,8 @@ import pytest
 
 from devolo_plc_api import Device
 
-from .. import TestData
-from ..mocks.mock_zeroconf import MockServiceBrowser
+from tests import TestData
+from tests.mocks.mock_zeroconf import MockServiceBrowser
 
 
 @pytest.fixture()

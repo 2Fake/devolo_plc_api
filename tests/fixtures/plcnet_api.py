@@ -8,7 +8,7 @@ from httpx import AsyncClient
 
 from devolo_plc_api.plcnet_api import SERVICE_TYPE, LogicalNetwork, PlcNetApi
 
-from .. import TestData
+from tests import TestData
 
 
 @pytest_asyncio.fixture()

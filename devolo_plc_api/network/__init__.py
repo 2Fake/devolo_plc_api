@@ -7,8 +7,8 @@ from ipaddress import ip_address
 
 from zeroconf import DNSQuestionType, ServiceBrowser, ServiceStateChange, Zeroconf
 
-from ..device import Device
-from ..device_api import SERVICE_TYPE
+from devolo_plc_api.device import Device
+from devolo_plc_api.device_api import SERVICE_TYPE
 
 
 async def async_discover_network() -> dict[str, Device]:

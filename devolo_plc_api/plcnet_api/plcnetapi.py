@@ -3,8 +3,9 @@ from __future__ import annotations
 
 from httpx import AsyncClient
 
-from ..clients import Protobuf
-from ..zeroconf import ZeroconfServiceInfo
+from devolo_plc_api.clients import Protobuf
+from devolo_plc_api.zeroconf import ZeroconfServiceInfo
+
 from .getnetworkoverview_pb2 import GetNetworkOverview
 from .identifydevice_pb2 import IdentifyDeviceResponse, IdentifyDeviceStart, IdentifyDeviceStop
 from .pairdevice_pb2 import PairDeviceResponse, PairDeviceStart

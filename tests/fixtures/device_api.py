@@ -19,7 +19,7 @@ from devolo_plc_api.device_api import (
     UpdateFirmwareCheck,
 )
 
-from .. import TestData
+from tests import TestData
 
 
 @pytest_asyncio.fixture()
