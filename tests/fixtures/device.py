@@ -1,4 +1,6 @@
 """Fixtures to properly mock a devolo device."""
+from __future__ import annotations
+
 from typing import Generator
 from unittest.mock import AsyncMock, Mock, patch
 
@@ -21,7 +23,7 @@ def mock_async_request() -> Generator[AsyncMock, None, None]:
 def mock_device(test_data: TestData) -> Device:
     """Generate a device from test data."""
     device = Device(ip=test_data.ip)
-    device._info = test_data.device_info  # pylint: disable=protected-access
+    device._info = test_data.device_info
     return device
 
 
