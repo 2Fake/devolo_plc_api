@@ -29,6 +29,8 @@ class Device:  # pylint: disable=too-many-instance-attributes
     :param zeroconf_instance: Zeroconf instance to be potentially reused.
     """
 
+    MDNS_TIMEOUT = 300
+
     def __init__(
         self,
         ip: str,
@@ -188,7 +190,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
             addr=addr,
             question_type=question_type,
         )
-        while not self._info[service_type].properties and counter < 300:
+        while not self._info[service_type].properties and counter < self.MDNS_TIMEOUT:
             counter += 1
             await asyncio.sleep(0.01)
 

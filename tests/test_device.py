@@ -163,7 +163,7 @@ class TestDevice:
         mock_device._info["_http._tcp.local."] = ZeroconfServiceInfo()
         await mock_device.async_connect()
         await mock_device._get_zeroconf_info("_http._tcp.local.")
-        assert sleep.call_count == 300
+        assert sleep.call_count == Device.MDNS_TIMEOUT
 
     @pytest.mark.asyncio
     async def test__get_zeroconf_info_device_info_exists(self, mock_device: Device, mock_service_browser: MockServiceBrowser):
