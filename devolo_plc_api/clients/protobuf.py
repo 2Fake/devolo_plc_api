@@ -61,40 +61,39 @@ class Protobuf(ABC):
         """Query URL asynchronously."""
         url = f"{self.url}{sub_url}"
         self._logger.debug("Getting from %s", url)
-
-        try:
-            response = await self._session.get(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
-            if response.status_code == HTTPStatus.UNAUTHORIZED:
-                self.password = hashlib.sha256(self.password.encode("utf-8")).hexdigest()
-                response = await self._session.get(url, auth=DigestAuth(self._user, self.password), timeout=timeout)
-            response.raise_for_status()
-            return response
-        except HTTPStatusError as e:
-            if e.response.status_code == HTTPStatus.UNAUTHORIZED:
-                raise DevicePasswordProtected("The used password is wrong.") from None
-            raise e
-        except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
-            raise DeviceUnavailable("The device is currently not available. Maybe on standby?") from None
+        return await self._async_request("GET", url, None, timeout)
 
     async def _async_post(self, sub_url: str, content: bytes, timeout: float = TIMEOUT) -> Response:
         """Post data asynchronously."""
         url = f"{self.url}{sub_url}"
         self._logger.debug("Posting to %s", url)
+        return await self._async_request("POST", url, content, timeout)
 
+    async def _async_request(self, method: str, url: str, content: bytes | None, timeout: float = TIMEOUT) -> Response:
+        """Request data asynchronously."""
         try:
-            response = await self._session.post(
-                url, auth=DigestAuth(self._user, self.password), content=content, timeout=timeout
+            response = await self._session.request(
+                method,
+                url,
+                auth=DigestAuth(self._user, self.password),
+                content=content,
+                timeout=timeout,
             )
             if response.status_code == HTTPStatus.UNAUTHORIZED:
                 self.password = hashlib.sha256(self.password.encode("utf-8")).hexdigest()
-                response = await self._session.post(
-                    url, auth=DigestAuth(self._user, self.password), content=content, timeout=timeout
+                response = await self._session.request(
+                    method,
+                    url,
+                    auth=DigestAuth(self._user, self.password),
+                    content=content,
+                    timeout=timeout,
                 )
             response.raise_for_status()
-            return response
         except HTTPStatusError as e:
             if e.response.status_code == HTTPStatus.UNAUTHORIZED:
-                raise DevicePasswordProtected("The used password is wrong.") from None
-            raise e
+                raise DevicePasswordProtected() from None
+            raise
         except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
-            raise DeviceUnavailable("The device is currently not available. Maybe on standby?") from None
+            raise DeviceUnavailable() from None
+        else:
+            return response

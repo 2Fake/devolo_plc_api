@@ -44,7 +44,7 @@ def _feature(
         def wrapper(deviceapi: DeviceApi, *args: _P.args, **kwargs: _P.kwargs) -> _ReturnT:
             if feature in deviceapi.features:
                 return method(deviceapi, *args, **kwargs)
-            raise FeatureNotSupported(f"The device does not support {method.__name__}.")
+            raise FeatureNotSupported(method.__name__)
 
         return wrapper
 

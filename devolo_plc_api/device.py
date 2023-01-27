@@ -128,7 +128,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
             self._zeroconf = self._zeroconf_instance
         await asyncio.gather(self._get_device_info(), self._get_plcnet_info())
         if not self.device and not self.plcnet:
-            raise DeviceNotFound(f"The device {self.ip} did not answer.")
+            raise DeviceNotFound(self.ip)
         self._connected = True
 
     def connect(self) -> None:
