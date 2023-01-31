@@ -63,7 +63,6 @@ class TestDevice:
             assert ac.call_count == 1
 
     @pytest.mark.asyncio()
-    # pylint: disable=protected-access
     async def test_async_disconnect(self, mock_device: Device):
         """Test that disconnecting from a device cleans up Zeroconf and the HTTP client."""
         await mock_device.async_connect()
@@ -157,7 +156,6 @@ class TestDevice:
             assert mock_get_zeroconf_info.call_count == 2
 
     @pytest.mark.asyncio()
-    # pylint: disable=protected-access
     async def test__get_zeroconf_info_timeout(self, mock_device: Device, sleep: AsyncMock):
         """Test that the mDNS service browser times out after 3 seconds."""
         mock_device._info["_http._tcp.local."] = ZeroconfServiceInfo()
@@ -181,7 +179,6 @@ class TestDevice:
             assert mock_info_from_service.call_count == 0
 
     @pytest.mark.asyncio()
-    # pylint: disable=protected-access
     async def test__state_change_removed(self, mock_device: Device):
         """Test that service information are not processed on state change to removed."""
         with patch("devolo_plc_api.device.Device._retry_zeroconf_info"), patch(

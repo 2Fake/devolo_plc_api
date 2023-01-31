@@ -41,7 +41,6 @@ class TestNetwork:
         assert serial_number in discovered
         assert isinstance(discovered[serial_number], Device)
 
-    # pylint: disable=protected-access
     def test_add_wrong_state(self):
         """Test early return on wrong state changes."""
         with patch("devolo_plc_api.network.Zeroconf.get_service_info") as gsi:
