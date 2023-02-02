@@ -1,5 +1,5 @@
 """Fixtures for plcnet API tests."""
-from collections.abc import AsyncGenerator, Generator
+from typing import AsyncGenerator, Generator
 from unittest.mock import patch
 
 import pytest

@@ -1,7 +1,7 @@
 """Fixtures to properly mock a devolo device."""
 from __future__ import annotations
 
-from collections.abc import Generator
+from typing import Generator
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
