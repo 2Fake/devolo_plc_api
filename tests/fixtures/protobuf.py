@@ -1,5 +1,5 @@
 """Fixtures for protobuf tests."""
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 import pytest_asyncio
 

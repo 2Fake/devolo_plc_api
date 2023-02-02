@@ -1,8 +1,8 @@
 """Fixtures for device API tests."""
 from __future__ import annotations
 
+from collections.abc import AsyncGenerator, Generator
 from secrets import randbelow
-from typing import AsyncGenerator, Generator
 from unittest.mock import patch
 
 import pytest

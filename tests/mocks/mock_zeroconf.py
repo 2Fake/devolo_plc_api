@@ -1,7 +1,8 @@
 """Mock methods from the Zeroconf module."""
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 from unittest.mock import AsyncMock, Mock
 
 from zeroconf import ServiceStateChange, Zeroconf
