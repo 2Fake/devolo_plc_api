@@ -12,7 +12,7 @@ from devolo_plc_api.plcnet_api.setuserdevicename_pb2 import SetUserDeviceNameRes
 class TestDeviceApi:
     """Test devolo_plc_api.plcnet_api.plcnetapi.PlcNetApi class."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_async_get_network_overview(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock, network: LogicalNetwork):
         """Test getting the network overview asynchronously."""
         network_overview = GetNetworkOverview(network=network)
@@ -27,7 +27,7 @@ class TestDeviceApi:
         overview = plcnet_api.get_network_overview()
         assert overview == network
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_async_identify_device_start(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
         """Test starting identifying a device asynchronously."""
         identify_device = IdentifyDeviceResponse()
@@ -40,7 +40,7 @@ class TestDeviceApi:
         httpx_mock.add_response(content=identify_device.SerializeToString())
         assert plcnet_api.identify_device_start()
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_async_identify_device_stop(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
         """Test stopping identifying a device asynchronously."""
         identify_device = IdentifyDeviceResponse()
@@ -53,7 +53,7 @@ class TestDeviceApi:
         httpx_mock.add_response(content=identify_device.SerializeToString())
         assert plcnet_api.identify_device_stop()
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_async_pair_device(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
         """Test pairing a device asynchronously."""
         pair_device = PairDeviceStart()
@@ -66,7 +66,7 @@ class TestDeviceApi:
         httpx_mock.add_response(content=pair_device.SerializeToString())
         assert plcnet_api.pair_device()
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_async_set_user_device_name(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
         """Test setting a device name asynchronously."""
         user_device_name_set = SetUserDeviceNameResponse()

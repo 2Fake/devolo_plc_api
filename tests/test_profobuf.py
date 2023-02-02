@@ -28,7 +28,7 @@ class TestProtobuf:
         version = test_data.device_info[SERVICE_TYPE].properties["Version"]
         assert mock_protobuf.url == f"http://{ip}:14791/{path}/{version}/"
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test__async_get_wrong_password(self, httpx_mock: HTTPXMock, mock_device: Device):
         """Test raising on using a wrong password."""
         httpx_mock.add_response(status_code=HTTPStatus.UNAUTHORIZED)
@@ -38,7 +38,7 @@ class TestProtobuf:
             await mock_device.device.async_get_wifi_connected_station()
         await mock_device.async_disconnect()
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test__async_get_device_unavailable(self, httpx_mock: HTTPXMock, mock_device: Device):
         """Test raising on connection timeout."""
         httpx_mock.add_exception(ConnectTimeout("ConnectTimeout"))
@@ -48,7 +48,7 @@ class TestProtobuf:
             await mock_device.device.async_get_wifi_connected_station()
         await mock_device.async_disconnect()
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test__async_get_unknown_error(self, httpx_mock: HTTPXMock, mock_device: Device):
         """Test re-raising unexpected HTTP errors."""
         httpx_mock.add_response(status_code=HTTPStatus.SERVICE_UNAVAILABLE)
@@ -58,7 +58,7 @@ class TestProtobuf:
             await mock_device.device.async_get_wifi_connected_station()
         await mock_device.async_disconnect()
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test__async_post_wrong_password(self, httpx_mock: HTTPXMock, mock_device: Device):
         """Test raising on using a wrong password."""
         httpx_mock.add_response(status_code=HTTPStatus.UNAUTHORIZED)
@@ -68,7 +68,7 @@ class TestProtobuf:
             await mock_device.device.async_set_wifi_guest_access(True)
         await mock_device.async_disconnect()
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test__async_post_device_unavailable(self, httpx_mock: HTTPXMock, mock_device: Device):
         """Test raising on connection timeout."""
         httpx_mock.add_exception(ConnectTimeout("ConnectTimeout"))
@@ -78,7 +78,7 @@ class TestProtobuf:
             await mock_device.device.async_set_wifi_guest_access(True)
         await mock_device.async_disconnect()
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test__async_post_unknown_error(self, httpx_mock: HTTPXMock, mock_device: Device):
         """Test re-raising unexpected HTTP errors."""
         httpx_mock.add_response(status_code=HTTPStatus.SERVICE_UNAVAILABLE)
@@ -88,7 +88,7 @@ class TestProtobuf:
             await mock_device.device.async_set_wifi_guest_access(True)
         await mock_device.async_disconnect()
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test__async_wrong_password_type(self, httpx_mock: HTTPXMock, mock_device: Device):
         """Test using different password hash if original password failed."""
         await mock_device.async_connect()

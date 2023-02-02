@@ -43,7 +43,7 @@ jobs:
         python -m pip install -e .[test]
         pylint --errors-only --score=n --load-plugins pylint_protobuf devolo_plc_api
         pylint --exit-zero --score=n --disable=E --enable=useless-suppression --load-plugins pylint_protobuf devolo_plc_api
-        pylint --exit-zero --score=n --disable=C0103,R0801,R0903,R0904 --load-plugins pylint_protobuf tests
+        pylint --exit-zero --score=n --disable=C0103,R0801,R0903,R0904,W0212 --load-plugins pylint_protobuf tests
     - name: Lint with mypy
       run: |
         python -m pip install mypy types-protobuf
