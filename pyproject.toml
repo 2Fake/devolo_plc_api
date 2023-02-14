@@ -55,16 +55,6 @@ skip_glob = "*_pb2.py"
 [tool.mypy]
 ignore_missing_imports = true
 
-[tool.pylint.design]
-max-attributes = 8
-
-[tool.pylint.format]
-ignore-patterns = ".*_pb2.py"
-max-line-length = 127
-
-[tool.pylint.messages_control]
-good-names = "e,ip"
-
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 
