@@ -31,19 +31,12 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: "3.8"
-    - name: Lint with flake8
+    - name: Lint with ruff
       run: |
         python -m pip install --upgrade pip
-        python -m pip install flake8
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 . --count --exit-zero --statistics
-    - name: Lint with pylint
-      run: |
-        python -m pip install pylint pylint-protobuf
-        python -m pip install -e .[test]
-        pylint --errors-only --score=n --load-plugins pylint_protobuf devolo_plc_api
-        pylint --exit-zero --score=n --disable=E --enable=useless-suppression --load-plugins pylint_protobuf devolo_plc_api
-        pylint --exit-zero --score=n --disable=C0103,R0801,R0903,R0904,W0212 --load-plugins pylint_protobuf tests
+        python -m pip install ruff
+        ruff check --format=github devolo_plc_api script
+        ruff check --format=github --exit-zero tests
     - name: Lint with mypy
       run: |
         python -m pip install mypy types-protobuf
