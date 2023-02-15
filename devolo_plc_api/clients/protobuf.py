@@ -50,7 +50,7 @@ class Protobuf(ABC):
         async_method = f"async_{attr}"
         if hasattr(self.__class__, async_method):
             return method
-        raise AttributeError(f"{self.__class__.__name__} object has no attribute {attr}")
+        raise AttributeError(f"{self.__class__.__name__} object has no attribute {attr}")  # noqa: EM102, TRY003
 
     @property
     def url(self) -> str:
@@ -91,9 +91,9 @@ class Protobuf(ABC):
             response.raise_for_status()
         except HTTPStatusError as e:
             if e.response.status_code == HTTPStatus.UNAUTHORIZED:
-                raise DevicePasswordProtected() from None
+                raise DevicePasswordProtected from None
             raise
         except (ConnectTimeout, ConnectError, ReadTimeout, RemoteProtocolError):
-            raise DeviceUnavailable() from None
+            raise DeviceUnavailable from None
         else:
             return response

@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v3
+      uses: actions/checkout@v3.3.0
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v4.5.0
       with:
         python-version: "3.8"
     - name: Install dependencies
@@ -26,24 +26,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v3
+      uses: actions/checkout@v3.3.0
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v4.5.0
       with:
         python-version: "3.8"
-    - name: Lint with flake8
+    - name: Lint with ruff
       run: |
         python -m pip install --upgrade pip
-        python -m pip install flake8
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 . --count --exit-zero --statistics
-    - name: Lint with pylint
-      run: |
-        python -m pip install pylint pylint-protobuf
-        python -m pip install -e .[test]
-        pylint --errors-only --score=n --load-plugins pylint_protobuf devolo_plc_api
-        pylint --exit-zero --score=n --disable=E --enable=useless-suppression --load-plugins pylint_protobuf devolo_plc_api
-        pylint --exit-zero --score=n --disable=C0103,R0801,R0903,R0904,W0212 --load-plugins pylint_protobuf tests
+        python -m pip install ruff
+        ruff check --format=github devolo_plc_api script
+        ruff check --format=github --exit-zero tests
     - name: Lint with mypy
       run: |
         python -m pip install mypy types-protobuf
@@ -58,9 +51,9 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v3
+      uses: actions/checkout@v3.3.0
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v4.5.0
       with:
         python-version: ${{ matrix.python-version }}
         check-latest: true
@@ -72,7 +65,7 @@ jobs:
       run: |
         pytest --cov=devolo_plc_api
     - name: Preserve coverage
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: coverage
         path: .coverage
@@ -83,13 +76,13 @@ jobs:
     needs: test
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v3
+      uses: actions/checkout@v3.3.0
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v4.5.0
       with:
         python-version: "3.8"
     - name: Download coverage
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v3.0.2
       with:
         name: coverage
     - name: Coveralls
@@ -99,6 +92,6 @@ jobs:
         export COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_TOKEN }}
         coveralls
     - name: Clean up coverage
-      uses: geekyeggo/delete-artifact@v2
+      uses: geekyeggo/delete-artifact@v2.0.0
       with:
         name: coverage
