@@ -47,6 +47,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
         self.device: DeviceApi | None = None
         self.plcnet: PlcNetApi | None = None
 
+        self._background_tasks: set[asyncio.Task] = set()
         self._browser: dict[str, AsyncServiceBrowser] = {}
         self._connected = False
         self._info: dict[str, ZeroconfServiceInfo] = {PLCNETAPI: ZeroconfServiceInfo(), DEVICEAPI: ZeroconfServiceInfo()}
@@ -206,7 +207,9 @@ class Device:  # pylint: disable=too-many-instance-attributes
         """Evaluate the query result."""
         if state_change == ServiceStateChange.Removed:
             return
-        asyncio.create_task(self._get_service_info(zeroconf, service_type, name))
+        task = asyncio.create_task(self._get_service_info(zeroconf, service_type, name))
+        self._background_tasks.add(task)
+        task.add_done_callback(self._background_tasks.remove)
 
     async def _get_service_info(self, zeroconf: Zeroconf, service_type: str, name: str) -> None:
         """Get service information, if IP matches."""
