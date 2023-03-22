@@ -2,14 +2,14 @@
 from __future__ import annotations
 
 import asyncio
-import ipaddress
 import logging
-import struct
 from contextlib import suppress
 from datetime import date
+from ipaddress import ip_address
+from struct import unpack_from
 from types import TracebackType
 
-import httpx
+from httpx import AsyncClient
 from zeroconf import DNSQuestionType, ServiceInfo, ServiceStateChange, Zeroconf
 from zeroconf.asyncio import AsyncServiceBrowser, AsyncServiceInfo, AsyncZeroconf
 
@@ -54,11 +54,11 @@ class Device:  # pylint: disable=too-many-instance-attributes
         self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
         self._multicast = False
         self._password = ""
-        self._session_instance: httpx.AsyncClient | None = None
+        self._session_instance: AsyncClient | None = None
         self._zeroconf_instance = zeroconf_instance
         logging.captureWarnings(True)
 
-        self._session: httpx.AsyncClient
+        self._session: AsyncClient
         self._zeroconf: AsyncZeroconf
 
     def __del__(self) -> None:
@@ -96,7 +96,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
 
     @property
     def hostname(self) -> str:
-        """mDNS hostname of the device."""
+        """mDNS hostname of the device."""  # noqa: D403
         return self._info[DEVICEAPI].hostname
 
     @property
@@ -113,14 +113,14 @@ class Device:  # pylint: disable=too-many-instance-attributes
         if self.plcnet:
             self.plcnet.password = password
 
-    async def async_connect(self, session_instance: httpx.AsyncClient | None = None) -> None:
+    async def async_connect(self, session_instance: AsyncClient | None = None) -> None:
         """
         Connect to a device asynchronous.
 
         :param: session_instance: Session client instance to be potentially reused.
         """
         self._session_instance = session_instance
-        self._session = self._session_instance or httpx.AsyncClient()
+        self._session = self._session_instance or AsyncClient()
         if not self._zeroconf_instance:
             self._zeroconf = AsyncZeroconf()
         elif isinstance(self._zeroconf_instance, Zeroconf):
@@ -218,7 +218,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
         with suppress(RuntimeError):
             await service_info.async_request(zeroconf, timeout=1000, question_type=question_type)
 
-        if not service_info.addresses or str(ipaddress.ip_address(service_info.addresses[0])) != self.ip:
+        if not service_info.addresses or str(ip_address(service_info.addresses[0])) != self.ip:
             return  # No need to continue, if there are no relevant service information
 
         self._logger.debug("Updating service info of %s for %s", service_type, service_info.server_key)
@@ -235,7 +235,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
         total_length = len(service_info.text)
         offset = 0
         while offset < total_length:
-            (parsed_length,) = struct.unpack_from("!B", service_info.text, offset)
+            (parsed_length,) = unpack_from("!B", service_info.text, offset)
             key_value = service_info.text[offset + 1 : offset + 1 + parsed_length].decode("UTF-8").split("=")
             properties[key_value[0]] = key_value[1]
             offset += parsed_length + 1
