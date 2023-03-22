@@ -42,13 +42,9 @@ def patch_sleep(request: pytest.FixtureRequest) -> Generator[AsyncMock | None, N
 @pytest.fixture()
 def block_communication() -> Generator[None, None, None]:
     """Block external communication."""
-    with patch("devolo_plc_api.device.AsyncZeroconf", AsyncMock), patch(
-        "devolo_plc_api.device.httpx.AsyncClient", AsyncMock
-    ), patch("devolo_plc_api.device.AsyncServiceBrowser", MockServiceBrowser), patch(
-        "devolo_plc_api.device.AsyncServiceInfo"
-    ), patch(
-        "devolo_plc_api.network.Zeroconf"
-    ), patch(
+    with patch("devolo_plc_api.device.AsyncZeroconf", AsyncMock), patch("devolo_plc_api.device.AsyncClient", AsyncMock), patch(
+        "devolo_plc_api.device.AsyncServiceBrowser", MockServiceBrowser
+    ), patch("devolo_plc_api.device.AsyncServiceInfo"), patch("devolo_plc_api.network.Zeroconf"), patch(
         "devolo_plc_api.network.ServiceBrowser", MockServiceBrowser
     ):
         yield

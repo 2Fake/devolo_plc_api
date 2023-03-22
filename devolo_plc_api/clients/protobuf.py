@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import logging
 from abc import ABC, abstractmethod
+from hashlib import sha256
 from http import HTTPStatus
 from typing import Any, Callable
 
@@ -80,7 +80,7 @@ class Protobuf(ABC):
                 timeout=timeout,
             )
             if response.status_code == HTTPStatus.UNAUTHORIZED:
-                self.password = hashlib.sha256(self.password.encode("utf-8")).hexdigest()
+                self.password = sha256(self.password.encode("utf-8")).hexdigest()
                 response = await self._session.request(
                     method,
                     url,
