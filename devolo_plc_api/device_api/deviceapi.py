@@ -12,6 +12,7 @@ from devolo_plc_api.zeroconf import ZeroconfServiceInfo
 
 from .factoryreset_pb2 import FactoryResetStart
 from .ledsettings_pb2 import LedSettingsGet, LedSettingsSet, LedSettingsSetResponse
+from .multiap_pb2 import WifiMultiApGetResponse
 from .restart_pb2 import RestartResponse, UptimeGetResponse
 from .support_pb2 import SupportInfoDump, SupportInfoDumpResponse
 from .updatefirmware_pb2 import UpdateFirmwareCheck, UpdateFirmwareStart
@@ -104,6 +105,19 @@ class DeviceApi(Protobuf):
         response = LedSettingsSetResponse()
         response.ParseFromString(await query.aread())
         return response.result == response.SUCCESS
+
+    @_feature("multiap")
+    async def async_get_wifi_multi_ap(self) -> WifiMultiApGetResponse:
+        """
+        Get MultiAP details asynchronously. This feature only works on devices, that announce the multiap feature.
+
+        return: MultiAP details
+        """
+        self._logger.debug("Getting MultiAP details.")
+        query = await self._async_get("WifiMultiApGet")
+        response = WifiMultiApGetResponse()
+        response.ParseFromString(await query.aread())
+        return response
 
     @_feature("repeater0")
     async def async_get_wifi_repeated_access_points(self) -> list[WifiRepeatedAPsGet.RepeatedAPInfo]:

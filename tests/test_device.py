@@ -205,7 +205,7 @@ class TestDevice:
         with patch("devolo_plc_api.device.AsyncServiceInfo", StubAsyncServiceInfo), patch(
             "devolo_plc_api.device.PlcNetApi"
         ), pytest.raises(DeviceNotFound):
-            mock_device = Device(ip="192.168.0.11")
+            mock_device = Device(ip="192.0.2.2")
             await mock_device.async_connect()
             assert StubAsyncServiceInfo.async_request.call_count == 1
             assert mock_info_from_service.call_count == 0
