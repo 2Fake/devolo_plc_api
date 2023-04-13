@@ -25,8 +25,8 @@ async def run():
         # Get MultiAP details. If the device is not aware of a mesh controller or doesn't know its IP, it is left empty.
         multi_ap = await dpa.device.async_get_wifi_multi_ap()
         print(multi_ap.enabled)  # True
-        print(multi_ap.controler_id)  # "AA:BB:CC:DD:EE:FF"
-        print(multi_ap.controler_ip)  # "192.0.2.1"
+        print(multi_ap.controller_id)  # "AA:BB:CC:DD:EE:FF"
+        print(multi_ap.controller_ip)  # "192.0.2.1"
 
         # Factory reset the device. If the reset will happen shortly, True is returned, otherwise False.
         print("success" if await dpa.device.async_factory_reset() else "failed")
