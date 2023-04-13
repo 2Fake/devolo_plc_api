@@ -2,6 +2,7 @@
 import re
 
 from .deviceapi import DeviceApi
+from .multiap_pb2 import WifiMultiApGetResponse
 from .support_pb2 import SupportInfoDump
 from .updatefirmware_pb2 import UpdateFirmwareCheck
 from .wifinetwork_pb2 import (
@@ -33,6 +34,7 @@ __all__ = [
     "RepeatedAPInfo",
     "SupportInfoItem",
     "WifiGuestAccessGet",
+    "WifiMultiApGetResponse",
     "CONFIGLAYER_FORMAT",
     "SERVICE_TYPE",
     "UPDATE_AVAILABLE",

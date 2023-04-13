@@ -7,6 +7,7 @@ from pytest_httpx import HTTPXMock
 from devolo_plc_api.device_api import ConnectedStationInfo, DeviceApi, NeighborAPInfo, RepeatedAPInfo, SupportInfoItem
 from devolo_plc_api.device_api.factoryreset_pb2 import FactoryResetStart
 from devolo_plc_api.device_api.ledsettings_pb2 import LedSettingsGet, LedSettingsSetResponse
+from devolo_plc_api.device_api.multiap_pb2 import WifiMultiApGetResponse
 from devolo_plc_api.device_api.restart_pb2 import RestartResponse, UptimeGetResponse
 from devolo_plc_api.device_api.support_pb2 import SupportInfoDump, SupportInfoDumpResponse
 from devolo_plc_api.device_api.updatefirmware_pb2 import UpdateFirmwareCheck, UpdateFirmwareStart
@@ -66,6 +67,23 @@ class TestDeviceApi:
         led_setting_set = LedSettingsSetResponse()
         httpx_mock.add_response(content=led_setting_set.SerializeToString())
         assert device_api.set_led_setting(True)
+
+    @pytest.mark.asyncio()
+    @pytest.mark.parametrize("feature", ["multiap"])
+    async def test_async_get_wifi_multi_ap(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        """Test setting LED settings asynchronously."""
+        multi_ap_details = WifiMultiApGetResponse(enabled=True)
+        httpx_mock.add_response(content=multi_ap_details.SerializeToString())
+        details = await device_api.async_get_wifi_multi_ap()
+        assert details.enabled
+
+    @pytest.mark.parametrize("feature", ["multiap"])
+    def test_get_wifi_multi_ap(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        """Test setting LED settings synchronously."""
+        multi_ap_details = WifiMultiApGetResponse(enabled=True)
+        httpx_mock.add_response(content=multi_ap_details.SerializeToString())
+        details = device_api.get_wifi_multi_ap()
+        assert details.enabled
 
     @pytest.mark.asyncio()
     @pytest.mark.parametrize("feature", ["repeater0"])
