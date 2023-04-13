@@ -134,7 +134,8 @@ class Device:  # pylint: disable=too-many-instance-attributes
 
     def connect(self) -> None:
         """Connect to a device synchronous."""
-        asyncio.run(self.async_connect())
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(self.async_connect())
 
     async def async_disconnect(self) -> None:
         """Disconnect from a device asynchronous."""
@@ -149,7 +150,9 @@ class Device:  # pylint: disable=too-many-instance-attributes
 
     def disconnect(self) -> None:
         """Disconnect from a device synchronous."""
-        asyncio.run(self.async_disconnect())
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.async_disconnect())
+        loop.close()
 
     async def _get_device_info(self) -> None:
         """Get information from the devolo Device API."""
@@ -242,7 +245,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
 
         return ZeroconfServiceInfo(
             address=service_info.addresses[0],
-            hostname=service_info.server,
+            hostname=service_info.server or "",
             port=service_info.port,
             properties=properties,
         )

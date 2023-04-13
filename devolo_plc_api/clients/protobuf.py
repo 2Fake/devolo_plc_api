@@ -45,7 +45,8 @@ class Protobuf(ABC):
         """Catch attempts to call methods synchronously."""
 
         def method(*args: Any, **kwargs: Any) -> Any:
-            return asyncio.run(getattr(self, async_method)(*args, **kwargs))
+            loop = asyncio.get_event_loop()
+            return loop.run_until_complete(getattr(self, async_method)(*args, **kwargs))
 
         async_method = f"async_{attr}"
         if hasattr(self.__class__, async_method):
