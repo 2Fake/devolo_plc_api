@@ -59,14 +59,14 @@ class TestDeviceApi:
         """Test setting LED settings asynchronously."""
         led_setting_set = LedSettingsSetResponse()
         httpx_mock.add_response(content=led_setting_set.SerializeToString())
-        assert await device_api.async_set_led_setting(True)
+        assert await device_api.async_set_led_setting(enable=True)
 
     @pytest.mark.parametrize("feature", ["led"])
     def test_set_led_setting(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test setting LED settings synchronously."""
         led_setting_set = LedSettingsSetResponse()
         httpx_mock.add_response(content=led_setting_set.SerializeToString())
-        assert device_api.set_led_setting(True)
+        assert device_api.set_led_setting(enable=True)
 
     @pytest.mark.asyncio()
     @pytest.mark.parametrize("feature", ["multiap"])
@@ -256,14 +256,14 @@ class TestDeviceApi:
         """Test setting wifi guest access status asynchronously."""
         wifi_guest_access_set = WifiGuestAccessSetResponse(result=WifiResult.WIFI_SUCCESS)
         httpx_mock.add_response(content=wifi_guest_access_set.SerializeToString())
-        assert await device_api.async_set_wifi_guest_access(True)
+        assert await device_api.async_set_wifi_guest_access(enable=True)
 
     @pytest.mark.parametrize("feature", ["wifi1"])
     def test_set_wifi_guest_access(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test setting wifi guest access status synchronously."""
         wifi_guest_access_set = WifiGuestAccessSetResponse(result=WifiResult.WIFI_SUCCESS)
         httpx_mock.add_response(content=wifi_guest_access_set.SerializeToString())
-        assert device_api.set_wifi_guest_access(True)
+        assert device_api.set_wifi_guest_access(enable=True)
 
     @pytest.mark.asyncio()
     @pytest.mark.parametrize("feature", ["wifi1"])

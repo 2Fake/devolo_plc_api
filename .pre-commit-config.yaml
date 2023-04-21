@@ -21,7 +21,7 @@ repos:
     hooks:
         - id: stubgen
           name: check API stub files
-          entry: script/stubgen.py
+          entry: scripts/stubgen.py
           description: check if stub files of the APIs are up-to-date
           language: script
           types: [python]

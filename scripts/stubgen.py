@@ -29,18 +29,21 @@ isort:skip_file
 class ApiStubGenerator(StubGenerator):
     """Generate stub text from a mypy AST."""
 
-    def get_str_type_of_node(self, rvalue: Expression, can_infer_optional: bool = False, can_be_any: bool = True) -> str:
+    def get_str_type_of_node(self, rvalue: Expression, *, can_infer_optional: bool = False, can_be_any: bool = True) -> str:
         """Get type of node as string."""
         if isinstance(rvalue, ConditionalExpr):
-            if_type = self.get_str_type_of_node(rvalue.if_expr, can_infer_optional, False)
-            else_type = self.get_str_type_of_node(rvalue.else_expr, can_infer_optional, False)
+            if_type = self.get_str_type_of_node(rvalue.if_expr, can_infer_optional=can_infer_optional, can_be_any=False)
+            else_type = self.get_str_type_of_node(rvalue.else_expr, can_infer_optional=can_infer_optional, can_be_any=False)
             if if_type and else_type and if_type != else_type:
                 return f"{if_type} | {else_type}"
             return if_type or else_type or "Any" if can_be_any else ""
         if isinstance(rvalue, ListExpr):
-            list_item_type = {self.get_str_type_of_node(item, can_infer_optional, can_be_any) for item in rvalue.items}
+            list_item_type = {
+                self.get_str_type_of_node(item, can_infer_optional=can_infer_optional, can_be_any=can_be_any)
+                for item in rvalue.items
+            }
             return f"list[{' | '.join(list_item_type)}]"
-        return super().get_str_type_of_node(rvalue, can_infer_optional, can_be_any)
+        return super().get_str_type_of_node(rvalue, can_infer_optional=can_infer_optional, can_be_any=can_be_any)
 
     def add_sync(self) -> None:
         """Add sync methods."""

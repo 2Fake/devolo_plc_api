@@ -65,7 +65,7 @@ class TestProtobuf:
         await mock_device.async_connect()
         assert mock_device.device
         with pytest.raises(DevicePasswordProtected):
-            await mock_device.device.async_set_wifi_guest_access(True)
+            await mock_device.device.async_set_wifi_guest_access(enable=True)
         await mock_device.async_disconnect()
 
     @pytest.mark.asyncio()
@@ -75,7 +75,7 @@ class TestProtobuf:
         await mock_device.async_connect()
         assert mock_device.device
         with pytest.raises(DeviceUnavailable):
-            await mock_device.device.async_set_wifi_guest_access(True)
+            await mock_device.device.async_set_wifi_guest_access(enable=True)
         await mock_device.async_disconnect()
 
     @pytest.mark.asyncio()
@@ -85,7 +85,7 @@ class TestProtobuf:
         await mock_device.async_connect()
         assert mock_device.device
         with pytest.raises(HTTPStatusError):
-            await mock_device.device.async_set_wifi_guest_access(True)
+            await mock_device.device.async_set_wifi_guest_access(enable=True)
         await mock_device.async_disconnect()
 
     @pytest.mark.asyncio()

@@ -56,7 +56,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
         self._password = ""
         self._session_instance: AsyncClient | None = None
         self._zeroconf_instance = zeroconf_instance
-        logging.captureWarnings(True)
+        logging.captureWarnings(capture=True)
 
         self._session: AsyncClient
         self._zeroconf: AsyncZeroconf

@@ -35,7 +35,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install ruff
-        ruff check --format=github devolo_plc_api script
+        ruff check --format=github devolo_plc_api scripts
         ruff check --format=github --exit-zero tests
     - name: Lint with mypy
       run: |
