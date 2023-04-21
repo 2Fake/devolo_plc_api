@@ -60,7 +60,7 @@ asyncio_mode = "auto"
 
 [tool.ruff]
 exclude = ["*_pb2.py", "*.pyi"]
-ignore = ["ANN101", "ANN401", "COM812", "D203", "D205", "D212", "FBT", "N818", "TCH"]
+ignore = ["ANN101", "ANN401", "COM812", "D203", "D205", "D212", "FBT001", "N818", "TCH"]
 line-length = 127
 select = ["ALL"]
 target-version = "py38"

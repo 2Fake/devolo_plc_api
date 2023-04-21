@@ -125,11 +125,14 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+# ruff
+.ruff_cache/
+
 # Pyre type checker
 .pyre/
 
 ### VisualStudioCode ###
-.vscode/*
+.vscode/
 
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
