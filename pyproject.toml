@@ -14,6 +14,7 @@ classifiers = [
 ]
 description = "devolo PLC devices in Python"
 dependencies = [
+    "ifaddr>=0.2.0",
     "httpx>=0.21.0",
     "protobuf",
     "zeroconf>=0.32.0",
@@ -38,6 +39,7 @@ test = [
     "pytest-cov",
     "pytest-httpx>=0.18.0",
     "typing-extensions",
+    "syrupy",
 ]
 
 [tool.black]

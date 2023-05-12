@@ -19,7 +19,7 @@ from httpx import (
     Response,
 )
 
-from devolo_plc_api.exceptions.device import DevicePasswordProtected, DeviceUnavailable
+from devolo_plc_api.exceptions import DevicePasswordProtected, DeviceUnavailable
 
 TIMEOUT = 10.0
 
@@ -45,8 +45,7 @@ class Protobuf(ABC):
         """Catch attempts to call methods synchronously."""
 
         def method(*args: Any, **kwargs: Any) -> Any:
-            loop = asyncio.get_event_loop()
-            return loop.run_until_complete(getattr(self, async_method)(*args, **kwargs))
+            return asyncio.run(getattr(self, async_method)(*args, **kwargs))
 
         async_method = f"async_{attr}"
         if hasattr(self.__class__, async_method):

@@ -1,0 +1,128 @@
+# serializer version: 1
+# name: TestDevice.test_async_connect
+  Device(
+    MDNS_TIMEOUT=300,
+    device=DeviceApi(
+      features=list([
+        'wifi1',
+      ]),
+      password='',
+      url='http://192.0.2.1:None/1234567890abcdef/v0/',
+    ),
+    firmware_date=datetime.date(2020, 6, 29),
+    firmware_version='5.5.1',
+    hostname='device.local',
+    ip='192.0.2.1',
+    mac='AABBCCDDEEFF',
+    mt_number='2730',
+    password='',
+    plcnet=PlcNetApi(
+      password='',
+      url='http://192.0.2.1:None/1234567890abcdef/v0/',
+    ),
+    product='dLAN pro 1200+ WiFi ac',
+    serial_number='1234567890123456',
+    technology='hpav',
+  )
+# ---
+# name: TestDevice.test_async_connect.1
+  Device(
+    MDNS_TIMEOUT=300,
+    device=DeviceApi(
+      features=list([
+        'wifi1',
+      ]),
+      password='',
+      url='http://192.0.2.1:None/1234567890abcdef/v0/',
+    ),
+    firmware_date=datetime.date(2020, 6, 29),
+    firmware_version='5.5.1',
+    hostname='device.local',
+    ip='192.0.2.1',
+    mac='AABBCCDDEEFF',
+    mt_number='2730',
+    password='',
+    plcnet=PlcNetApi(
+      password='',
+      url='http://192.0.2.1:None/1234567890abcdef/v0/',
+    ),
+    product='dLAN pro 1200+ WiFi ac',
+    serial_number='1234567890123456',
+    technology='hpav',
+  )
+# ---
+# name: TestDevice.test_async_connect_plc[DeviceType.PLC]
+  Device(
+    MDNS_TIMEOUT=300,
+    device=DeviceApi(
+      features=list([
+        'wifi1',
+      ]),
+      password='',
+      url='http://192.0.2.1:80/1234567890abcdef/v0/',
+    ),
+    firmware_date=datetime.date(2020, 6, 29),
+    firmware_version='5.5.1',
+    hostname='device.local',
+    ip='192.0.2.1',
+    mac='AABBCCDDEEFF',
+    mt_number='3046',
+    password='',
+    plcnet=PlcNetApi(
+      password='',
+      url='http://192.0.2.1:80/1234567890abcdef/v0/',
+    ),
+    product='dLAN pro 1200+ WiFi ac',
+    serial_number='1234567890123456',
+    technology='hpav',
+  )
+# ---
+# name: TestDevice.test_async_connect_plc[DeviceType.PLC].1
+  Device(
+    MDNS_TIMEOUT=300,
+    device=DeviceApi(
+      features=list([
+        'wifi1',
+      ]),
+      password='',
+      url='http://192.0.2.1:80/1234567890abcdef/v0/',
+    ),
+    firmware_date=datetime.date(2020, 6, 29),
+    firmware_version='5.5.1',
+    hostname='device.local',
+    ip='192.0.2.1',
+    mac='AABBCCDDEEFF',
+    mt_number='3046',
+    password='',
+    plcnet=PlcNetApi(
+      password='',
+      url='http://192.0.2.1:80/1234567890abcdef/v0/',
+    ),
+    product='dLAN pro 1200+ WiFi ac',
+    serial_number='1234567890123456',
+    technology='hpav',
+  )
+# ---
+# name: TestDevice.test_async_connect_repeater[DeviceType.REPEATER]
+  Device(
+    MDNS_TIMEOUT=300,
+    device=DeviceApi(
+      features=list([
+        'wifi1',
+      ]),
+      password='',
+      url='http://192.0.2.1:80/1234567890abcdef/v0/',
+    ),
+    firmware_date=datetime.date(2020, 6, 29),
+    firmware_version='5.5.1',
+    hostname='device.local',
+    ip='192.0.2.1',
+    mac='',
+    mt_number='3046',
+    password='',
+    plcnet=None,
+    product='dLAN pro 1200+ WiFi ac',
+    serial_number='1234567890123456',
+    technology='',
+  )
+# ---

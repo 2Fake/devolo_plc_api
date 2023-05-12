@@ -1,16 +1,44 @@
 """Test communicating with a the plcnet API."""
+from http import HTTPStatus
+
 import pytest
+from httpx import ConnectTimeout
 from pytest_httpx import HTTPXMock
 
+from devolo_plc_api import Device
+from devolo_plc_api.exceptions import DevicePasswordProtected, DeviceUnavailable
 from devolo_plc_api.plcnet_api import LogicalNetwork, PlcNetApi
 from devolo_plc_api.plcnet_api.getnetworkoverview_pb2 import GetNetworkOverview
 from devolo_plc_api.plcnet_api.identifydevice_pb2 import IdentifyDeviceResponse
 from devolo_plc_api.plcnet_api.pairdevice_pb2 import PairDeviceStart
 from devolo_plc_api.plcnet_api.setuserdevicename_pb2 import SetUserDeviceNameResponse
 
+from . import DeviceType
+
 
 class TestDeviceApi:
     """Test devolo_plc_api.plcnet_api.plcnetapi.PlcNetApi class."""
+
+    @pytest.mark.asyncio()
+    @pytest.mark.parametrize("device_type", [DeviceType.PLC])
+    @pytest.mark.usefixtures("block_communication", "service_browser")
+    async def test_wrong_password_type(self, httpx_mock: HTTPXMock, mock_device: Device):
+        """Test using different password hash if original password failed."""
+        await mock_device.async_connect()
+        assert mock_device.plcnet
+        mock_device.password = "password"
+
+        httpx_mock.add_response(status_code=HTTPStatus.UNAUTHORIZED)
+        with pytest.raises(DevicePasswordProtected):
+            await mock_device.plcnet.async_set_user_device_name("Test")
+            assert mock_device.plcnet.password == "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+
+        httpx_mock.add_response(status_code=HTTPStatus.UNAUTHORIZED)
+        with pytest.raises(DevicePasswordProtected):
+            await mock_device.plcnet.async_set_user_device_name("Test")
+            assert mock_device.plcnet.password == "113459eb7bb31bddee85ade5230d6ad5d8b2fb52879e00a84ff6ae1067a210d3"
+
+        await mock_device.async_disconnect()
 
     @pytest.mark.asyncio()
     async def test_async_get_network_overview(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock, network: LogicalNetwork):
@@ -78,3 +106,24 @@ class TestDeviceApi:
         user_device_name_set = SetUserDeviceNameResponse()
         httpx_mock.add_response(content=user_device_name_set.SerializeToString())
         assert plcnet_api.set_user_device_name("Test")
+
+    @pytest.mark.asyncio()
+    @pytest.mark.parametrize("device_type", [DeviceType.PLC])
+    @pytest.mark.usefixtures("block_communication", "service_browser")
+    async def test_device_unavailable(self, httpx_mock: HTTPXMock, mock_device: Device):
+        """Test device being unavailable."""
+        await mock_device.async_connect()
+        assert mock_device.plcnet
+        httpx_mock.add_exception(ConnectTimeout(""))
+        with pytest.raises(DeviceUnavailable):
+            await mock_device.plcnet.async_get_network_overview()
+
+    @pytest.mark.asyncio()
+    @pytest.mark.parametrize("device_type", [DeviceType.PLC])
+    @pytest.mark.usefixtures("block_communication", "service_browser")
+    async def test_attribute_error(self, mock_device: Device):
+        """Test raising on calling not existing method."""
+        await mock_device.async_connect()
+        assert mock_device.plcnet
+        with pytest.raises(AttributeError):
+            mock_device.plcnet.test()  # type: ignore[union-attr]
