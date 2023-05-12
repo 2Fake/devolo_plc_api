@@ -5,21 +5,23 @@ import asyncio
 import logging
 from contextlib import suppress
 from datetime import date
-from ipaddress import ip_address
+from ipaddress import ip_address, ip_network
 from struct import unpack_from
 from types import TracebackType
+from typing import cast
 
 from httpx import AsyncClient
+from ifaddr import get_adapters
 from zeroconf import DNSQuestionType, ServiceInfo, ServiceStateChange, Zeroconf
 from zeroconf.asyncio import AsyncServiceBrowser, AsyncServiceInfo, AsyncZeroconf
 
 from .device_api import SERVICE_TYPE as DEVICEAPI, DeviceApi
-from .exceptions.device import DeviceNotFound
+from .exceptions import DeviceNotFound
 from .plcnet_api import DEVICES_WITHOUT_PLCNET, SERVICE_TYPE as PLCNETAPI, PlcNetApi
 from .zeroconf import ZeroconfServiceInfo
 
 
-class Device:  # pylint: disable=too-many-instance-attributes
+class Device:
     """
     Representing object for your devolo PLC device. It stores all properties and functionalities discovered during setup.
 
@@ -48,7 +50,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
         self.plcnet: PlcNetApi | None = None
 
         self._background_tasks: set[asyncio.Task] = set()
-        self._browser: dict[str, AsyncServiceBrowser] = {}
+        self._browser: AsyncServiceBrowser | None
         self._connected = False
         self._info: dict[str, ZeroconfServiceInfo] = {PLCNETAPI: ZeroconfServiceInfo(), DEVICEAPI: ZeroconfServiceInfo()}
         self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
@@ -58,6 +60,7 @@ class Device:  # pylint: disable=too-many-instance-attributes
         self._zeroconf_instance = zeroconf_instance
         logging.captureWarnings(capture=True)
 
+        self._loop: asyncio.AbstractEventLoop
         self._session: AsyncClient
         self._zeroconf: AsyncZeroconf
 
@@ -122,26 +125,28 @@ class Device:  # pylint: disable=too-many-instance-attributes
         self._session_instance = session_instance
         self._session = self._session_instance or AsyncClient()
         if not self._zeroconf_instance:
-            self._zeroconf = AsyncZeroconf()
+            self._zeroconf = AsyncZeroconf(interfaces=await self._get_relevant_interfaces())
         elif isinstance(self._zeroconf_instance, Zeroconf):
             self._zeroconf = AsyncZeroconf(zc=self._zeroconf_instance)
         else:
             self._zeroconf = self._zeroconf_instance
-        await asyncio.gather(self._get_device_info(), self._get_plcnet_info())
+        await self._get_zeroconf_info()
+        if not self._info[DEVICEAPI].properties and not self._info[PLCNETAPI].properties:
+            await self._retry_zeroconf_info()
         if not self.device and not self.plcnet:
             raise DeviceNotFound(self.ip)
         self._connected = True
 
     def connect(self) -> None:
         """Connect to a device synchronous."""
-        loop = asyncio.new_event_loop()
-        loop.run_until_complete(self.async_connect())
+        self._loop = asyncio.get_event_loop()
+        self._loop.run_until_complete(self.async_connect())
 
     async def async_disconnect(self) -> None:
         """Disconnect from a device asynchronous."""
         if self._connected:
-            for browser in self._browser.values():
-                await browser.async_cancel()
+            if self._browser:
+                await self._browser.async_cancel()
             if not self._zeroconf_instance:
                 await self._zeroconf.async_close()
             if not self._session_instance:
@@ -150,61 +155,78 @@ class Device:  # pylint: disable=too-many-instance-attributes
 
     def disconnect(self) -> None:
         """Disconnect from a device synchronous."""
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.async_disconnect())
-        loop.close()
+        self._loop.run_until_complete(self.async_disconnect())
+
+    async def _get_relevant_interfaces(self) -> list[str]:
+        """Get the IP address of the relevant interface to reduce traffic."""
+        interface: list[str] = []
+        for adapter in get_adapters():
+            interface.extend(
+                cast(str, ip.ip)
+                for ip in adapter.ips
+                if ip.is_IPv4 and ip_address(self.ip) in ip_network(f"{ip.ip}/{ip.network_prefix}", strict=False)
+            )
+            interface.extend(
+                cast(str, ip.ip[0])
+                for ip in adapter.ips
+                if ip.is_IPv6 and ip_address(self.ip) in ip_network(f"{ip.ip[0]}/{ip.network_prefix}", strict=False)
+            )
+        return interface
 
     async def _get_device_info(self) -> None:
         """Get information from the devolo Device API."""
         service_type = DEVICEAPI
-        await self._get_zeroconf_info(service_type=service_type)
-        if not self._info[service_type].properties:
-            await self._retry_zeroconf_info(service_type=service_type)
         if self._info[service_type].properties:
             self.mt_number = self._info[service_type].properties.get("MT", "0")
             self.product = self._info[service_type].properties.get("Product", "")
             self.serial_number = self._info[service_type].properties["SN"]
-            self.device = DeviceApi(ip=self.ip, session=self._session, info=self._info[service_type])
+            self.device = DeviceApi(
+                ip=str(ip_address(self._info[service_type].address)),
+                session=self._session,
+                info=self._info[service_type],
+            )
             self.device.password = self.password
 
     async def _get_plcnet_info(self) -> None:
         """Get information from the devolo PlcNet API."""
         service_type = PLCNETAPI
-        if self.mt_number in DEVICES_WITHOUT_PLCNET:
-            return
-        await self._get_zeroconf_info(service_type=service_type)
-        if not self._info[service_type].properties and self.mt_number not in DEVICES_WITHOUT_PLCNET:
-            await self._retry_zeroconf_info(service_type=service_type)
         if self._info[service_type].properties:
             self.mac = self._info[service_type].properties["PlcMacAddress"]
             self.technology = self._info[service_type].properties.get("PlcTechnology", "")
-            self.plcnet = PlcNetApi(ip=self.ip, session=self._session, info=self._info[service_type])
+            self.plcnet = PlcNetApi(
+                ip=str(ip_address(self._info[service_type].address)),
+                session=self._session,
+                info=self._info[service_type],
+            )
             self.plcnet.password = self.password
 
-    async def _get_zeroconf_info(self, service_type: str) -> None:
+    async def _get_zeroconf_info(self) -> None:
         """Browse for the desired mDNS service types and query them."""
-        self._logger.debug("Browsing for %s", service_type)
+        service_types = [DEVICEAPI, PLCNETAPI]
         counter = 0
+        self._logger.debug("Browsing for %s", service_types)
         addr = None if self._multicast else self.ip
         question_type = DNSQuestionType.QM if self._multicast else DNSQuestionType.QU
-        self._browser[service_type] = AsyncServiceBrowser(
+        self._browser = AsyncServiceBrowser(
             zeroconf=self._zeroconf.zeroconf,
-            type_=service_type,
+            type_=service_types,
             handlers=[self._state_change],
             addr=addr,
             question_type=question_type,
         )
-        while not self._info[service_type].properties and counter < self.MDNS_TIMEOUT:
+        while (
+            not self._info[DEVICEAPI].properties
+            or not self._info[PLCNETAPI].properties
+            and self.mt_number not in DEVICES_WITHOUT_PLCNET
+        ) and counter < self.MDNS_TIMEOUT:
             counter += 1
             await asyncio.sleep(0.01)
 
-    async def _retry_zeroconf_info(self, service_type: str) -> None:
+    async def _retry_zeroconf_info(self) -> None:
         """Retry getting the zeroconf info using multicast."""
-        self._logger.debug(
-            "Having trouble getting %s via unicast messages. Switching to multicast for this device.", service_type
-        )
+        self._logger.debug("Having trouble getting results via unicast messages. Switching to multicast for this device.")
         self._multicast = True
-        await self._get_zeroconf_info(service_type=service_type)
+        await self._get_zeroconf_info()
 
     def _state_change(self, zeroconf: Zeroconf, service_type: str, name: str, state_change: ServiceStateChange) -> None:
         """Evaluate the query result."""
@@ -218,23 +240,25 @@ class Device:  # pylint: disable=too-many-instance-attributes
         """Get service information, if IP matches."""
         service_info = AsyncServiceInfo(service_type, name)
         question_type = DNSQuestionType.QM if self._multicast else DNSQuestionType.QU
+        update = {
+            DEVICEAPI: self._get_device_info,
+            PLCNETAPI: self._get_plcnet_info,
+        }
         with suppress(RuntimeError):
             await service_info.async_request(zeroconf, timeout=1000, question_type=question_type)
 
-        if not service_info.addresses or str(ip_address(service_info.addresses[0])) != self.ip:
+        if not service_info.addresses or self.ip not in service_info.parsed_addresses():
             return  # No need to continue, if there are no relevant service information
 
         self._logger.debug("Updating service info of %s for %s", service_type, service_info.server_key)
         if info := self.info_from_service(service_info):
             self._info[service_type] = info
+            await update[service_type]()
 
     @staticmethod
     def info_from_service(service_info: ServiceInfo) -> ZeroconfServiceInfo | None:
         """Return prepared info from mDNS entries."""
         properties = {}
-        if not service_info.addresses:
-            return None  # No need to continue, if there is no IP address to contact the device
-
         total_length = len(service_info.text)
         offset = 0
         while offset < total_length:

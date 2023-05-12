@@ -1,12 +1,13 @@
 {
     "device_info": {
         "_dvl-deviceapi._tcp.local.": {
+            "address": "192.0.2.1",
             "port": 80,
             "properties": {
                 "FirmwareDate": "2020-06-29",
                 "FirmwareVersion": "5.5.1",
                 "SN": "1234567890123456",
-                "MT": "2730",
+                "MT": "3046",
                 "Product": "dLAN pro 1200+ WiFi ac",
                 "Path": "1234567890abcdef",
                 "Version": "v0",
@@ -14,6 +15,7 @@
             }
         },
         "_dvl-plcnetapi._tcp.local.": {
+            "address": "192.0.2.1",
             "port": 80,
             "properties": {
                 "Path": "1234567890abcdef",

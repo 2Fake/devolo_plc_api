@@ -2,8 +2,7 @@
 from __future__ import annotations
 
 from secrets import randbelow
-from typing import AsyncGenerator, Generator
-from unittest.mock import patch
+from typing import AsyncGenerator
 
 import pytest
 import pytest_asyncio
@@ -28,13 +27,6 @@ async def device_api(test_data: TestData, feature: str) -> AsyncGenerator[Device
     test_data.device_info[SERVICE_TYPE].properties["Features"] = feature
     async with AsyncClient() as client:
         yield DeviceApi(test_data.ip, client, test_data.device_info[SERVICE_TYPE])
-
-
-@pytest.fixture()
-def mock_device_api() -> Generator[None, None, None]:
-    """Mock a DeviceApi object."""
-    with patch("devolo_plc_api.device_api.deviceapi.DeviceApi"):
-        yield
 
 
 @pytest.fixture(scope="session")

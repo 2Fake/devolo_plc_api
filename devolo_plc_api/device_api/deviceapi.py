@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Callable, TypeVar
 from httpx import AsyncClient
 
 from devolo_plc_api.clients import Protobuf
-from devolo_plc_api.exceptions.feature import FeatureNotSupported
+from devolo_plc_api.exceptions import FeatureNotSupported
 from devolo_plc_api.zeroconf import ZeroconfServiceInfo
 
 from .factoryreset_pb2 import FactoryResetStart

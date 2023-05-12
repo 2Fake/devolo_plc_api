@@ -1,6 +1,5 @@
 """Fixtures for plcnet API tests."""
-from typing import AsyncGenerator, Generator
-from unittest.mock import patch
+from typing import AsyncGenerator
 
 import pytest
 import pytest_asyncio
@@ -16,13 +15,6 @@ async def plcnet_api(test_data: TestData) -> AsyncGenerator[PlcNetApi, None]:
     """Yield a prepared PlcNetApi object."""
     async with AsyncClient() as client:
         yield PlcNetApi(test_data.ip, client, test_data.device_info[SERVICE_TYPE])
-
-
-@pytest.fixture()
-def mock_plcnet_api() -> Generator[None, None, None]:
-    """Mock a PlcNetApi object."""
-    with patch("devolo_plc_api.plcnet_api.plcnetapi.PlcNetApi"):
-        yield
 
 
 @pytest.fixture()
