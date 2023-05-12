@@ -1,4 +1,5 @@
 """Test communicating with a devolo device."""
+import asyncio
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
@@ -103,6 +104,7 @@ class TestDevice:
     def test_disconnect(self, mock_device: Device):
         """Test that the sync disconnect method just calls the async disconnect method."""
         with patch("devolo_plc_api.device.Device.async_disconnect", new=AsyncMock()) as ad:
+            mock_device._loop = asyncio.get_event_loop()
             mock_device.disconnect()
             assert ad.call_count == 1
 
