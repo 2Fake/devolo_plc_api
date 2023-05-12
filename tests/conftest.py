@@ -40,19 +40,6 @@ def block_communication() -> Generator[None, None, None]:
         yield
 
 
-@pytest.fixture()
-def event_loop() -> Generator[asyncio.events.AbstractEventLoop, None, None]:
-    """Handle the event loop in tests."""
-    loop = asyncio.new_event_loop()
-    yield loop
-    if loop.is_running():
-        to_cancel = asyncio.tasks.all_tasks(loop)
-        for task in to_cancel:
-            task.cancel()
-        loop.run_until_complete(asyncio.tasks.gather(*to_cancel, return_exceptions=True))
-        loop.close()
-
-
 @pytest_asyncio.fixture()
 async def http_client() -> AsyncGenerator[None, None]:
     """Patch HTTP client."""
