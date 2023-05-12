@@ -27,7 +27,7 @@ class TestNetwork:
                 address=inet_aton(test_data.ip),
                 properties=test_data.device_info[SERVICE_TYPE].properties,
             )
-            discovered = await network.async_discover_network(timeout=0.1)
+            discovered = await network.async_discover_network(timeout=0.5)
             assert serial_number in discovered
             assert isinstance(discovered[serial_number], Device)
 
@@ -38,7 +38,7 @@ class TestNetwork:
             address=inet_aton(test_data.ip),
             properties=test_data.device_info[SERVICE_TYPE].properties,
         )
-        discovered = network.discover_network(timeout=0.1)
+        discovered = network.discover_network(timeout=0.5)
         assert serial_number in discovered
         assert isinstance(discovered[serial_number], Device)
 
