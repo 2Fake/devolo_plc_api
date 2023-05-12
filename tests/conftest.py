@@ -1,7 +1,6 @@
 """Test configuration."""
 from __future__ import annotations
 
-import asyncio
 from collections import OrderedDict
 from functools import partial
 from typing import AsyncGenerator, Generator
