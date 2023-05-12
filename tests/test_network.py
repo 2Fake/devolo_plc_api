@@ -27,20 +27,23 @@ class TestNetwork:
                 address=inet_aton(test_data.ip),
                 properties=test_data.device_info[SERVICE_TYPE].properties,
             )
-            discovered = await network.async_discover_network(timeout=0.5)
+            discovered = await network.async_discover_network(timeout=0.1)
             assert serial_number in discovered
             assert isinstance(discovered[serial_number], Device)
 
     def test_discover_network(self, test_data: TestData, mock_info_from_service: Mock):
         """Test discovering the network synchronously."""
-        serial_number = test_data.device_info[SERVICE_TYPE].properties["SN"]
-        mock_info_from_service.return_value = ZeroconfServiceInfo(
-            address=inet_aton(test_data.ip),
-            properties=test_data.device_info[SERVICE_TYPE].properties,
-        )
-        discovered = network.discover_network(timeout=0.5)
-        assert serial_number in discovered
-        assert isinstance(discovered[serial_number], Device)
+        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
+            "devolo_plc_api.network.Zeroconf.get_service_info", return_value=""
+        ):
+            serial_number = test_data.device_info[SERVICE_TYPE].properties["SN"]
+            mock_info_from_service.return_value = ZeroconfServiceInfo(
+                address=inet_aton(test_data.ip),
+                properties=test_data.device_info[SERVICE_TYPE].properties,
+            )
+            discovered = network.discover_network(timeout=0.1)
+            assert serial_number in discovered
+            assert isinstance(discovered[serial_number], Device)
 
     def test_add_wrong_state(self):
         """Test early return on wrong state changes."""
