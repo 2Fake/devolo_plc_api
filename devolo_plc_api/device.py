@@ -50,7 +50,7 @@ class Device:
         self.plcnet: PlcNetApi | None = None
 
         self._background_tasks: set[asyncio.Task] = set()
-        self._browser: AsyncServiceBrowser | None
+        self._browser: AsyncServiceBrowser | None = None
         self._connected = False
         self._info: dict[str, ZeroconfServiceInfo] = {PLCNETAPI: ZeroconfServiceInfo(), DEVICEAPI: ZeroconfServiceInfo()}
         self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
@@ -207,6 +207,9 @@ class Device:
         self._logger.debug("Browsing for %s", service_types)
         addr = None if self._multicast else self.ip
         question_type = DNSQuestionType.QM if self._multicast else DNSQuestionType.QU
+        if self._browser:
+            await self._browser.async_cancel()
+            self._browser = None
         self._browser = AsyncServiceBrowser(
             zeroconf=self._zeroconf.zeroconf,
             type_=service_types,

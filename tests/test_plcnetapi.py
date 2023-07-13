@@ -16,7 +16,7 @@ from devolo_plc_api.plcnet_api.setuserdevicename_pb2 import SetUserDeviceNameRes
 from . import DeviceType
 
 
-class TestDeviceApi:
+class TestPlcApi:
     """Test devolo_plc_api.plcnet_api.plcnetapi.PlcNetApi class."""
 
     @pytest.mark.asyncio()
