@@ -207,6 +207,9 @@ class Device:
         self._logger.debug("Browsing for %s", service_types)
         addr = None if self._multicast else self.ip
         question_type = DNSQuestionType.QM if self._multicast else DNSQuestionType.QU
+        if self._browser:
+            await self._browser.async_cancel()
+            self._browser = None
         self._browser = AsyncServiceBrowser(
             zeroconf=self._zeroconf.zeroconf,
             type_=service_types,
