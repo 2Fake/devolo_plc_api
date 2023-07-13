@@ -59,9 +59,11 @@ class TestDevice:
             assert get_zeroconf_info.call_count == 2
 
     @pytest.mark.asyncio()
+    @pytest.mark.parametrize("device_type", [DeviceType.PLC])
+    @pytest.mark.usefixtures("service_browser")
     async def test_async_connect_not_found(self, mock_device: Device, sleep: AsyncMock):
         """Test that an exception is raised if both APIs are not available."""
-        with patch("devolo_plc_api.device.AsyncServiceBrowser"), pytest.raises(DeviceNotFound):
+        with pytest.raises(DeviceNotFound):
             await mock_device.async_connect()
             assert not mock_device._connected
             assert sleep.call_count == Device.MDNS_TIMEOUT

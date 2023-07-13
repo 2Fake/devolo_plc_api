@@ -50,7 +50,7 @@ class Device:
         self.plcnet: PlcNetApi | None = None
 
         self._background_tasks: set[asyncio.Task] = set()
-        self._browser: AsyncServiceBrowser | None
+        self._browser: AsyncServiceBrowser | None = None
         self._connected = False
         self._info: dict[str, ZeroconfServiceInfo] = {PLCNETAPI: ZeroconfServiceInfo(), DEVICEAPI: ZeroconfServiceInfo()}
         self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
