@@ -64,7 +64,7 @@ def run():
         print(guest_wifi.enabled)  # False
         print(guest_wifi.remaining_duration)  # 0
 
-        # Get a QR code of the guest Wifi settings as byte stream in SVG format
+        # Get a QR code of the guest wifi settings as byte stream in SVG format
         qr = wifi_qr_code(guest_wifi)
         with open("qr.svg", "wb") as binary_file:
             binary_file.write(qr)
