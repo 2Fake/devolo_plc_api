@@ -242,13 +242,15 @@ class Device:
     async def _get_service_info(self, zeroconf: Zeroconf, service_type: str, name: str) -> None:
         """Get service information, if IP matches."""
         service_info = AsyncServiceInfo(service_type, name)
-        question_type = DNSQuestionType.QM if self._multicast else DNSQuestionType.QU
         update = {
             DEVICEAPI: self._get_device_info,
             PLCNETAPI: self._get_plcnet_info,
         }
         with suppress(RuntimeError):
-            await service_info.async_request(zeroconf, timeout=1000, question_type=question_type)
+            if not self._multicast:
+                await service_info.async_request(zeroconf, timeout=1000, question_type=DNSQuestionType.QU, addr=self.ip)
+            else:
+                await service_info.async_request(zeroconf, timeout=1000, question_type=DNSQuestionType.QM)
 
         if not service_info.addresses or self.ip not in service_info.parsed_addresses():
             return  # No need to continue, if there are no relevant service information
