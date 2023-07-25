@@ -1,4 +1,4 @@
-from devolo_plc_api import Device
+from devolo_plc_api import Device, wifi_qr_code
 
 # IP of the device to query
 IP = "192.168.0.10"
@@ -63,6 +63,11 @@ def run():
         print(guest_wifi.key)  # "HMANPGBA"
         print(guest_wifi.enabled)  # False
         print(guest_wifi.remaining_duration)  # 0
+
+        # Get a QR code of the guest wifi settings as byte stream in SVG format
+        qr = wifi_qr_code(guest_wifi)
+        with open("qr.svg", "wb") as binary_file:
+            binary_file.write(qr)
 
         # Enable or disable the wifi guest access. Set enable to True to it turn on, to False to turn it off. Optionally
         # specify a duration in minutes. Changing SSID or the wifi key is currently not supported. If the state was changed
