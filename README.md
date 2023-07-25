@@ -16,6 +16,7 @@ Defining the system requirements with exact versions typically is difficult. But
 * pip 20.2.4
 * httpx 0.21.0
 * protobuf 3.17.3
+* segno 1.5.2
 * zeroconf 0.36.8
 
 Other versions and even other operating systems might work. Feel free to tell us about your experience. If you want to run our unit tests, you also need:
