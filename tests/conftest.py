@@ -3,18 +3,20 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from functools import partial
-from typing import AsyncGenerator, Generator
+from typing import TYPE_CHECKING, AsyncGenerator, Generator
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 import pytest_asyncio
 from ifaddr import IP, Adapter
-from syrupy.assertion import SnapshotAssertion
 
 from devolo_plc_api import Device
 
 from . import DeviceType, DifferentDirectoryExtension, TestData, load_test_data
 from .mocks.zeroconf import MockAsyncServiceInfo, MockServiceBrowser
+
+if TYPE_CHECKING:
+    from syrupy.assertion import SnapshotAssertion
 
 pytest_plugins = [
     "tests.fixtures.device_api",

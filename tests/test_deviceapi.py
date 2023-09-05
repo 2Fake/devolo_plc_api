@@ -2,13 +2,11 @@
 from __future__ import annotations
 
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from httpx import ConnectTimeout
-from pytest_httpx import HTTPXMock
 
-from devolo_plc_api import Device
-from devolo_plc_api.device_api import ConnectedStationInfo, DeviceApi, NeighborAPInfo, RepeatedAPInfo, SupportInfoItem
 from devolo_plc_api.device_api.factoryreset_pb2 import FactoryResetStart
 from devolo_plc_api.device_api.ledsettings_pb2 import LedSettingsGet, LedSettingsSetResponse
 from devolo_plc_api.device_api.multiap_pb2 import WifiMultiApGetResponse
@@ -28,6 +26,12 @@ from devolo_plc_api.device_api.wifinetwork_pb2 import (
 from devolo_plc_api.exceptions import DevicePasswordProtected, DeviceUnavailable, FeatureNotSupported
 
 from . import DeviceType
+
+if TYPE_CHECKING:
+    from pytest_httpx import HTTPXMock
+
+    from devolo_plc_api import Device
+    from devolo_plc_api.device_api import ConnectedStationInfo, DeviceApi, NeighborAPInfo, RepeatedAPInfo, SupportInfoItem
 
 
 class TestDeviceApi:
