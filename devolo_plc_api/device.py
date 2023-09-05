@@ -7,8 +7,7 @@ from contextlib import suppress
 from datetime import date
 from ipaddress import ip_address, ip_network
 from struct import unpack_from
-from types import TracebackType
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from httpx import AsyncClient
 from ifaddr import get_adapters
@@ -19,6 +18,11 @@ from .device_api import SERVICE_TYPE as DEVICEAPI, DeviceApi
 from .exceptions import DeviceNotFound
 from .plcnet_api import DEVICES_WITHOUT_PLCNET, SERVICE_TYPE as PLCNETAPI, PlcNetApi
 from .zeroconf import ZeroconfServiceInfo
+
+if TYPE_CHECKING:
+    from types import TracebackType
+
+    from typing_extensions import Self
 
 
 class Device:
@@ -69,21 +73,25 @@ class Device:
         if self._connected and self._session_instance is None:
             self._logger.warning("Please disconnect properly from the device.")
 
-    async def __aenter__(self) -> Device:
+    async def __aenter__(self) -> Self:
         """Connect to a device asynchronously when entering a context manager."""
         await self.async_connect()
         return self
 
-    async def __aexit__(self, exc_type: type | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
+    async def __aexit__(
+        self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None
+    ) -> None:
         """Disconnect to a device asynchronously when entering a context manager."""
         await self.async_disconnect()
 
-    def __enter__(self) -> Device:
+    def __enter__(self) -> Self:
         """Connect to a device synchronously when leaving a context manager."""
         self.connect()
         return self
 
-    def __exit__(self, exc_type: type | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
+    def __exit__(
+        self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None
+    ) -> None:
         """Disconnect to a device synchronously when leaving a context manager."""
         self.disconnect()
 
