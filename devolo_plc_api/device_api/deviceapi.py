@@ -4,11 +4,8 @@ from __future__ import annotations
 import functools
 from typing import TYPE_CHECKING, Callable, TypeVar
 
-from httpx import AsyncClient
-
 from devolo_plc_api.clients import Protobuf
 from devolo_plc_api.exceptions import FeatureNotSupported
-from devolo_plc_api.zeroconf import ZeroconfServiceInfo
 
 from .factoryreset_pb2 import FactoryResetStart
 from .ledsettings_pb2 import LedSettingsGet, LedSettingsSet, LedSettingsSetResponse
@@ -29,7 +26,10 @@ from .wifinetwork_pb2 import (
 )
 
 if TYPE_CHECKING:
+    from httpx import AsyncClient
     from typing_extensions import Concatenate, ParamSpec
+
+    from devolo_plc_api.zeroconf import ZeroconfServiceInfo
 
     _ReturnT = TypeVar("_ReturnT")
     _P = ParamSpec("_P")

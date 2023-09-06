@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from secrets import randbelow
-from typing import AsyncGenerator
+from typing import TYPE_CHECKING, AsyncGenerator
 
 import pytest
 import pytest_asyncio
@@ -18,7 +18,8 @@ from devolo_plc_api.device_api import (
     UpdateFirmwareCheck,
 )
 
-from tests import TestData
+if TYPE_CHECKING:
+    from tests import TestData
 
 
 @pytest_asyncio.fixture()

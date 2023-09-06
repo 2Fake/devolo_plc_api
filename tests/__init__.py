@@ -5,13 +5,16 @@ import json
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from syrupy.extensions.amber import AmberSnapshotExtension
-from syrupy.location import PyTestLocation
 
 from devolo_plc_api.device_api import SERVICE_TYPE as DEVICE_API
 from devolo_plc_api.plcnet_api import SERVICE_TYPE as PLCNET_API
 from devolo_plc_api.zeroconf import ZeroconfServiceInfo
+
+if TYPE_CHECKING:
+    from syrupy.location import PyTestLocation
 
 
 class DeviceType(Enum):
