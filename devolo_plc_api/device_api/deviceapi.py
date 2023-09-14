@@ -208,7 +208,7 @@ class DeviceApi(Protobuf):
         """
         self._logger.debug("Checking for new firmware.")
         update_firmware_check = UpdateFirmwareCheck()
-        response = await self._async_get("UpdateFirmwareCheck")
+        response = await self._async_get("UpdateFirmwareCheck", timeout=30.0)
         update_firmware_check.ParseFromString(await response.aread())
         return update_firmware_check
 
