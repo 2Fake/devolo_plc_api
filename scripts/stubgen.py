@@ -53,6 +53,7 @@ class ApiStubGenerator(StubGenerator):
                 self.add(output[i].replace("async_", "").replace("async ", ""))
                 self.add(output[i + 1])
                 self.add(output[i + 2])
+                self.add(output[i + 3])
 
     def fix_union_annotations(self) -> None:
         """Fix Union annotations."""
@@ -80,6 +81,7 @@ def generate_stubs() -> None:
         verbose=False,
         quiet=True,
         export_less=True,
+        include_docstrings=False,
     )
     mypy_opts = mypy_options(options)
     py_modules, _ = collect_build_targets(options, mypy_opts)
