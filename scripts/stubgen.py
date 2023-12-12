@@ -10,8 +10,8 @@ from pathlib import Path
 
 from mypy.nodes import ConditionalExpr, Expression, ListExpr
 from mypy.stubgen import (
+    ASTStubGenerator,
     Options,
-    StubGenerator,
     StubSource,
     collect_build_targets,
     generate_asts_for_modules,
@@ -26,10 +26,10 @@ isort:skip_file
 '''
 
 
-class ApiStubGenerator(StubGenerator):
+class ApiStubGenerator(ASTStubGenerator):
     """Generate stub text from a mypy AST."""
 
-    def get_str_type_of_node(self, rvalue: Expression, *, can_infer_optional: bool = False, can_be_any: bool = True) -> str:
+    def get_str_type_of_node(self, rvalue: Expression, can_infer_optional: bool = False, can_be_any: bool = True) -> str:
         """Get type of node as string."""
         if isinstance(rvalue, ConditionalExpr):
             if_type = self.get_str_type_of_node(rvalue.if_expr, can_infer_optional=can_infer_optional, can_be_any=False)
@@ -51,9 +51,6 @@ class ApiStubGenerator(StubGenerator):
         for i in range(len(output)):
             if "async" in output[i]:
                 self.add(output[i].replace("async_", "").replace("async ", ""))
-                self.add(output[i + 1])
-                self.add(output[i + 2])
-                self.add(output[i + 3])
 
     def fix_union_annotations(self) -> None:
         """Fix Union annotations."""
@@ -68,6 +65,7 @@ def generate_stubs() -> None:
     options = Options(
         pyversion=sys.version_info[:2],
         no_import=True,
+        inspect=False,
         doc_dir="",
         search_path=[],
         interpreter=sys.executable,
@@ -84,13 +82,13 @@ def generate_stubs() -> None:
         include_docstrings=False,
     )
     mypy_opts = mypy_options(options)
-    py_modules, _ = collect_build_targets(options, mypy_opts)
+    py_modules, _, _ = collect_build_targets(options, mypy_opts)
     generate_asts_for_modules(py_modules, options.parse_only, mypy_opts, options.verbose)
     files = []
     for mod in py_modules:
         target = mod.module.replace(".", "/")
         target += ".pyi"
-        target = Path(options.output_dir) / target
+        target = str(Path(options.output_dir) / target)
         files.append(target)
         with generate_guarded(mod.module, target, options.ignore_errors, options.verbose):
             generate_stub_from_ast(mod, target, options.parse_only, options.include_private, options.export_less)
@@ -99,6 +97,9 @@ def generate_stubs() -> None:
 def generate_stub_from_ast(mod: StubSource, target: str, parse_only: bool, include_private: bool, export_less: bool) -> None:
     """Use analyzed (or just parsed) AST to generate type stub for single file."""
     gen = ApiStubGenerator(mod.runtime_all, include_private=include_private, analyzed=not parse_only, export_less=export_less)
+    if mod.ast is None:
+        return
+
     mod.ast.accept(gen)
     if "annotations" in mod.ast.future_import_flags:
         gen.add_import_line("from __future__ import annotations\n")
