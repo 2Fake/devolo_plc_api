@@ -93,6 +93,6 @@ jobs:
           export COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_TOKEN }}
           coveralls
       - name: Clean up coverage
-        uses: geekyeggo/delete-artifact@v2.0.0
+        uses: geekyeggo/delete-artifact@v4.0.0
         with:
           name: coverage
