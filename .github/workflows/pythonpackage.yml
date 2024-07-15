@@ -10,7 +10,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4.1.7
       - name: Set up Python
-        uses: actions/setup-python@v5.1.0
+        uses: actions/setup-python@v5.1.1
         with:
           python-version: "3.8"
       - name: Install dependencies
@@ -27,7 +27,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4.1.7
       - name: Set up Python
-        uses: actions/setup-python@v5.1.0
+        uses: actions/setup-python@v5.1.1
         with:
           python-version: "3.8"
       - name: Lint with ruff
@@ -52,7 +52,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4.1.7
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5.1.0
+        uses: actions/setup-python@v5.1.1
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
@@ -79,7 +79,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4.1.7
       - name: Set up Python
-        uses: actions/setup-python@v5.1.0
+        uses: actions/setup-python@v5.1.1
         with:
           python-version: "3.8"
       - name: Download coverage
