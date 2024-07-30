@@ -63,16 +63,18 @@ asyncio_mode = "auto"
 
 [tool.ruff]
 exclude = ["*_pb2.py", "*.pyi"]
-ignore = ["ANN101", "ANN401", "COM812", "D203", "D205", "D212", "FBT001", "N818"]
 line-length = 127
-select = ["ALL"]
 target-version = "py38"
 
-[tool.ruff.isort]
+[tool.ruff.lint]
+ignore = ["ANN101", "ANN401", "COM812", "D203", "D205", "D212", "FBT001", "N818"]
+select = ["ALL"]
+
+[tool.ruff.lint.isort]
 combine-as-imports = true
 forced-separate = ["tests"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*" = ["ANN201", "ARG", "PLR2004", "PT004", "PT012", "S", "SLF001"]
 "scripts/*" = ["FBT002", "INP001"]
 
