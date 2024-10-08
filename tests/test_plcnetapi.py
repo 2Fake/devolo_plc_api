@@ -22,6 +22,7 @@ class TestPlcApi:
     @pytest.mark.asyncio()
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     @pytest.mark.usefixtures("block_communication", "service_browser")
+    @pytest.mark.httpx_mock(can_send_already_matched_responses=True)
     async def test_wrong_password_type(self, httpx_mock: HTTPXMock, mock_device: Device):
         """Test using different password hash if original password failed."""
         await mock_device.async_connect()
@@ -117,6 +118,7 @@ class TestPlcApi:
         httpx_mock.add_exception(ConnectTimeout(""))
         with pytest.raises(DeviceUnavailable):
             await mock_device.plcnet.async_get_network_overview()
+        await mock_device.async_disconnect()
 
     @pytest.mark.asyncio()
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
