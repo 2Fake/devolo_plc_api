@@ -35,6 +35,7 @@ if TYPE_CHECKING:
     from devolo_plc_api.device_api import ConnectedStationInfo, DeviceApi, NeighborAPInfo, RepeatedAPInfo, SupportInfoItem
 
 
+@pytest.mark.skipif(sys.version_info < (3, 9), reason="Tests with httpx_mock need at least Python 3.9")
 class TestDeviceApi:
     """Test devolo_plc_api.device_api.deviceapi.DeviceApi class."""
 
@@ -50,7 +51,6 @@ class TestDeviceApi:
         assert device_api.features == ["reset", "update", "led", "intmtg"]
 
     @pytest.mark.asyncio
-    @pytest.mark.skipif(sys.version_info < (3, 9), reason="Tests with httpx_mock need at least Python 3.9")
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     @pytest.mark.usefixtures("block_communication", "service_browser")
     @pytest.mark.httpx_mock(can_send_already_matched_responses=True)
