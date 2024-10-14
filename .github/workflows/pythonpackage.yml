@@ -42,12 +42,31 @@ jobs:
           mypy devolo_plc_api
           mypy tests || true
 
+  test38:
+    name: Test with Python 3.8
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4.2.1
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v5.2.0
+        with:
+          python-version: 3.8
+          check-latest: true
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .[test]
+      - name: Test with pytest
+        run: |
+          pytest --cov=devolo_plc_api -p no:warnings
+
   test:
     name: Test with Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4.2.1
@@ -60,7 +79,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e .[test]
+          python -m pip install -e .[test]
       - name: Test with pytest
         run: |
           pytest --cov=devolo_plc_api
