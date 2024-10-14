@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from tests import TestData
 
 
-@pytest_asyncio.fixture()
+@pytest_asyncio.fixture
 async def device_api(test_data: TestData, feature: str) -> AsyncGenerator[DeviceApi, None]:
     """Yield a prepared DeviceApi object."""
     test_data.device_info[SERVICE_TYPE].properties["Features"] = feature

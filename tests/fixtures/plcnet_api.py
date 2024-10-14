@@ -17,7 +17,7 @@ async def plcnet_api(test_data: TestData) -> AsyncGenerator[PlcNetApi, None]:
         yield PlcNetApi(test_data.ip, client, test_data.device_info[SERVICE_TYPE])
 
 
-@pytest.fixture()
+@pytest.fixture
 def network() -> LogicalNetwork:
     """Mock a PLC network."""
     return LogicalNetwork(devices=[], data_rates=[])
