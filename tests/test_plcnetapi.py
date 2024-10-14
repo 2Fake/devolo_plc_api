@@ -19,7 +19,7 @@ from . import DeviceType
 class TestPlcApi:
     """Test devolo_plc_api.plcnet_api.plcnetapi.PlcNetApi class."""
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     @pytest.mark.usefixtures("block_communication", "service_browser")
     @pytest.mark.httpx_mock(can_send_already_matched_responses=True)
@@ -41,7 +41,7 @@ class TestPlcApi:
 
         await mock_device.async_disconnect()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_get_network_overview(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock, network: LogicalNetwork):
         """Test getting the network overview asynchronously."""
         network_overview = GetNetworkOverview(network=network)
@@ -56,7 +56,7 @@ class TestPlcApi:
         overview = plcnet_api.get_network_overview()
         assert overview == network
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_identify_device_start(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
         """Test starting identifying a device asynchronously."""
         identify_device = IdentifyDeviceResponse()
@@ -69,7 +69,7 @@ class TestPlcApi:
         httpx_mock.add_response(content=identify_device.SerializeToString())
         assert plcnet_api.identify_device_start()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_identify_device_stop(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
         """Test stopping identifying a device asynchronously."""
         identify_device = IdentifyDeviceResponse()
@@ -82,7 +82,7 @@ class TestPlcApi:
         httpx_mock.add_response(content=identify_device.SerializeToString())
         assert plcnet_api.identify_device_stop()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_pair_device(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
         """Test pairing a device asynchronously."""
         pair_device = PairDeviceStart()
@@ -95,7 +95,7 @@ class TestPlcApi:
         httpx_mock.add_response(content=pair_device.SerializeToString())
         assert plcnet_api.pair_device()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_set_user_device_name(self, plcnet_api: PlcNetApi, httpx_mock: HTTPXMock):
         """Test setting a device name asynchronously."""
         user_device_name_set = SetUserDeviceNameResponse()
@@ -108,7 +108,7 @@ class TestPlcApi:
         httpx_mock.add_response(content=user_device_name_set.SerializeToString())
         assert plcnet_api.set_user_device_name("Test")
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     @pytest.mark.usefixtures("block_communication", "service_browser")
     async def test_device_unavailable(self, httpx_mock: HTTPXMock, mock_device: Device):
@@ -120,7 +120,7 @@ class TestPlcApi:
             await mock_device.plcnet.async_get_network_overview()
         await mock_device.async_disconnect()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     @pytest.mark.usefixtures("block_communication", "service_browser")
     async def test_attribute_error(self, mock_device: Device):

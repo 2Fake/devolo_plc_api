@@ -48,7 +48,7 @@ class TestDeviceApi:
         """Test list of default features."""
         assert device_api.features == ["reset", "update", "led", "intmtg"]
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     @pytest.mark.usefixtures("block_communication", "service_browser")
     @pytest.mark.httpx_mock(can_send_already_matched_responses=True)
@@ -70,7 +70,7 @@ class TestDeviceApi:
 
         await mock_device.async_disconnect()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["led"])
     async def test_async_get_led_setting(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test getting LED settings asynchronously."""
@@ -85,7 +85,7 @@ class TestDeviceApi:
         httpx_mock.add_response(content=led_setting_get.SerializeToString())
         assert device_api.get_led_setting()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["led"])
     async def test_async_set_led_setting(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test setting LED settings asynchronously."""
@@ -100,7 +100,7 @@ class TestDeviceApi:
         httpx_mock.add_response(content=led_setting_set.SerializeToString())
         assert device_api.set_led_setting(enable=True)
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["multiap"])
     async def test_async_get_wifi_multi_ap(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test setting LED settings asynchronously."""
@@ -117,7 +117,7 @@ class TestDeviceApi:
         details = device_api.get_wifi_multi_ap()
         assert details.enabled
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["repeater0"])
     async def test_async_get_wifi_repeated_access_points(
         self, device_api: DeviceApi, httpx_mock: HTTPXMock, repeated_ap: RepeatedAPInfo
@@ -136,7 +136,7 @@ class TestDeviceApi:
         wifi_repeated_access_points = device_api.get_wifi_repeated_access_points()
         assert wifi_repeated_access_points == [repeated_ap]
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["repeater0"])
     async def test_async_start_wps_clone(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test starting WPS clone mode asynchronously."""
@@ -165,7 +165,7 @@ class TestDeviceApi:
         httpx_mock.add_response(content=reset.SerializeToString())
         assert device_api.factory_reset()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["restart"])
     async def test_async_restart(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test restarting a device asynchronously."""
@@ -180,7 +180,7 @@ class TestDeviceApi:
         httpx_mock.add_response(content=restart.SerializeToString())
         assert device_api.restart()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["restart"])
     async def test_async_uptime(self, device_api: DeviceApi, httpx_mock: HTTPXMock, runtime: int):
         """Test getting a device's update asynchronously."""
@@ -195,7 +195,7 @@ class TestDeviceApi:
         httpx_mock.add_response(content=uptime.SerializeToString())
         assert device_api.uptime() == runtime
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["support"])
     async def test_async_get_support_info(self, device_api: DeviceApi, httpx_mock: HTTPXMock, support_item: SupportInfoItem):
         """Test getting a device's support information asynchronously."""
@@ -210,7 +210,7 @@ class TestDeviceApi:
         httpx_mock.add_response(content=support_info.SerializeToString())
         assert device_api.get_support_info() == support_info.info
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["update"])
     async def test_async_check_firmware_available(
         self, device_api: DeviceApi, httpx_mock: HTTPXMock, firmware_update: UpdateFirmwareCheck
@@ -229,7 +229,7 @@ class TestDeviceApi:
         firmware = device_api.check_firmware_available()
         assert firmware == firmware_update
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["update"])
     async def test_async_start_firmware_update(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test firmware update asynchronously."""
@@ -244,7 +244,7 @@ class TestDeviceApi:
         httpx_mock.add_response(content=firmware_update.SerializeToString())
         assert device_api.start_firmware_update()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["wifi1"])
     async def test_async_get_wifi_connected_station(
         self, device_api: DeviceApi, httpx_mock: HTTPXMock, connected_station: ConnectedStationInfo
@@ -265,7 +265,7 @@ class TestDeviceApi:
         connected_stations = device_api.get_wifi_connected_station()
         assert connected_stations == [connected_station]
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["wifi1"])
     async def test_async_get_wifi_guest_access(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test getting wifi guest access status asynchronously."""
@@ -282,7 +282,7 @@ class TestDeviceApi:
         wifi_guest_access = device_api.get_wifi_guest_access()
         assert wifi_guest_access == wifi_guest_access_get
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["wifi1"])
     async def test_async_set_wifi_guest_access(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test setting wifi guest access status asynchronously."""
@@ -297,7 +297,7 @@ class TestDeviceApi:
         httpx_mock.add_response(content=wifi_guest_access_set.SerializeToString())
         assert device_api.set_wifi_guest_access(enable=True)
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["wifi1"])
     async def test_async_get_wifi_neighbor_access_points(
         self, device_api: DeviceApi, httpx_mock: HTTPXMock, neighbor_ap: NeighborAPInfo
@@ -316,7 +316,7 @@ class TestDeviceApi:
         wifi_neighbor_access_points = device_api.get_wifi_neighbor_access_points()
         assert wifi_neighbor_access_points == [neighbor_ap]
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["wifi1"])
     async def test_async_start_wps(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
         """Test starting WPS asynchronously."""
@@ -331,7 +331,7 @@ class TestDeviceApi:
         httpx_mock.add_response(content=wps.SerializeToString())
         assert device_api.start_wps()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     @pytest.mark.usefixtures("block_communication", "service_browser")
     async def test_device_unavailable(self, httpx_mock: HTTPXMock, mock_device: Device):
@@ -343,7 +343,7 @@ class TestDeviceApi:
             await mock_device.device.async_get_wifi_connected_station()
         await mock_device.async_disconnect()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     @pytest.mark.usefixtures("block_communication", "service_browser")
     async def test_attribute_error(self, mock_device: Device):

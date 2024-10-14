@@ -16,7 +16,7 @@ from .mocks.zeroconf import MockServiceBrowser
 class TestNetwork:
     """Test devolo_plc_api.network functions."""
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_discover_network(self, test_data: TestData, mock_info_from_service: Mock):
         """Test discovering the network asynchronously."""
         with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(

@@ -30,7 +30,7 @@ def test_data() -> TestData:
     return load_test_data()
 
 
-@pytest.fixture()
+@pytest.fixture
 def block_communication() -> Generator[None, None, None]:
     """Block external communication."""
     adapter = OrderedDict()
@@ -41,20 +41,20 @@ def block_communication() -> Generator[None, None, None]:
         yield
 
 
-@pytest_asyncio.fixture()
+@pytest_asyncio.fixture
 async def http_client() -> AsyncGenerator[None, None]:
     """Patch HTTP client."""
     with patch("devolo_plc_api.device.AsyncClient", autospec=True):
         yield
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_device(test_data: TestData) -> Device:
     """Generate a device from test data."""
     return Device(ip=test_data.ip)
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_info_from_service() -> Generator[Mock, None, None]:
     """Patch reading info from mDNS entries."""
     with patch("devolo_plc_api.device.Device.info_from_service") as ifs:
@@ -68,7 +68,7 @@ def patch_sleep() -> Generator[AsyncMock, None, None]:
         yield sleep
 
 
-@pytest.fixture()
+@pytest.fixture
 def service_browser(device_type: DeviceType) -> Generator[None, None, None]:
     """Patch mDNS service browser."""
     service_browser = partial(MockServiceBrowser, device_type=device_type)
@@ -78,7 +78,7 @@ def service_browser(device_type: DeviceType) -> Generator[None, None, None]:
         yield
 
 
-@pytest.fixture()
+@pytest.fixture
 def snapshot(snapshot: SnapshotAssertion) -> SnapshotAssertion:
     """Return snapshot assertion fixture with nicer path."""
     return snapshot.use_extension(DifferentDirectoryExtension)

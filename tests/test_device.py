@@ -18,7 +18,7 @@ from .mocks.zeroconf import MockAsyncServiceInfo
 class TestDevice:
     """Test devolo_plc_api.device.Device class."""
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     @pytest.mark.usefixtures("service_browser")
     async def test_async_connect_plc(self, mock_device: Device, snapshot: SnapshotAssertion):
@@ -37,7 +37,7 @@ class TestDevice:
         assert mock_device == snapshot
         await mock_device.async_disconnect()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.REPEATER])
     @pytest.mark.usefixtures("service_browser")
     async def test_async_connect_repeater(self, mock_device: Device, snapshot: SnapshotAssertion):
@@ -49,7 +49,7 @@ class TestDevice:
         assert mock_device == snapshot
         await mock_device.async_disconnect()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_sync_connect_multicast(self, test_data: TestData):
         """Test that devices having trouble with unicast zeroconf are queried twice."""
         with patch("devolo_plc_api.device.Device._get_zeroconf_info") as get_zeroconf_info, pytest.raises(DeviceNotFound):
@@ -58,7 +58,7 @@ class TestDevice:
             assert device._multicast
             assert get_zeroconf_info.call_count == 2
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     @pytest.mark.usefixtures("service_browser")
     async def test_async_connect_not_found(self, mock_device: Device, sleep: AsyncMock):
@@ -74,7 +74,7 @@ class TestDevice:
             mock_device.connect()
             assert ac.call_count == 1
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     @pytest.mark.usefixtures("service_browser")
     async def test_set_password(self, mock_device: Device):
@@ -86,7 +86,7 @@ class TestDevice:
         assert mock_device.device.password == "super_secret"
         assert mock_device.plcnet.password == "super_secret"
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     @pytest.mark.usefixtures("http_client", "service_browser")
     async def test_async_disconnect(self, mock_device: Device):
@@ -110,7 +110,7 @@ class TestDevice:
             mock_device.disconnect()
             assert ad.call_count == 1
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     @pytest.mark.usefixtures("service_browser")
     async def test_async_context_manager(self, test_data: TestData):
@@ -127,7 +127,7 @@ class TestDevice:
             assert device._connected
         assert not device._connected
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_state_change_removed(self, mock_device: Device):
         """Test that service information are not processed on state change to removed."""
         with patch("devolo_plc_api.device.Device._retry_zeroconf_info"), patch(
@@ -136,7 +136,7 @@ class TestDevice:
             mock_device._state_change(Mock(), PLCNETAPI, PLCNETAPI, ServiceStateChange.Removed)
             assert gsi.call_count == 0
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.usefixtures("service_browser", "sleep")
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
     async def test_get_service_info_alien(self, mock_info_from_service: Mock):
