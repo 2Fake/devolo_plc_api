@@ -227,8 +227,8 @@ class Device:
         )
         while (
             not self._info[DEVICEAPI].properties
-            or not self._info[PLCNETAPI].properties
-            and self.mt_number not in DEVICES_WITHOUT_PLCNET
+            or (not self._info[PLCNETAPI].properties
+            and self.mt_number not in DEVICES_WITHOUT_PLCNET)
         ) and counter < self.MDNS_TIMEOUT:
             counter += 1
             await asyncio.sleep(0.01)
