@@ -28,13 +28,6 @@ NeighborAPInfo = WifiNeighborAPsGet.NeighborAPInfo
 SupportInfoItem = SupportInfoDump.SupportInfoItem
 
 __all__ = [
-    "ConnectedStationInfo",
-    "DeviceApi",
-    "NeighborAPInfo",
-    "RepeatedAPInfo",
-    "SupportInfoItem",
-    "WifiGuestAccessGet",
-    "WifiMultiApGetResponse",
     "CONFIGLAYER_FORMAT",
     "SERVICE_TYPE",
     "UPDATE_AVAILABLE",
@@ -44,4 +37,11 @@ __all__ = [
     "WIFI_VAP_GUEST_AP",
     "WIFI_VAP_MAIN_AP",
     "WIFI_VAP_STATION",
+    "ConnectedStationInfo",
+    "DeviceApi",
+    "NeighborAPInfo",
+    "RepeatedAPInfo",
+    "SupportInfoItem",
+    "WifiGuestAccessGet",
+    "WifiMultiApGetResponse",
 ]

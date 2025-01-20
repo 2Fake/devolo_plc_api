@@ -10,4 +10,4 @@ except PackageNotFoundError:
     # package is not installed - e.g. pulled and run locally
     __version__ = "0.0.0"
 
-__all__ = ["Device", "wifi_qr_code", "__version__"]
+__all__ = ["Device", "__version__", "wifi_qr_code"]

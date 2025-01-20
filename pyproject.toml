@@ -68,7 +68,7 @@ line-length = 127
 target-version = "py38"
 
 [tool.ruff.lint]
-ignore = ["ANN101", "ANN401", "COM812", "D203", "D205", "D212", "FBT001", "N818"]
+ignore = ["ANN401", "COM812", "D203", "D205", "D212", "FBT001", "N818"]
 select = ["ALL"]
 
 [tool.ruff.lint.isort]

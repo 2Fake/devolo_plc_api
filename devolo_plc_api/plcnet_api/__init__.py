@@ -15,10 +15,6 @@ Device = GetNetworkOverview.Device
 LogicalNetwork = GetNetworkOverview.LogicalNetwork
 
 __all__ = [
-    "DataRate",
-    "Device",
-    "LogicalNetwork",
-    "PlcNetApi",
     "DEVICES_WITHOUT_PLCNET",
     "GHN_SPIRIT",
     "HPAV_PANTHER",
@@ -26,4 +22,8 @@ __all__ = [
     "LOCAL",
     "REMOTE",
     "SERVICE_TYPE",
+    "DataRate",
+    "Device",
+    "LogicalNetwork",
+    "PlcNetApi",
 ]
