@@ -84,7 +84,7 @@ jobs:
         run: |
           pytest --cov=devolo_plc_api --cov-report=xml
       - name: Preserve coverage
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v4.6.0
         if: matrix.python-version == '3.9'
         with:
           name: coverage
