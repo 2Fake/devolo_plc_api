@@ -106,7 +106,7 @@ jobs:
         with:
           name: coverage
       - name: Coveralls
-        uses: coverallsapp/github-action@v2.3.4
+        uses: coverallsapp/github-action@v2.3.6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Clean up coverage
