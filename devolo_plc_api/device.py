@@ -171,12 +171,12 @@ class Device:
         interface: list[str] = []
         for adapter in get_adapters():
             interface.extend(
-                cast(str, ip.ip)
+                cast("str", ip.ip)
                 for ip in adapter.ips
                 if ip.is_IPv4 and ip_address(self.ip) in ip_network(f"{ip.ip}/{ip.network_prefix}", strict=False)
             )
             interface.extend(
-                cast(str, ip.ip[0])
+                cast("str", ip.ip[0])
                 for ip in adapter.ips
                 if ip.is_IPv6 and ip_address(self.ip) in ip_network(f"{ip.ip[0]}/{ip.network_prefix}", strict=False)
             )

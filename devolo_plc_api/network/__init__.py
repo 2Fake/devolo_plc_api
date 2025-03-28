@@ -1,4 +1,5 @@
 """Discover devices in your network."""
+
 from __future__ import annotations
 
 import asyncio
@@ -69,6 +70,6 @@ def _interfaces() -> list[str]:
     """Get IP addresses not being localhost."""
     interface: list[str] = []
     for adapter in get_adapters():
-        interface.extend(cast(str, ip.ip) for ip in adapter.ips if ip.is_IPv4 and ip.ip != "127.0.0.1")
-        interface.extend(cast(str, ip.ip[0]) for ip in adapter.ips if ip.is_IPv6 and ip.ip[0] != "::1")
+        interface.extend(cast("str", ip.ip) for ip in adapter.ips if ip.is_IPv4 and ip.ip != "127.0.0.1")
+        interface.extend(cast("str", ip.ip[0]) for ip in adapter.ips if ip.is_IPv6 and ip.ip[0] != "::1")
     return interface
