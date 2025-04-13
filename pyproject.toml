@@ -17,6 +17,7 @@ dependencies = [
     "httpx>=0.21.0",
     "protobuf>=4.22.0",
     "segno>=1.5.2",
+    "tenacity>=9.0.0",
     "zeroconf>=0.70.0",
 ]
 dynamic = [

@@ -36,6 +36,9 @@ if TYPE_CHECKING:
     _P = ParamSpec("_P")
 
 
+LONG_RUNNING = 30.0
+
+
 def _feature(
     feature: str,
 ) -> Callable[[Callable[Concatenate[DeviceApi, _P], _ReturnT]], Callable[Concatenate[DeviceApi, _P], _ReturnT]]:
@@ -196,7 +199,7 @@ class DeviceApi(Protobuf):
         """
         self._logger.debug("Get uptime.")
         support_info = SupportInfoDumpResponse()
-        response = await self._async_get("SupportInfoDump")
+        response = await self._async_get("SupportInfoDump", timeout=LONG_RUNNING)
         support_info.ParseFromString(await response.aread())
         return support_info.info
 
@@ -209,7 +212,7 @@ class DeviceApi(Protobuf):
         """
         self._logger.debug("Checking for new firmware.")
         update_firmware_check = UpdateFirmwareCheck()
-        response = await self._async_get("UpdateFirmwareCheck", timeout=30.0)
+        response = await self._async_get("UpdateFirmwareCheck", timeout=LONG_RUNNING)
         update_firmware_check.ParseFromString(await response.aread())
         return update_firmware_check
 
@@ -283,7 +286,7 @@ class DeviceApi(Protobuf):
         """
         self._logger.debug("Getting neighbored access points.")
         wifi_neighbor_aps = WifiNeighborAPsGet()
-        response = await self._async_get("WifiNeighborAPsGet", timeout=30.0)
+        response = await self._async_get("WifiNeighborAPsGet", timeout=LONG_RUNNING)
         wifi_neighbor_aps.ParseFromString(await response.aread())
         return list(wifi_neighbor_aps.neighbor_aps)
 

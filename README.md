@@ -18,6 +18,7 @@ Defining the system requirements with exact versions typically is difficult. But
 * httpx 0.28.1
 * protobuf 5.28.3
 * segno 1.6.1
+* tenacity 9.0.0
 * zeroconf 0.146.1
 
 Other versions and even other operating systems might work. Feel free to tell us about your experience. If you want to run our unit tests, you also need:

@@ -11,6 +11,8 @@ from devolo_plc_api.clients import Protobuf
 from devolo_plc_api.zeroconf import ZeroconfServiceInfo as ZeroconfServiceInfo
 from httpx import AsyncClient as AsyncClient
 
+LONG_RUNNING: float
+
 class DeviceApi(Protobuf):
     features: list[str]
     password: str

@@ -2,6 +2,7 @@
 
 import sys
 from http import HTTPStatus
+from unittest.mock import patch
 
 import pytest
 from httpx import ConnectTimeout
@@ -118,10 +119,11 @@ class TestPlcApi:
         """Test device being unavailable."""
         await mock_device.async_connect()
         assert mock_device.plcnet
-        httpx_mock.add_exception(ConnectTimeout(""))
-        with pytest.raises(DeviceUnavailable):
+        httpx_mock.add_exception(ConnectTimeout(""), is_reusable=True)
+        with pytest.raises(DeviceUnavailable), patch("asyncio.sleep"):
             await mock_device.plcnet.async_get_network_overview()
         await mock_device.async_disconnect()
+        assert len(httpx_mock.get_requests()) == 3
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
