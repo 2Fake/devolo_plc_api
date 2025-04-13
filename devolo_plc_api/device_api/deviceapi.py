@@ -1,4 +1,5 @@
 """Implementation of the devolo device API."""
+
 from __future__ import annotations
 
 import functools

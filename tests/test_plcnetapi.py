@@ -1,4 +1,5 @@
 """Test communicating with a the plcnet API."""
+
 import sys
 from http import HTTPStatus
 

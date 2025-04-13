@@ -1,8 +1,9 @@
 """Fixtures for device API tests."""
+
 from __future__ import annotations
 
 from secrets import randbelow
-from typing import TYPE_CHECKING, AsyncGenerator
+from typing import TYPE_CHECKING
 
 import pytest
 import pytest_asyncio
@@ -19,6 +20,8 @@ from devolo_plc_api.device_api import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
+
     from tests import TestData
 
 

@@ -1,4 +1,5 @@
 """Test network discovery."""
+
 from socket import inet_aton
 from unittest.mock import Mock, patch
 
@@ -19,8 +20,9 @@ class TestNetwork:
     @pytest.mark.asyncio
     async def test_async_discover_network(self, test_data: TestData, mock_info_from_service: Mock):
         """Test discovering the network asynchronously."""
-        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
-            "devolo_plc_api.network.Zeroconf.get_service_info", return_value=""
+        with (
+            patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser),
+            patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value=""),
         ):
             serial_number = test_data.device_info[SERVICE_TYPE].properties["SN"]
             mock_info_from_service.return_value = ZeroconfServiceInfo(
@@ -33,8 +35,9 @@ class TestNetwork:
 
     def test_discover_network(self, test_data: TestData, mock_info_from_service: Mock):
         """Test discovering the network synchronously."""
-        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
-            "devolo_plc_api.network.Zeroconf.get_service_info", return_value=""
+        with (
+            patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser),
+            patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value=""),
         ):
             serial_number = test_data.device_info[SERVICE_TYPE].properties["SN"]
             mock_info_from_service.return_value = ZeroconfServiceInfo(
@@ -53,8 +56,9 @@ class TestNetwork:
 
     def test_no_devices(self):
         """Test discovery with no devices."""
-        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
-            "devolo_plc_api.network.Zeroconf.get_service_info", return_value=None
+        with (
+            patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser),
+            patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value=None),
         ):
             discovered = network.discover_network(timeout=0.1)
             assert not discovered
@@ -62,8 +66,9 @@ class TestNetwork:
     @pytest.mark.parametrize("mt", ["2600", "2601"])
     def test_hcu(self, test_data: TestData, mt: str, mock_info_from_service: Mock):
         """Test ignoring Home Control Central Units."""
-        with patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser), patch(
-            "devolo_plc_api.network.Zeroconf.get_service_info", return_value=""
+        with (
+            patch("devolo_plc_api.network.ServiceBrowser", MockServiceBrowser),
+            patch("devolo_plc_api.network.Zeroconf.get_service_info", return_value=""),
         ):
             mock_info_from_service.return_value = ZeroconfServiceInfo(address=test_data.ip.encode(), properties={"MT": mt})
             discovered = network.discover_network(timeout=0.1)

@@ -1,4 +1,5 @@
 """Test communicating with a devolo device."""
+
 from asyncio import AbstractEventLoop
 from unittest.mock import AsyncMock, Mock, patch
 
@@ -130,9 +131,10 @@ class TestDevice:
     @pytest.mark.asyncio
     async def test_state_change_removed(self, mock_device: Device):
         """Test that service information are not processed on state change to removed."""
-        with patch("devolo_plc_api.device.Device._retry_zeroconf_info"), patch(
-            "devolo_plc_api.device.Device._get_service_info"
-        ) as gsi:
+        with (
+            patch("devolo_plc_api.device.Device._retry_zeroconf_info"),
+            patch("devolo_plc_api.device.Device._get_service_info") as gsi,
+        ):
             mock_device._state_change(Mock(), PLCNETAPI, PLCNETAPI, ServiceStateChange.Removed)
             assert gsi.call_count == 0
 

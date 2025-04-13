@@ -1,4 +1,5 @@
 """The devolo device API."""
+
 import re
 
 from .deviceapi import DeviceApi

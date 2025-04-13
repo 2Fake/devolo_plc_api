@@ -1,4 +1,5 @@
 """Test communicating with a the device API."""
+
 from __future__ import annotations
 
 import sys

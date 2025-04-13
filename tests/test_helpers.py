@@ -1,4 +1,5 @@
 """Test helper methods."""
+
 from syrupy.assertion import SnapshotAssertion
 
 from devolo_plc_api import wifi_qr_code
