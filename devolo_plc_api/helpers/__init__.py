@@ -1,4 +1,5 @@
 """Helper methods to allow advanced usage of information provided by the device."""
+
 from io import BytesIO
 from typing import Any
 

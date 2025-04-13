@@ -65,7 +65,7 @@ asyncio_default_fixture_loop_scope = "function"
 [tool.ruff]
 exclude = ["*_pb2.py", "*.pyi"]
 line-length = 127
-target-version = "py38"
+target-version = "py39"
 
 [tool.ruff.lint]
 ignore = ["ANN401", "COM812", "D203", "D205", "D212", "FBT001", "N818"]

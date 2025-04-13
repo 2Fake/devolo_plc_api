@@ -1,9 +1,10 @@
 """Test configuration."""
+
 from __future__ import annotations
 
 from collections import OrderedDict
 from functools import partial
-from typing import TYPE_CHECKING, AsyncGenerator, Generator
+from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
@@ -16,6 +17,8 @@ from . import DeviceType, DifferentDirectoryExtension, TestData, load_test_data
 from .mocks.zeroconf import MockAsyncServiceInfo, MockServiceBrowser
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator, Generator
+
     from syrupy.assertion import SnapshotAssertion
 
 pytest_plugins = [
@@ -35,9 +38,11 @@ def block_communication() -> Generator[None, None, None]:
     """Block external communication."""
     adapter = OrderedDict()
     adapter["eth0"] = Adapter(name="eth0", nice_name="eth0", ips=[IP("192.0.2.100", network_prefix=24, nice_name="eth0")])
-    with patch("devolo_plc_api.device.get_adapters", return_value=adapter.values()), patch(
-        "devolo_plc_api.device.AsyncZeroconf", AsyncMock
-    ), patch("devolo_plc_api.device.AsyncServiceInfo", MockAsyncServiceInfo):
+    with (
+        patch("devolo_plc_api.device.get_adapters", return_value=adapter.values()),
+        patch("devolo_plc_api.device.AsyncZeroconf", AsyncMock),
+        patch("devolo_plc_api.device.AsyncServiceInfo", MockAsyncServiceInfo),
+    ):
         yield
 
 
@@ -72,8 +77,9 @@ def patch_sleep() -> Generator[AsyncMock, None, None]:
 def service_browser(device_type: DeviceType) -> Generator[None, None, None]:
     """Patch mDNS service browser."""
     service_browser = partial(MockServiceBrowser, device_type=device_type)
-    with patch("devolo_plc_api.device.AsyncServiceBrowser", service_browser), patch(
-        "devolo_plc_api.network.ServiceBrowser", service_browser
+    with (
+        patch("devolo_plc_api.device.AsyncServiceBrowser", service_browser),
+        patch("devolo_plc_api.network.ServiceBrowser", service_browser),
     ):
         yield
 

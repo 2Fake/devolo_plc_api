@@ -1,4 +1,5 @@
 """Mock methods from the Zeroconf module."""
+
 from __future__ import annotations
 
 import socket

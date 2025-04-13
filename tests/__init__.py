@@ -1,4 +1,5 @@
 """Unittests for devolo_plc_api."""
+
 from __future__ import annotations
 
 import json

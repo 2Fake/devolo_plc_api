@@ -1,4 +1,5 @@
 """The devolo plcnet API."""
+
 from .getnetworkoverview_pb2 import GetNetworkOverview
 from .plcnetapi import PlcNetApi
 
