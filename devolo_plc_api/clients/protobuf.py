@@ -19,6 +19,7 @@ from httpx import (
     RemoteProtocolError,
     Response,
 )
+from tenacity import before_sleep_log, retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from devolo_plc_api.exceptions import DevicePasswordProtected, DeviceUnavailable
 
@@ -70,6 +71,13 @@ class Protobuf(ABC):
         self._logger.debug("Posting to %s", url)
         return await self._async_request("POST", url, content, timeout)
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=5),
+        retry=retry_if_exception_type(DeviceUnavailable),
+        reraise=True,
+        before_sleep=before_sleep_log(logging.getLogger("devolo_plc_api.clients.protobuf.Protobuf"), logging.DEBUG),
+    )
     async def _async_request(self, method: str, url: str, content: bytes | None, timeout: float = TIMEOUT) -> Response:
         """Request data asynchronously."""
         try:

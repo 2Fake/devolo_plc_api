@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 from http import HTTPStatus
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import pytest
 from httpx import ConnectTimeout
@@ -341,10 +342,11 @@ class TestDeviceApi:
         """Test device being unavailable."""
         await mock_device.async_connect()
         assert mock_device.device
-        httpx_mock.add_exception(ConnectTimeout(""))
-        with pytest.raises(DeviceUnavailable):
+        httpx_mock.add_exception(ConnectTimeout(""), is_reusable=True)
+        with pytest.raises(DeviceUnavailable), patch("asyncio.sleep"):
             await mock_device.device.async_get_wifi_connected_station()
         await mock_device.async_disconnect()
+        assert len(httpx_mock.get_requests()) == 3
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("device_type", [DeviceType.PLC])
