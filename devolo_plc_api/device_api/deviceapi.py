@@ -78,7 +78,7 @@ class DeviceApi(Protobuf):
         self._version = info.properties["Version"]
 
         features: str = info.properties.get("Features", "")
-        self.features = features.split(",") if features else ["reset", "update", "led", "intmtg"]
+        self.features: list[str] = features.split(",") if features else ["reset", "update", "led", "intmtg"]
         self.password = ""
 
     @_feature("led")

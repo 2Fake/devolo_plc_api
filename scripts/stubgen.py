@@ -2,13 +2,11 @@
 """Generate stub files for API classes with async and sync interface."""
 from __future__ import annotations
 
-import re
 import sys
 from contextlib import suppress
 from copy import copy
 from pathlib import Path
 
-from mypy.nodes import ConditionalExpr, Expression, ListExpr
 from mypy.stubgen import (
     ASTStubGenerator,
     Options,
@@ -29,35 +27,12 @@ isort:skip_file
 class ApiStubGenerator(ASTStubGenerator):
     """Generate stub text from a mypy AST."""
 
-    def get_str_type_of_node(self, rvalue: Expression, can_infer_optional: bool = False, can_be_any: bool = True) -> str:
-        """Get type of node as string."""
-        if isinstance(rvalue, ConditionalExpr):
-            if_type = self.get_str_type_of_node(rvalue.if_expr, can_infer_optional=can_infer_optional, can_be_any=False)
-            else_type = self.get_str_type_of_node(rvalue.else_expr, can_infer_optional=can_infer_optional, can_be_any=False)
-            if if_type and else_type and if_type != else_type:
-                return f"{if_type} | {else_type}"
-            return if_type or else_type or "Any" if can_be_any else ""
-        if isinstance(rvalue, ListExpr):
-            list_item_type = {
-                self.get_str_type_of_node(item, can_infer_optional=can_infer_optional, can_be_any=can_be_any)
-                for item in rvalue.items
-            }
-            return f"list[{' | '.join(list_item_type)}]"
-        return super().get_str_type_of_node(rvalue, can_infer_optional=can_infer_optional, can_be_any=can_be_any)
-
     def add_sync(self) -> None:
         """Add sync methods."""
         output = copy(self._output)
         for i in range(len(output)):
             if "async" in output[i]:
                 self.add(output[i].replace("async_", "").replace("async ", ""))
-
-    def fix_union_annotations(self) -> None:
-        """Fix Union annotations."""
-        for i, output in enumerate(self._output):
-            if match := re.search(r"Union\[([a-z, ]+)\]", output):
-                types = match[1].replace(",", " |")
-                self._output[i] = output.replace(match[0], types)
 
 
 def generate_stubs() -> None:
@@ -101,9 +76,6 @@ def generate_stub_from_ast(mod: StubSource, target: str, parse_only: bool, inclu
         return
 
     mod.ast.accept(gen)
-    if "annotations" in mod.ast.future_import_flags:
-        gen.add_import_line("from __future__ import annotations\n")
-        gen.fix_union_annotations()
     gen.add_sync()
 
     old_output = ""
