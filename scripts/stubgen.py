@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Generate stub files for API classes with async and sync interface."""
+
 from __future__ import annotations
 
 import sys

@@ -43,18 +43,6 @@ test = [
     "syrupy",
 ]
 
-[tool.black]
-line-length = 127
-force-exclude = '.*_pb2\.py|.*\.pyi'
-
-[tool.isort]
-combine_as_imports = true
-filter_files = true
-forced_separate = ["tests"]
-line_length = 127
-profile = "black"
-skip_glob = "*_pb2.py"
-
 [tool.mypy]
 ignore_missing_imports = true
 
