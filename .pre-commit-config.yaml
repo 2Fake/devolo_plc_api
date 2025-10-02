@@ -1,27 +1,23 @@
 repos:
-    - repo: https://github.com/psf/black-pre-commit-mirror
-      rev: "25.1.0"
-      hooks:
-          - id: black
-    - repo: https://github.com/pycqa/isort
-      rev: "6.0.1"
-      hooks:
-          - id: isort
-    - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: "v5.0.0"
-      hooks:
-          - id: check-json
-          - id: end-of-file-fixer
-          - id: trailing-whitespace
-    - repo: https://github.com/abravalheri/validate-pyproject
-      rev: "v0.24.1"
-      hooks:
-          - id: validate-pyproject
-    - repo: local
-      hooks:
-          - id: stubgen
-            name: check API stub files
-            entry: scripts/stubgen.py
-            description: check if stub files of the APIs are up-to-date
-            language: script
-            types: [python]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.12.1
+    hooks:
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v5.0.0"
+    hooks:
+      - id: check-json
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: "v0.24.1"
+    hooks:
+      - id: validate-pyproject
+  - repo: local
+    hooks:
+      - id: stubgen
+        name: check API stub files
+        entry: scripts/stubgen.py
+        description: check if stub files of the APIs are up-to-date
+        language: script
+        types: [python]
