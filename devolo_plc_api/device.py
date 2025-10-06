@@ -65,7 +65,6 @@ class Device:
         self._zeroconf_instance = zeroconf_instance
         logging.captureWarnings(capture=True)
 
-        self._loop: asyncio.AbstractEventLoop
         self._session: AsyncClient
         self._zeroconf: AsyncZeroconf
 
@@ -148,8 +147,7 @@ class Device:
 
     def connect(self) -> None:
         """Connect to a device synchronous."""
-        self._loop = asyncio.get_event_loop()
-        self._loop.run_until_complete(self.async_connect())
+        asyncio.run(self.async_connect())
 
     async def async_disconnect(self) -> None:
         """Disconnect from a device asynchronous."""
@@ -164,7 +162,7 @@ class Device:
 
     def disconnect(self) -> None:
         """Disconnect from a device synchronous."""
-        self._loop.run_until_complete(self.async_disconnect())
+        asyncio.run(self.async_disconnect())
 
     async def _get_relevant_interfaces(self) -> list[str]:
         """Get the IP address of the relevant interface to reduce traffic."""
