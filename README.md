@@ -93,6 +93,8 @@ for device in _devices.values():
 
 The following devolo devices were queried with at least one call to verify functionality:
 
+* Magic 2 WiFi 6 next
+* Magic 2 WiFi 6
 * Magic 2 WiFi next
 * Magic 2 WiFi 2-1
 * Magic 2 LAN triple
