@@ -27,7 +27,7 @@ from .wifinetwork_pb2 import (
 )
 
 if TYPE_CHECKING:
-    from httpx import AsyncClient
+    from httpx import AsyncClient, SSLContext
     from typing_extensions import Concatenate, ParamSpec
 
     from devolo_plc_api.zeroconf import ZeroconfServiceInfo
@@ -64,8 +64,7 @@ class DeviceApi(Protobuf):
     :param session: HTTP client session
     :param info: Information collected from the mDNS query
     """
-
-    def __init__(self, ip: str, session: AsyncClient, info: ZeroconfServiceInfo) -> None:
+    def __init__(self, ip: str, session: AsyncClient, info: ZeroconfServiceInfo, ssl_context: SSLContext | None = None) -> None:
         """Initialize the device API."""
         super().__init__()
 
@@ -76,6 +75,7 @@ class DeviceApi(Protobuf):
         self._session = session
         self._user = "devolo"
         self._version = info.properties["Version"]
+        self._ssl_context = ssl_context
 
         features: str = info.properties.get("Features", "")
         self.features: list[str] = features.split(",") if features else ["reset", "update", "led", "intmtg"]
