@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Callable, TypeVar
 from devolo_plc_api.clients import Protobuf
 from devolo_plc_api.exceptions import FeatureNotSupported
 
+from .diagnostics import DeviceDiagnostics, _parse_device_diagnostics
 from .factoryreset_pb2 import FactoryResetStart
 from .ledsettings_pb2 import LedSettingsGet, LedSettingsSet, LedSettingsSetResponse
 from .multiap_pb2 import WifiMultiApGetResponse
@@ -197,11 +198,23 @@ class DeviceApi(Protobuf):
 
         :return: The support info
         """
-        self._logger.debug("Get uptime.")
+        self._logger.debug("Getting support info.")
         support_info = SupportInfoDumpResponse()
         response = await self._async_get("SupportInfoDump", timeout=LONG_RUNNING)
         support_info.ParseFromString(await response.aread())
         return support_info.info
+
+    @_feature("support")
+    async def async_get_device_diagnostics(self) -> DeviceDiagnostics:
+        """
+        Get typed diagnostic information from the device support dump.
+
+        Missing or malformed values are returned as None for compatibility with different firmware versions.
+
+        :return: Typed device diagnostic information
+        """
+        self._logger.debug("Getting device diagnostics.")
+        return _parse_device_diagnostics(await self.async_get_support_info())
 
     @_feature("update")
     async def async_check_firmware_available(self) -> UpdateFirmwareCheck:

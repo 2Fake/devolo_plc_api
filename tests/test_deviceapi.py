@@ -10,6 +10,7 @@ from unittest.mock import patch
 import pytest
 from httpx import ConnectTimeout
 
+from devolo_plc_api.device_api import DeviceDiagnostics, EthernetPortDiagnostics
 from devolo_plc_api.device_api.factoryreset_pb2 import FactoryResetStart
 from devolo_plc_api.device_api.ledsettings_pb2 import LedSettingsGet, LedSettingsSetResponse
 from devolo_plc_api.device_api.multiap_pb2 import WifiMultiApGetResponse
@@ -213,6 +214,83 @@ class TestDeviceApi:
         support_info = SupportInfoDumpResponse(info=SupportInfoDump(items=[support_item]))
         httpx_mock.add_response(content=support_info.SerializeToString())
         assert device_api.get_support_info() == support_info.info
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("feature", ["support"])
+    async def test_async_get_device_diagnostics(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        """Test getting typed device diagnostic information asynchronously."""
+        configlayer = b"""SYSTEM.STATS.CPU_USAGE=29
+SYSTEM.STATS.TOTAL_MEMORY=8053
+SYSTEM.STATS.FREE_MEMORY=5036
+TEMPSENSORS.GENERAL.MEASURE=8156
+MSPS.L1.ACTIVE_SLOTS=8
+MSPS.L1.ACTIVE_SLOTS_MIN=2
+MSPS.L1.ACTIVE_SLOTS_MAX=16
+DEVOLO.ETHERNET.ETH_PORTS_LINK=NO,YES,NO
+DEVOLO.ETHERNET.ETH_PORTS_SPEED=0,1000,0
+DEVOLO.ETHERNET.ETH_PORTS_FULLDUPLEX=NO,YES,NO
+DEVOLO.ETHERNET.CONNECTED_TO_GATEWAY=YES
+MASTERSELECTION.DOMAIN.LOST_MAPS=89"""
+        support_info = SupportInfoDumpResponse(
+            info=SupportInfoDump(items=[SupportInfoDump.SupportInfoItem(label="configlayer", content=configlayer)])
+        )
+        httpx_mock.add_response(content=support_info.SerializeToString())
+
+        assert await device_api.async_get_device_diagnostics() == DeviceDiagnostics(
+            cpu_usage_percent=29,
+            total_memory_kib=8053,
+            free_memory_kib=5036,
+            temperature_celsius=81.56,
+            active_time_slots_percent=50,
+            ethernet_ports=(
+                EthernetPortDiagnostics(port=1, link=False, speed_mbps=0, full_duplex=False),
+                EthernetPortDiagnostics(port=2, link=True, speed_mbps=1000, full_duplex=True),
+                EthernetPortDiagnostics(port=3, link=False, speed_mbps=0, full_duplex=False),
+            ),
+            connected_to_gateway=True,
+            lost_maps=89,
+        )
+
+    @pytest.mark.parametrize("feature", ["support"])
+    def test_get_device_diagnostics_with_partial_malformed_data(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        """Test missing and malformed diagnostic information synchronously."""
+        configlayer = b"""SYSTEM.STATS.CPU_USAGE=invalid
+SYSTEM.STATS.FREE_MEMORY=1024
+TEMPSENSORS.GENERAL.MEASURE=invalid
+MSPS.L1.ACTIVE_SLOTS=8
+MSPS.L1.ACTIVE_SLOTS_MAX=0
+DEVOLO.ETHERNET.ETH_PORTS_LINK=YES,UNKNOWN
+DEVOLO.ETHERNET.ETH_PORTS_SPEED=1000,invalid,100
+DEVOLO.ETHERNET.ETH_PORTS_FULLDUPLEX=YES
+DEVOLO.ETHERNET.CONNECTED_TO_GATEWAY=NO"""
+        support_info = SupportInfoDumpResponse(
+            info=SupportInfoDump(
+                items=[
+                    SupportInfoDump.SupportInfoItem(label="other", content=b"SYSTEM.STATS.CPU_USAGE=99"),
+                    SupportInfoDump.SupportInfoItem(label="configlayer", content=configlayer),
+                ]
+            )
+        )
+        httpx_mock.add_response(content=support_info.SerializeToString())
+
+        assert device_api.get_device_diagnostics() == DeviceDiagnostics(
+            free_memory_kib=1024,
+            ethernet_ports=(
+                EthernetPortDiagnostics(port=1, link=True, speed_mbps=1000, full_duplex=True),
+                EthernetPortDiagnostics(port=2, link=None, speed_mbps=None, full_duplex=None),
+                EthernetPortDiagnostics(port=3, link=None, speed_mbps=100, full_duplex=None),
+            ),
+            connected_to_gateway=False,
+        )
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("feature", ["support"])
+    async def test_async_get_device_diagnostics_without_configlayer(self, device_api: DeviceApi, httpx_mock: HTTPXMock):
+        """Test getting empty diagnostics if the support dump has no configlayer item."""
+        support_info = SupportInfoDumpResponse(info=SupportInfoDump(items=[]))
+        httpx_mock.add_response(content=support_info.SerializeToString())
+
+        assert await device_api.async_get_device_diagnostics() == DeviceDiagnostics()
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("feature", ["update"])
