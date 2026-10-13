@@ -1,6 +1,6 @@
 import asyncio
 
-from devolo_plc_api import Device, wifi_qr_code
+from devolo_plc_api import Device, hops, lost_maps, neighboring_plc_networks, temperature, wifi_qr_code, wire_length
 
 # IP of the device to query
 IP = "192.168.0.10"
@@ -38,7 +38,16 @@ async def run():
         print(await dpa.device.async_uptime())
 
         # Get support information from the device.
-        print(await dpa.device.async_get_support_info())
+        support_info = await dpa.device.async_get_support_info()
+        print(support_info)
+
+        # Extract single diagnostic values from the support information. Values not reported by the device's firmware are
+        # None.
+        print(temperature(support_info))  # 70.9
+        print(neighboring_plc_networks(support_info))  # 1
+        print(hops(support_info))  # 1
+        print(wire_length(support_info))  # 97
+        print(lost_maps(support_info))  # 178
 
         # Check for new firmware versions
         firmware = await dpa.device.async_check_firmware_available()
