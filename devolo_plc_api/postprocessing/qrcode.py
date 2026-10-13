@@ -1,4 +1,4 @@
-"""Helper methods to allow advanced usage of information provided by the device."""
+"""Generate a QR code from a device's guest wifi credentials."""
 
 from io import BytesIO
 from typing import Any
