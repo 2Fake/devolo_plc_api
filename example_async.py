@@ -40,6 +40,11 @@ async def run():
         # Get support information from the device.
         print(await dpa.device.async_get_support_info())
 
+        # Get an allowlisted, typed view of diagnostic information from the support dump.
+        diagnostics = await dpa.device.async_get_device_diagnostics()
+        print(diagnostics.temperature_celsius)
+        print(diagnostics.ethernet_ports)
+
         # Check for new firmware versions
         firmware = await dpa.device.async_check_firmware_available()
         print(firmware.result)  # devolo_plc_api.device_api.UPDATE_NOT_AVAILABLE

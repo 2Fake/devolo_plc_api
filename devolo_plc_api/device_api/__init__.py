@@ -1,8 +1,7 @@
 """The devolo device API."""
 
-import re
-
 from .deviceapi import DeviceApi
+from .diagnostics import CONFIGLAYER_FORMAT, DeviceDiagnostics, EthernetPortDiagnostics
 from .multiap_pb2 import WifiMultiApGetResponse
 from .support_pb2 import SupportInfoDump
 from .updatefirmware_pb2 import UpdateFirmwareCheck
@@ -18,7 +17,6 @@ from .wifinetwork_pb2 import (
     WifiRepeatedAPsGet,
 )
 
-CONFIGLAYER_FORMAT = re.compile(rb"(([A-Z][A-Z0-9._]+)=(.+?))(?=(([A-Z][A-Z0-9._]+)=(.+))|$)", re.DOTALL)
 SERVICE_TYPE = "_dvl-deviceapi._tcp.local."
 UPDATE_AVAILABLE = UpdateFirmwareCheck.UPDATE_AVAILABLE
 UPDATE_NOT_AVAILABLE = UpdateFirmwareCheck.UPDATE_NOT_AVAILABLE
@@ -40,6 +38,8 @@ __all__ = [
     "WIFI_VAP_STATION",
     "ConnectedStationInfo",
     "DeviceApi",
+    "DeviceDiagnostics",
+    "EthernetPortDiagnostics",
     "NeighborAPInfo",
     "RepeatedAPInfo",
     "SupportInfoItem",
