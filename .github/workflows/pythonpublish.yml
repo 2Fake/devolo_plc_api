@@ -43,7 +43,7 @@ jobs:
       id-token: write
     steps:
       - name: Download distribution
-        uses: actions/download-artifact@v8.0.1
+        uses: actions/download-artifact@v8.0.2
         with:
           name: dist
           path: dist/
