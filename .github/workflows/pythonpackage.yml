@@ -12,7 +12,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
         with:
-          python-version: "3.9"
+          python-version: "3.10"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -29,7 +29,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
         with:
-          python-version: "3.9"
+          python-version: "3.10"
       - name: Lint with ruff
         run: |
           python -m pip install --upgrade pip
@@ -42,12 +42,31 @@ jobs:
           mypy devolo_plc_api
           mypy tests || true
 
+  test-legacy:
+    name: Test with Python 3.9
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v7.0.1
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.9"
+          check-latest: true
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .[test]
+      - name: Test with pytest
+        run: |
+          pytest
+
   test:
     name: Test with Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
     steps:
       - name: Checkout sources
         uses: actions/checkout@v7.0.1
@@ -66,7 +85,7 @@ jobs:
           pytest --cov=devolo_plc_api --cov-report=xml
       - name: Preserve coverage
         uses: actions/upload-artifact@v7.0.2
-        if: matrix.python-version == '3.9'
+        if: matrix.python-version == '3.10'
         with:
           name: coverage
           path: coverage.xml
@@ -81,7 +100,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
         with:
-          python-version: "3.9"
+          python-version: "3.10"
       - name: Download coverage
         uses: actions/download-artifact@v8.0.2
         with:

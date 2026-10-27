@@ -21,3 +21,4 @@ repos:
         description: check if stub files of the APIs are up-to-date
         language: script
         types: [python]
+        pass_filenames: false
